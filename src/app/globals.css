@@ -5,13 +5,6 @@
   --foreground: #171717;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
@@ -23,4 +16,182 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+.common-box {
+  display: flex;
+  flex-direction: column;
+  align-items: left;
+  justify-content: left;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid #ccc;
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px,
+              rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
+}
+
+.calendar-header-item {
+  align-items: center;
+  padding: 0.25rem 2.0rem;
+  background-color: var(--foreground);
+  color: var(--background);
+  align-content: center;
+
+}
+
+.calendar-cell {
+  border: #000080 1px solid;
+  width: 100px;
+  height: 35px;
+  align-content: center;
+  user-select: none;
+}
+
+.calendar-cell-requirements-definition {
+  background-color: #ffa500;
+  color: #000;
+  font-weight: bold;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.calendar-cell-design {
+  background-color: #ffd700;
+  color: #000;
+  font-weight: bold;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.calendar-cell-development {
+  background-color: #3cb371;
+  color: #fff;
+  font-weight: bold;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
+}
+
+.calendar-cell-unit-test-document-creation {
+  background-color: #000080;
+  color: #fff;
+  font-weight: bold;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.5);
+}
+
+.calendar-cell-unit-test {
+  background-color: #4682b4;
+  color: #fff;
+  font-weight: bold;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.4);
+}
+
+.calendar-cell-integration-test-internal-document-creation {
+  background-color: #da70d6;
+  color: #000;
+  font-weight: bold;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.calendar-cell-integration-test-internal {
+  background-color: #9400d3;
+  color: #fff;
+  font-weight: bold;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.5);
+}
+
+.calendar-cell-integration-test-external-document-creation {
+  background-color: #ff69b4;
+  color: #000;
+  font-weight: bold;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.calendar-cell-integration-test-external {
+  background-color: #ff1493;
+  color: #fff;
+  font-weight: bold;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.5);
+}
+
+.calendar-task-cell {
+  position: relative;
+  display: flex;
+}
+
+
+.detail-tips {
+  background-color: #f0f0f0;
+  border-radius: 5px;
+  padding: 10px;
+  margin-top: 10px;
+}
+
+.jellybean {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  /* color: #fff; */
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow:
+    inset -2px -2px 5px rgba(255, 255, 255, 0.6),
+    inset 2px 2px 6px rgba(0, 0, 0, 0.1),
+    0 3px 8px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  overflow: hidden;
+  padding: 0 8px;
+  text-align: center;
+  white-space: nowrap;
+  /* pointer-events: none; */
+}
+
+.jellybean:hover {
+  box-shadow:
+    inset -2px -2px 5px rgba(255, 255, 255, 0.7),
+    inset 2px 2px 8px rgba(0, 0, 0, 0.15),
+    0 6px 12px rgba(0, 0, 0, 0.25);
+}
+
+.jellybean-gloss {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 50%;
+  border-top-left-radius: inherit;
+  border-top-right-radius: inherit;
+  background: linear-gradient(to bottom,
+      rgba(255, 255, 255, 0.6),
+      rgba(255, 255, 255, 0.1));
+  pointer-events: none;
+}
+
+.jellybean-text {
+  position: relative;
+  z-index: 1;
+  font-size: 0.9rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.jellybean.selected {
+  outline: 4px solid rgba(0, 123, 255, 0.7);
+  outline-offset: -4px;
+  /* animation: pulse 1.5s infinite; */
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(0, 123, 255, 0.4);
+  }
+
+  70% {
+    transform: scale(1.03);
+    box-shadow: 0 0 0 8px rgba(0, 123, 255, 0);
+  }
+
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(0, 123, 255, 0);
+  }
 }

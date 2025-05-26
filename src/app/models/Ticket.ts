@@ -1,0 +1,163 @@
+import { generateUUID, UUID } from "../common/IdUtil";
+import { parsePhase, PhaseEnum } from "../common/PhaseEnum";
+import { TicketMaterial } from "../types/TicketType";
+
+/**
+ * チケットの詳細を表すクラス。
+ * チケットのフェーズ一つに相当する。
+ * @param detailid チケットの詳細のID
+ * @param duration チケットの詳細の所要日数
+ * @param phase チケットの詳細のフェーズ
+ * @param description チケットの詳細の説明
+ */
+export class TicketPhase {
+    constructor(
+        public readonly phaseId: UUID,
+        public readonly duration: number,
+        public readonly phase: PhaseEnum,
+        public readonly description: string,
+    ) { }
+
+
+}
+
+/**
+ * 一つのチケットを表すクラス。チケットとは、  
+ * このプロジェクトでこなすべきタスクのソースとなるもの。  
+ * チケットを元に、メンバーが実際に行う作業を、タスクという。　　
+ * 
+ * チケットは複数の工程からなる。
+ * @param id チケットのID
+ * @param title チケットのタイトル
+ * @param description チケットの説明
+ * @param details チケットの詳細。PhaseEnumをキーに、TicketDetailを値に持つMap
+ */
+export class Ticket {
+    private _phaseList: readonly TicketPhase[] = [];
+
+    constructor(
+        public readonly id: UUID,
+        public readonly title: string,
+        public readonly description: string,
+        public readonly phases: Map<PhaseEnum, TicketPhase>,
+    ) {
+        this._phaseList = Array.from(phases.values());
+    }
+
+    public static TicketFactory(
+        ticketMaterial: TicketMaterial,
+    ): Ticket {
+        const phases = new Map<PhaseEnum, TicketPhase>();
+        ticketMaterial.phases.forEach(phase => {
+            const phaseEnum = parsePhase(phase.phase);
+            const ticketDetail = new TicketPhase(
+                generateUUID(),
+                phase.duration,
+                phaseEnum,
+                phase.description
+            );
+            phases.set(phaseEnum, ticketDetail);
+        });
+        return new Ticket(
+            generateUUID(),
+            ticketMaterial.title,
+            ticketMaterial.description,
+            phases
+        );
+    }
+
+
+    get totalDuration(): number {
+        return this._phaseList.reduce((total, detail) => total + detail.duration, 0);
+    }
+
+    public getPhase(phase: PhaseEnum): TicketPhase | undefined {
+        return this.phases.get(phase);
+    }
+
+    public getPhaseList(): readonly TicketPhase[] {
+        return this._phaseList;
+    }
+
+
+}
+
+/**
+ * チケットの管理を行うクラス。
+ * @param ticketList チケットのリスト
+ * @param ticketMap チケットのIDをキーに、チケットを値に持つMap
+ * 
+ */
+export class TicketManager {
+    private _ticketMap: Map<string, Ticket> = new Map<string, Ticket>();
+    private _ticketList: Ticket[] = [];
+
+    constructor(ticketList: Ticket[]) {
+        this._ticketList = ticketList;
+        this._ticketMap = new Map<string, Ticket>(ticketList.map(ticket => [ticket.id, ticket]));
+    }
+
+    public static TicketManagerFactory(ticketMaterials: TicketMaterial[]): TicketManager {
+
+        const ticketList: Ticket[] = [];
+        ticketMaterials.forEach(ticketMaterial => {
+            const ticket = Ticket.TicketFactory(ticketMaterial);
+            ticketList.push(ticket);
+        });
+
+        return new TicketManager(ticketList);
+
+
+    }
+
+    addTicket(ticket: Ticket): TicketManager {
+        this._ticketList.push(ticket);
+        this._ticketMap.set(ticket.id, ticket);
+
+        return this;
+    }
+
+    removeTicket(ticketId: string): TicketManager {
+        const ticket = this._ticketMap.get(ticketId);
+        if (ticket) {
+            this._ticketList = this._ticketList.filter(t => t.id !== ticketId);
+            this._ticketMap.delete(ticketId);
+        }
+
+        return this;
+    }
+
+    getTicket(ticketId: string): Ticket | undefined {
+        return this._ticketMap.get(ticketId);
+    }
+
+    getTicketList(): readonly Ticket[] {
+        return this._ticketList;
+    }
+
+    getTicketPhases(ticketId: string): Map<PhaseEnum, TicketPhase> | undefined {
+        const ticket = this.getTicket(ticketId);
+        if (ticket) {
+            return ticket.phases;
+        }
+        return undefined;
+    }
+
+    getTicketPhase(ticketId: string, phase: PhaseEnum): TicketPhase | undefined {
+        const ticket = this.getTicket(ticketId);
+        if (ticket) {
+            return ticket.getPhase(phase);
+        }
+        return undefined;
+    }
+
+    getTicketPhaseFromPhaseId(phaseId: string): TicketPhase | undefined {
+        for (const ticket of this._ticketList) {
+            const phase = ticket.phases.get(phaseId as PhaseEnum);
+            if (phase) {
+                return phase;
+            }
+        }
+        return undefined;
+    }
+}
