@@ -19,7 +19,10 @@ export class PlanedTask {
         return Array.from(this._assignedTasks.values());
     }
 
-    public get(taskId: UUID): AssignedTask | undefined {
+    public get(taskId: UUID | undefined): AssignedTask | undefined {
+        if (!taskId) {
+            return undefined;
+        }
         return this._assignedTasks.get(taskId);
 
     }

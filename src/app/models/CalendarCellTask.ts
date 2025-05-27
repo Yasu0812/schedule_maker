@@ -1,4 +1,4 @@
-import { UUID } from "../common/IdUtil";
+import { generateUUID, UUID } from "../common/IdUtil";
 import { Phase } from "../common/PhaseEnum";
 
 /**
@@ -87,7 +87,7 @@ export class CalendarCellTaskManager {
                 const date = `2025-04-${i < 10 ? '0' + i : i}`;
 
                 const phase = i % 2 === 0 ? Phase.DEVELOPMENT : Phase.UNIT_TEST;
-                const task = new CalendarCellTask(`Task ${i}-${j}`, `${member}-${i}`, date, phase, `Task ${i} description`);
+                const task = new CalendarCellTask(`Task ${i}-${j}`, generateUUID(), date, phase, `Task ${i} description`);
                 taskMapForMember.set(date, task);
 
             }

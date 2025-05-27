@@ -1,10 +1,9 @@
 import { Task } from "@/app/models/Task";
 import { TaskMergeSplitService } from "@/app/service/TaskMergeSplitService";
 import { UUID } from "crypto";
-import { DraggableDiv } from "../atom/DraggableDiv";
-import { JellyBean } from "../decorator/JellyBean";
 import { TaskManager } from "@/app/models/TaskManager";
 import { phaseCompare } from "@/app/common/PhaseEnum";
+import TaskBeanDiv from "../atom/TaskBeanDiv";
 
 export default function UnassignedTasks(
     props: {
@@ -23,16 +22,16 @@ export default function UnassignedTasks(
         .sort((a, b) => Number(a.tickeTitle) - Number(b.tickeTitle))
         ;
 
-    const onDoubleClick = (taskId: UUID, clientX: number, clientY: number) => {
-        const newTaskManager = new TaskMergeSplitService().splitTaskHalf(taskId, taskManager);
-        console.log("onDoubleClick", taskId, clientX, clientY);
+    const onDoubleClick = (taskId: UUID, clientX: number, currentTarget: HTMLElement) => {
+        const rect = currentTarget.getBoundingClientRect();
+        const pointX = Math.floor((clientX - rect.left) / 100);
+        const newTaskManager = new TaskMergeSplitService().splitTaskLeftDuration(taskId, taskManager, pointX);
         props.setTaskManager(newTaskManager);
-        handleMoveTargetTask(taskId);
+        handleMoveTargetTask(undefined);
     }
 
     const onMouseUp = (e: React.MouseEvent, taskId: UUID) => {
         if (!moveTargetTaskId) {
-            console.warn("No move target task ID set.");
             return;
         }
 
@@ -44,6 +43,23 @@ export default function UnassignedTasks(
         const newTaskManager = new TaskMergeSplitService().mergeTasks([taskId, moveTargetTaskId], taskManager);
         setTaskManager(newTaskManager);
 
+        handleMoveTargetTask(undefined);
+
+    }
+
+    const onMouseDown = (taskId: UUID) => {
+
+        if (!moveTargetTaskId) {
+            handleMoveTargetTask(taskId);
+        } else if (isSameTaskId(taskId)) {
+            handleMoveTargetTask(undefined);
+        } else {
+            const newTaskManager = new TaskMergeSplitService().mergeTasks([taskId, moveTargetTaskId], taskManager);
+            setTaskManager(newTaskManager);
+
+            handleMoveTargetTask(undefined);
+        }
+
     }
 
     const isSameTaskId = (taskId: UUID) => {
@@ -54,17 +70,21 @@ export default function UnassignedTasks(
 
         return (
             <div
-                onMouseDown={() => handleMoveTargetTask(task.id)}
                 key={task.id}
                 style={{ margin: "5px" }}
-                onDoubleClick={(e) => onDoubleClick(task.id, e.clientX, e.clientY)}
+                onDoubleClick={(e) => onDoubleClick(task.id, e.clientX, e.currentTarget)}
                 onMouseUp={(e) => onMouseUp(e, task.id)}
             >
-                <DraggableDiv width={100 * task.duration} height={38} >
-                    <JellyBean width={100 * task.duration} height={38} phase={task.phase} selected={isSameTaskId(task.id)} >
-                        {task.tickeTitle}
-                    </JellyBean >
-                </DraggableDiv>
+                <TaskBeanDiv
+                    task={{
+                        taskId: task.id,
+                        taskName: task.tickeTitle,
+                        taskPhase: task.phase,
+                    }}
+                    duration={task.duration}
+                    moveTargetTaskId={moveTargetTaskId}
+                    handleMouseDown={() => onMouseDown(task.id)}
+                />
             </div>
 
         );

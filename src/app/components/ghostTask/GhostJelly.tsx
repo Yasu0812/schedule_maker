@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 
 export function GhostJelly(
     props: {
-        taskId: UUID,
+        taskId: UUID | undefined,
         taskManager: TaskManager,
     },
 ) {
@@ -33,6 +33,7 @@ export function GhostJelly(
                     left: pos.x - 50,
                     top: pos.y - 17,
                     pointerEvents: 'none',
+                    userSelect: "none",
                 }}>
                     <JellyBean width={100 * task.duration} height={34} phase={task.phase} selected={false}>
                         {task.tickeTitle}

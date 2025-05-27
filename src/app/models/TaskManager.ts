@@ -66,7 +66,10 @@ export class TaskManager {
         return this;
     }
 
-    public getTask(id: UUID): Task | undefined {
+    public getTask(id: UUID | undefined): Task | undefined {
+        if (!id) {
+            return undefined;
+        }
         return this._taskMap.get(id);
     }
 

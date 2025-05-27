@@ -5,8 +5,10 @@ import TaskCell from "./TaskCell";
 import { UUID } from "@/app/common/IdUtil";
 import { PlanedTask } from "@/app/models/PlanedTask";
 import { TaskManager } from "@/app/models/TaskManager";
-import { DraggableDiv } from "../atom/DraggableDiv";
-import { JellyBean } from "../decorator/JellyBean";
+import TaskBeanDiv from "../atom/TaskBeanDiv";
+import { TaskAssignmentService } from "@/app/service/TaskAssignmentService";
+import { PlanningStatusService } from "@/app/service/PlanningStatusService";
+import { parsePhase } from "@/app/common/PhaseEnum";
 
 
 export default function CalendarLine(
@@ -32,17 +34,47 @@ export default function CalendarLine(
     const moveTargetTaskId = props.moveTargetTaskId;
     const setPlanedTaskManager = props.setPlanedTaskManager;
 
+    const disAssignTask = (taskId: UUID) => {
+        const assignedTaskId = planedTaskManager.get(taskId);
+        if (assignedTaskId) {
+            // すでに割り当てられているタスクを解除する
+            const newPlanedTask = new TaskAssignmentService().disassignTask(
+                assignedTaskId.id,
+                planedTaskManager,
+            );
+            setPlanedTaskManager(
+                newPlanedTask
+            );
+        }
+    }
+
+
     const dayListItems = dayList.map((day, index) => {
         const dayString = DateUtil.formatDate(day);
         const task = lineTask.getTaskForDate(dayString);
         const planedTask = planedTaskManager.get(task?.taskId);
+
+        const isFinishedBeforePhase = (planedTask && task && new PlanningStatusService().isFinishedBeforePhaseWithDay(
+            planedTask?.ticketId,
+            parsePhase(task.taskPhase),
+            taskManager,
+            planedTaskManager,
+            index
+
+        )) ? true : false;
+
         return (
-            <td key={index} className="calendar-line-item" style={{ position: 'relative', overflow: "", alignItems: "center" }} >
+            <td key={index} className="calendar-line-item" style={{ position: 'relative', alignItems: "center" }} >
                 {task && planedTask?.startDayNum === index &&
-                    <div onMouseDown={() => { handleMoveTargetTask(task?.taskId) }} style={{ position: "absolute", top: 0, left: 0, width: 100 * planedTask?.duration, height: "100%", zIndex: 1 }} >
-                        <JellyBean width={100 * planedTask?.duration} height={36} phase={task?.taskPhase} selected={moveTargetTaskId === task?.taskId} >
-                            &nbsp;{task?.taskName}
-                        </JellyBean>
+                    <div style={{ position: "absolute", top: 0, left: 0, }}>
+                        <TaskBeanDiv
+                            task={task}
+                            duration={planedTask.duration}
+                            moveTargetTaskId={moveTargetTaskId}
+                            handleMouseDown={() => handleMoveTargetTask(task.taskId)}
+                            handleContextMenu={() => disAssignTask(task.taskId)}
+                            isFinishedBeforePhase={!isFinishedBeforePhase}
+                        />
                     </div>
                 }
                 <CalendarCell>

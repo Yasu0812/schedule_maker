@@ -38,7 +38,6 @@ export class PlanedTaskMapper {
 
                 for (let date = new Date(firstDate); date <= lastDate; date.setDate(date.getDate() + 1)) {
                     if (date >= startDate && date < endDate) {
-                        console.log(`Adding task for member ${member} on date ${date}`);
                         const dateString = DateUtil.formatDate(date);
                         const cellTask = new CalendarCellTask(
                             ticket.title,

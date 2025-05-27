@@ -76,7 +76,7 @@ export default function SceduleMaker() {
     }
 
     return (
-        <div>
+        <div style={{ padding: '1rem', backgroundColor: '#f0f0f0', height: '100vh' }}>
             <div style={{ display: 'flex', overflow: 'scroll', justifyContent: 'space-between', marginBottom: '1rem' }}>
                 <CalendarBox
                     calendarManager={schdule.calandarManager}
