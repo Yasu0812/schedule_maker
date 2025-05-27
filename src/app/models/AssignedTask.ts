@@ -25,7 +25,7 @@ export class AssignedTask {
     ) { }
 
     get duration(): number {
-        return this.endDayNum - this.startDayNum;
+        return this.endDayNum - this.startDayNum + 1;
     }
 
 }

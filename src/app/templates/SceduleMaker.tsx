@@ -10,6 +10,7 @@ import { PlanedTask } from "../models/PlanedTask";
 import { GetCalendarService } from "../service/GetCalendarService";
 import { UUID } from "../common/IdUtil";
 import { toSerializable } from "../common/JsonUtil";
+import { GhostJelly } from "../components/ghostTask/GhostJelly";
 
 export default function SceduleMaker() {
 
@@ -76,7 +77,7 @@ export default function SceduleMaker() {
 
     return (
         <div>
-            <div style={{ display: 'flex', overflow:'scroll', justifyContent: 'space-between', marginBottom: '1rem' }}>
+            <div style={{ display: 'flex', overflow: 'scroll', justifyContent: 'space-between', marginBottom: '1rem' }}>
                 <CalendarBox
                     calendarManager={schdule.calandarManager}
                     taskManager={schdule.taskManager}
@@ -110,6 +111,8 @@ export default function SceduleMaker() {
                     <pre>{JSON.stringify(toSerializable(schdule), null, 2)}</pre>
                 </div>
             )}
+
+            <GhostJelly taskId={moveTargetTaskId} taskManager={schdule.taskManager} />
 
             <div>
                 <TaskUnassignedBox

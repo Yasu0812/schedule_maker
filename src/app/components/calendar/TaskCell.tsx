@@ -26,6 +26,7 @@ export default function TaskCell(
     const { rowIndex, colIndex } = props;
     const className = `calendar-task-cell`;
     const thisCellTicketId = task ? taskManager.getTask(task.taskId)?.ticketId : undefined;
+    const planedTask = planedTaskManager.get(task?.taskId as UUID);
 
     const onMouseDown = (event: React.MouseEvent) => {
         //event.stopPropagation(); // クリックイベントが親要素に伝播しないようにする
@@ -97,24 +98,18 @@ export default function TaskCell(
 
 
     return (
-        <div style={{ overflow: "hidden" }}
+        <div style={{ overflow: "visible" }}
             className={className}
             onClick={onClick}
             onContextMenu={onContextMenu}
             onMouseDown={onMouseDown}
             onMouseUp={onMouseUp}
         >
-            <div style={{ width: "10%", height: "100%", position: "absolute", zIndex:1 }}></div>
+            <div style={{ width: "10%", height: "100%", position: "absolute", zIndex: 1 }}></div>
 
-            {task &&
-                <DraggableDiv width={105} height={36} >
-                    <JellyBean width={105} height={36} phase={task?.taskPhase} selected={moveTargetTaskId === task.taskId} >
-                        &nbsp;{task?.taskName} {isFinishedBeforePhase ? "" : "❗️"}
-                    </JellyBean>
-                </DraggableDiv>
-            }
-            {!task && <>&nbsp;</>}
-            <div style={{ width: "10%", height: "100%", position: "absolute", right: 0, zIndex:1 }}></div>
+
+            <>&nbsp;</>
+            <div style={{ width: "10%", height: "100%", position: "absolute", right: 0, zIndex: 1 }}></div>
 
         </div>
     );

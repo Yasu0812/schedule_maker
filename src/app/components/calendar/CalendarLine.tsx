@@ -5,6 +5,8 @@ import TaskCell from "./TaskCell";
 import { UUID } from "@/app/common/IdUtil";
 import { PlanedTask } from "@/app/models/PlanedTask";
 import { TaskManager } from "@/app/models/TaskManager";
+import { DraggableDiv } from "../atom/DraggableDiv";
+import { JellyBean } from "../decorator/JellyBean";
 
 
 export default function CalendarLine(
@@ -33,8 +35,16 @@ export default function CalendarLine(
     const dayListItems = dayList.map((day, index) => {
         const dayString = DateUtil.formatDate(day);
         const task = lineTask.getTaskForDate(dayString);
+        const planedTask = planedTaskManager.get(task?.taskId);
         return (
-            <td key={index} className="calendar-line-item" style={{ position: 'relative', overflow: "hidden", alignItems: "center" }}  >
+            <td key={index} className="calendar-line-item" style={{ position: 'relative', overflow: "", alignItems: "center" }} >
+                {task && planedTask?.startDayNum === index &&
+                    <div onMouseDown={() => { handleMoveTargetTask(task?.taskId) }} style={{ position: "absolute", top: 0, left: 0, width: 100 * planedTask?.duration, height: "100%", zIndex: 1 }} >
+                        <JellyBean width={100 * planedTask?.duration} height={36} phase={task?.taskPhase} selected={moveTargetTaskId === task?.taskId} >
+                            &nbsp;{task?.taskName}
+                        </JellyBean>
+                    </div>
+                }
                 <CalendarCell>
                     <TaskCell
                         rowIndex={rowIndex}
