@@ -1,3 +1,4 @@
+import { DateUtil } from "../common/DateUtil";
 import { UUID } from "../common/IdUtil";
 import { isAfterPhase, isBeforePhase, PhaseEnum } from "../common/PhaseEnum";
 import { difference } from "../common/SetOperationUtil";
@@ -59,25 +60,6 @@ export class PlanningStatusService {
         planedTask: PlanedTask,
         baseDayNum: number,
     ) {
-
-        // TODO: 再帰的に終了を見る処理を追加したい
-        // 足りないのは、baseDayNumを該当タスクの開始日に再帰的に設定していく点
-        // const prephase = previousPhase(phase);
-        // if (!prephase) {
-        //     return true;
-        // }
-
-        // const isFinishedBeforePhase = this.isFinishedBeforePhaseWithDay(
-        //     ticketId,
-        //     prephase,
-        //     taskManager,
-        //     planedTask,
-        //     baseDayNum
-        // );
-
-        // if (!isFinishedBeforePhase) {
-        //     return false;
-        // }
 
         const isBeforePhaseFinished = this.isAllAssignedBeforePhase(
             ticketId,

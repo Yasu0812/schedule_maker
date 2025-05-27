@@ -29,6 +29,7 @@ export default function SceduleMaker() {
         });
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const handleCalendarManagerChange = (calendarManager: CalendarCellTaskManager) => {
         setSchedule((prevSchedule) => {
             return new ScheduleStateManager(
@@ -81,7 +82,6 @@ export default function SceduleMaker() {
                 <CalendarBox
                     calendarManager={schdule.calandarManager}
                     taskManager={schdule.taskManager}
-                    setCalendarManager={handleCalendarManagerChange}
                     planedTaskManager={schdule.planedTaskManager}
                     setPlanedTaskManager={handlePlanedTaskManagerChange}
                     moveTargetTaskId={moveTargetTaskId}
