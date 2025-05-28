@@ -32,9 +32,9 @@ export default function TaskBeanDiv(props: {
         <div
             onMouseDown={onMouseDown}
             onContextMenu={onContextMenu}
-            style={{ width: 100 * duration, height: "100%", zIndex: 1, userSelect: "none", pointerEvents: pointerEvents }}
+            style={{ width: 75 * duration, height: "100%", zIndex: 1, userSelect: "none", pointerEvents: pointerEvents }}
         >
-            <JellyBean width={100 * duration} height={36} phase={task?.taskPhase} selected={isSelected} >
+            <JellyBean width={75 * duration} height={36} phase={task?.taskPhase} selected={isSelected} >
                 &nbsp;{task?.taskName} {isFinishedBeforePhase ? "❗️" : ""}
             </JellyBean>
         </ div>

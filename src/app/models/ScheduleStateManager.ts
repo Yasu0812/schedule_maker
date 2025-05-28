@@ -42,7 +42,7 @@ export class ScheduleStateManager {
     }
 
     public static ScheduleStateManagerFactory(): ScheduleStateManager {
-        const calandarManager = new CalendarCellTaskManager(["a", "b", "c", "d"], new Map<string, Map<string, CalendarCellTask>>(), new Date("2025-04-01"), new Date("2025-06-30"));
+        const calandarManager = new CalendarCellTaskManager(["a", "b", "c", "d", "e", "f", "g"], new Map<string, Map<string, CalendarCellTask>>(), new Date("2025-04-01"), new Date("2025-06-30"));
         const taskManager = new TaskManager(new Map<UUID, Task>());
         const ticketManager = new TicketManager([]);
         const planedTaskManager = new PlanedTask();

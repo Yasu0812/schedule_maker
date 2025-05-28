@@ -35,7 +35,7 @@ export function GhostJelly(
                     pointerEvents: 'none',
                     userSelect: "none",
                 }}>
-                    <JellyBean width={100 * task.duration} height={34} phase={task.phase} selected={false}>
+                    <JellyBean width={75 * task.duration} height={34} phase={task.phase} selected={false}>
                         {task.tickeTitle}
                     </JellyBean>
                 </div>

@@ -11,6 +11,7 @@ import { GetCalendarService } from "../service/GetCalendarService";
 import { UUID } from "../common/IdUtil";
 import { toSerializable } from "../common/JsonUtil";
 import { GhostJelly } from "../components/ghostTask/GhostJelly";
+import Legend from "../components/atom/Legend";
 
 export default function SceduleMaker() {
 
@@ -77,7 +78,7 @@ export default function SceduleMaker() {
     }
 
     return (
-        <div style={{ padding: '1rem', backgroundColor: '#f0f0f0', height: '100vh' }}>
+        <div style={{ padding: '1rem', backgroundColor: '#f0f0f0' }}>
             <div style={{ display: 'flex', overflow: 'scroll', justifyContent: 'space-between', marginBottom: '1rem' }}>
                 <CalendarBox
                     calendarManager={schdule.calandarManager}
@@ -130,6 +131,7 @@ export default function SceduleMaker() {
                 setTicketManager={handleTicketManagerChange}
                 setTaskManager={handleTaskManagerChange}
             />
+            <Legend />
         </div>
 
     );

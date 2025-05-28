@@ -24,7 +24,7 @@ export default function UnassignedTasks(
 
     const onDoubleClick = (taskId: UUID, clientX: number, currentTarget: HTMLElement) => {
         const rect = currentTarget.getBoundingClientRect();
-        const pointX = Math.floor((clientX - rect.left) / 100);
+        const pointX = Math.floor((clientX - rect.left) / 75);
         const newTaskManager = new TaskMergeSplitService().splitTaskLeftDuration(taskId, taskManager, pointX);
         props.setTaskManager(newTaskManager);
         handleMoveTargetTask(undefined);
