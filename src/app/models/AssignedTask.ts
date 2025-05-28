@@ -1,13 +1,5 @@
+import { DateUtil } from "../common/DateUtil";
 import { UUID } from "../common/IdUtil";
-
-
-export type AssignTaskInfo = {
-    taskId: UUID,
-    ticketId: UUID,
-    memberId: string,
-    startDayNum: number,
-    endDayNum: number,
-};
 
 /**
  * 割り当て済みのタスクを表すクラス
@@ -15,17 +7,17 @@ export type AssignTaskInfo = {
  */
 export class AssignedTask {
 
+    public readonly endDay: Date;
+
     constructor(
         public readonly id: UUID,
         public readonly ticketId: UUID,
         public readonly taskId: UUID,
         public readonly memberId: string,
-        public readonly startDayNum: number,
-        public readonly endDayNum: number,
-    ) { }
-
-    get duration(): number {
-        return this.endDayNum - this.startDayNum + 1;
+        public readonly startDay: Date,
+        public readonly duration: number,
+    ) {
+        this.endDay = DateUtil.getEndDateNoHoliday(this.startDay, this.duration - 1);
     }
 
 }

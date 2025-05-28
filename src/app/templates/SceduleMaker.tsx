@@ -55,8 +55,8 @@ export default function SceduleMaker() {
     const handlePlanedTaskManagerChange = (planedTaskManager: PlanedTask) => {
         setSchedule((prevSchedule) => {
             const newCalendarManager = new GetCalendarService().fromPlanedDatas(
-                new Date("2025-04-01"),
-                new Date("2025-06-30"),
+                prevSchedule.calandarManager.firstDate,
+                prevSchedule.calandarManager.lastDate,
                 [...prevSchedule.calandarManager.memberList],
                 prevSchedule.ticketManager,
                 prevSchedule.taskManager,

@@ -1,4 +1,3 @@
-import { DateUtil } from "../common/DateUtil";
 import { UUID } from "../common/IdUtil";
 import { isAfterPhase, isBeforePhase, PhaseEnum } from "../common/PhaseEnum";
 import { difference } from "../common/SetOperationUtil";
@@ -58,7 +57,7 @@ export class PlanningStatusService {
         phase: PhaseEnum,
         taskManager: TaskManager,
         planedTask: PlanedTask,
-        baseDayNum: number,
+        startDay: Date,
     ) {
 
         const isBeforePhaseFinished = this.isAllAssignedBeforePhase(
@@ -74,7 +73,7 @@ export class PlanningStatusService {
             if (!task) {
                 throw new Error(`Task with ID ${assignedTask.taskId} not found`);
             }
-            return !isBeforePhase(task.phase, phase) || assignedTask.endDayNum < baseDayNum;
+            return !isBeforePhase(task.phase, phase) || assignedTask.endDay < startDay;
         });
 
         return isBeforePhaseFinished && isFinishedBeforePhaseWithDay;

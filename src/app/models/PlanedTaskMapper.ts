@@ -33,21 +33,19 @@ export class PlanedTaskMapper {
                     throw new Error(`Ticket with ID ${task.ticketId} not found`);
                 }
 
-                const startDate = DateUtil.getAddDate(firstDate, assignedTask.startDayNum);
-                const endDate = DateUtil.getAddDate(firstDate, assignedTask.startDayNum + assignedTask.duration);
+                const startDate = assignedTask.startDay;
+                const endDate = assignedTask.endDay;
 
-                for (let date = new Date(firstDate); date <= lastDate; date.setDate(date.getDate() + 1)) {
-                    if (date >= startDate && date < endDate) {
-                        const dateString = DateUtil.formatDate(date);
-                        const cellTask = new CalendarCellTask(
-                            ticket.title,
-                            task.id,
-                            dateString,
-                            task.phase,
-                            ticket.description,
-                        );
-                        taskMapForMember.set(dateString, cellTask);
-                    }
+                for (let date = new Date(startDate); date <= endDate; date.setDate(date.getDate() + 1)) {
+                    const dateString = DateUtil.formatDate(date);
+                    const cellTask = new CalendarCellTask(
+                        ticket.title,
+                        task.id,
+                        dateString,
+                        task.phase,
+                        ticket.description,
+                    );
+                    taskMapForMember.set(dateString, cellTask);
                 }
             }
             taskMap.set(member, taskMapForMember);

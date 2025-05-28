@@ -5,17 +5,17 @@ import { TaskManager } from "../models/TaskManager";
 
 export class TaskAssignmentService {
 
-
     public assignTask(
         task: Task,
         memberId: string,
-        startDayNum: number,
+        startDay: Date,
         planedTask: PlanedTask,
 
     ): PlanedTask {
 
-        if (planedTask.isTaskAssingnable(memberId, task.id, startDayNum, startDayNum + task.duration - 1)) {
-            planedTask.assignTask(task, memberId, startDayNum);
+
+        if (planedTask.isTaskAssingnable(memberId, task.id, startDay, task.duration)) {
+            planedTask.assignTask(task, memberId, startDay, task.duration);
         }
         return planedTask;
     }
@@ -36,15 +36,15 @@ export class TaskAssignmentService {
     public assignTaskFromTaskId(
         taskId: UUID,
         memberId: string,
-        startDayNum: number,
+        startDay: Date,
         planedTask: PlanedTask,
-        taskManager: TaskManager
+        taskManager: TaskManager,
     ): PlanedTask {
         const task = taskManager.getTask(taskId);
         if (!task) {
             throw new Error(`Task not found: ${taskId}`);
         }
-        return this.assignTask(task, memberId, startDayNum, planedTask);
+        return this.assignTask(task, memberId, startDay, planedTask);
     }
 
 }

@@ -1,3 +1,4 @@
+import { DateUtil } from "../common/DateUtil";
 import { generateUUID, UUID } from "../common/IdUtil";
 import { Phase } from "../common/PhaseEnum";
 
@@ -56,13 +57,21 @@ export class CalendarCellTaskManager {
 
     private _memberTaskMap: Map<string, CalendarLineTask> = new Map<string, CalendarLineTask>();
     private _memberList: readonly string[];
+    public readonly firstDate: Date;
+    public readonly lastDate: Date;
+    public readonly dayList: Date[];
 
     constructor(
         memberList: string[],
         taskMap: Map<string, Map<string, CalendarCellTask>>,
+        firstDate: Date,
+        lastDate: Date,
     ) {
         this._memberList = memberList;
         this._memberTaskMap = new Map<string, CalendarLineTask>();
+        this.firstDate = firstDate;
+        this.lastDate = lastDate;
+        this.dayList = DateUtil.generateDayList(DateUtil.formatDate(firstDate), DateUtil.formatDate(lastDate));
 
         // メンバーリストを元に、メンバーごとのタスクマップを初期化する
         for (const member of memberList) {
@@ -95,7 +104,7 @@ export class CalendarCellTaskManager {
             taskMap.set(member, taskMapForMember);
         }
 
-        return new CalendarCellTaskManager(memberList, taskMap);
+        return new CalendarCellTaskManager(memberList, taskMap, new Date("2025-04-01"), new Date("2025-04-20"));
     }
 
     getCalendarLine(member: string): CalendarLineTask {

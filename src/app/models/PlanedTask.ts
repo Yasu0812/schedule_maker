@@ -1,3 +1,4 @@
+import { DateUtil } from "../common/DateUtil";
 import { generateUUID, UUID } from "../common/IdUtil";
 import { AssignedTask, } from "./AssignedTask";
 
@@ -47,9 +48,8 @@ export class PlanedTask {
         return assignedTasks;
     }
 
-    public assignTask(task: { id: UUID, ticketId: UUID, duration: number }, memberId: string, startDayNum: number): PlanedTask {
-        const endDayNum = startDayNum + task.duration;
-        const assignedTask = new AssignedTask(generateUUID(), task.ticketId, task.id, memberId, startDayNum, endDayNum - 1);
+    public assignTask(task: { id: UUID, ticketId: UUID }, memberId: string, startDay: Date, duration: number): PlanedTask {
+        const assignedTask = new AssignedTask(generateUUID(), task.ticketId, task.id, memberId, startDay, duration);
         this._assignedTasks.set(task.id, assignedTask);
 
         return this;
@@ -59,12 +59,14 @@ export class PlanedTask {
         this._assignedTasks.delete(taskId);
     }
 
-    public isTaskAssingnable(memberId: string, planId: UUID, startDayNum: number, endDayNum: number): boolean {
+    public isTaskAssingnable(memberId: string, planId: UUID, startDay: Date, duration: number): boolean {
         const planTask = this.get(planId);
+        const endDay = DateUtil.getEndDateNoHoliday(startDay, duration - 1);
+
         return this._list.every(task => {
             const isSameTask = task.taskId === planTask?.taskId;
             const isSameMember = task.memberId === memberId;
-            const isOverlapping = (task.startDayNum <= endDayNum && task.endDayNum >= startDayNum);
+            const isOverlapping = (task.startDay <= endDay && task.endDay >= startDay);
             return isSameTask || !(isSameMember && isOverlapping);
         });
     }

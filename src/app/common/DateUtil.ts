@@ -38,9 +38,47 @@ export class DateUtil {
         return `${month}/${day}`;
     }
 
+    static formatDateFromString(dateStr: string): string {
+        const date = new Date(dateStr);
+        return this.formatDate(date);
+    }
+
+    static getFromDayNum(date: Date, dayNum: number): Date {
+        const newDate = new Date(date);
+        newDate.setDate(newDate.getDate() + dayNum);
+        return newDate;
+    }
+
     static getAddDate(date: Date, addDay: number): Date {
         const newDate = new Date(date);
         newDate.setDate(newDate.getDate() + addDay);
         return newDate;
+    }
+
+    static getEndDateNoHoliday(date: Date, addDay: number): Date {
+        const newDate = new Date(date);
+        let addedDays = 0;
+        while (addedDays < addDay) {
+            newDate.setDate(newDate.getDate() + 1);
+            if (!this.isHoliday(newDate)) {
+                addedDays++;
+            }
+        }
+        return newDate;
+    }
+
+    static getDayOfWeekString(date: Date): string {
+        const daysOfWeek = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
+        return daysOfWeek[date.getDay()];
+    }
+
+    static getDayOfWeekStringFromString(dateStr: string): string {
+        const date = new Date(dateStr);
+        return this.getDayOfWeekString(date);
+    }
+
+    static isHoliday(date: Date): boolean {
+        const day = date.getDay();
+        return day === 0 || day === 6;
     }
 }

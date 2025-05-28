@@ -5,10 +5,7 @@ import TaskCell from "./TaskCell";
 import { UUID } from "@/app/common/IdUtil";
 import { PlanedTask } from "@/app/models/PlanedTask";
 import { TaskManager } from "@/app/models/TaskManager";
-import TaskBeanDiv from "../atom/TaskBeanDiv";
-import { TaskAssignmentService } from "@/app/service/TaskAssignmentService";
-import { PlanningStatusService } from "@/app/service/PlanningStatusService";
-import { parsePhase } from "@/app/common/PhaseEnum";
+import DayColor from "../decorator/DayColor";
 
 
 export default function CalendarLine(
@@ -24,7 +21,6 @@ export default function CalendarLine(
         handleMoveTargetTask: (taskId: UUID | undefined) => void,
     }
 ) {
-    const rowIndex = props.rowIndex;
     const dayList = props.dayListItems;
     const lineTask = props.lineTask;
     const member = props.member;
@@ -34,62 +30,28 @@ export default function CalendarLine(
     const moveTargetTaskId = props.moveTargetTaskId;
     const setPlanedTaskManager = props.setPlanedTaskManager;
 
-    const disAssignTask = (taskId: UUID) => {
-        const assignedTaskId = planedTaskManager.get(taskId);
-        if (assignedTaskId) {
-            // すでに割り当てられているタスクを解除する
-            const newPlanedTask = new TaskAssignmentService().disassignTask(
-                assignedTaskId.id,
-                planedTaskManager,
-            );
-            setPlanedTaskManager(
-                newPlanedTask
-            );
-        }
-    }
-
-
     const dayListItems = dayList.map((day, index) => {
         const dayString = DateUtil.formatDate(day);
+        const isHoliday = DateUtil.isHoliday(day);
         const task = lineTask.getTaskForDate(dayString);
-        const planedTask = planedTaskManager.get(task?.taskId);
-
-        const isFinishedBeforePhase = (planedTask && task && new PlanningStatusService().isFinishedBeforePhaseWithDay(
-            planedTask?.ticketId,
-            parsePhase(task.taskPhase),
-            taskManager,
-            planedTaskManager,
-            index
-
-        )) ? true : false;
 
         return (
             <td key={index} className="calendar-line-item" style={{ position: 'relative', alignItems: "center" }} >
-                {task && planedTask?.startDayNum === index &&
-                    <div style={{ position: "absolute", top: 0, left: 0, }}>
-                        <TaskBeanDiv
+                <DayColor dayString={dayString}>
+                    <CalendarCell>
+                        {!isHoliday && <TaskCell
+                            colIndex={index}
                             task={task}
-                            duration={planedTask.duration}
+                            taskManager={taskManager}
+                            planedTaskManager={planedTaskManager}
+                            setPlanedTaskManager={setPlanedTaskManager}
                             moveTargetTaskId={moveTargetTaskId}
-                            handleMouseDown={() => handleMoveTargetTask(task.taskId)}
-                            handleContextMenu={() => disAssignTask(task.taskId)}
-                            isFinishedBeforePhase={!isFinishedBeforePhase}
-                        />
-                    </div>
-                }
-                <CalendarCell>
-                    <TaskCell
-                        rowIndex={rowIndex}
-                        colIndex={index}
-                        task={task}
-                        taskManager={taskManager}
-                        planedTaskManager={planedTaskManager}
-                        setPlanedTaskManager={setPlanedTaskManager}
-                        moveTargetTaskId={moveTargetTaskId}
-                        handleMoveTargetTask={handleMoveTargetTask}
-                        member={member}
-                    />
-                </CalendarCell>
+                            handleMoveTargetTask={handleMoveTargetTask}
+                            member={member}
+                            startDay={day}
+                        />}
+                    </CalendarCell>
+                </DayColor>
             </td >
         );
     });
