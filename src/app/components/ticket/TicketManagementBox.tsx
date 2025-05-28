@@ -3,6 +3,7 @@ import TicketBox from "./TicketBox";
 import { TicketMaterial } from "@/app/types/TicketType";
 import TicketRegistrationBox from "./TicketRegistrationBox";
 import { TaskManager } from "@/app/models/TaskManager";
+import CardDesign from "../decorator/CardDesign";
 
 
 export default function TicketManagementBox(props: {
@@ -30,9 +31,17 @@ export default function TicketManagementBox(props: {
     })
 
     return (
-        <div>
-            {/* {ticketBoxes} */}
-            <TicketRegistrationBox addTicket={addTicket} />
-        </div>
+        <>
+            <div className="max-w-xl">
+                <CardDesign>
+                    <TicketRegistrationBox addTicket={addTicket} />
+                </CardDesign>
+            </div>
+            <div className="max-w-xl">
+                <CardDesign>
+                    {ticketBoxes}
+                </CardDesign>
+            </div>
+        </>
     );
 }

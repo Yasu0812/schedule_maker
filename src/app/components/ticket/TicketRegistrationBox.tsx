@@ -29,29 +29,45 @@ export default function TicketRegistrationBox(props: {
         props.addTicket(ticket);
     };
 
-    const phaseInputBoxes = orderedPhases.map((phase) => {
-        return (
-            <div key={phase} style={{ width: '45%' }}>
-                <div>{phaseNameMap[phase]}</div>
-                <input type="number" placeholder={`days`} name={`duration-${phase}`} />
-            </div>
-        );
-    });
-
     return (
-        <div className="common-box" style={{ maxWidth: '600px' }}>
-            <form action={handleCreateTicket}>
-                <h2>Register New Ticket</h2>
-                <hr style={{ padding: '0.5rem' }} />
-                <div>タイトル</div>
-                <input type="text" placeholder="Ticket Title" name="title" />
-                <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-                    {phaseInputBoxes}
-                </div>
+        <form action={handleCreateTicket}>
+            <div className="flex items-center gap-2 border-b pb-2">
+                <h2 className="text-lg font-semibold">Register New Ticket</h2>
+            </div>
 
-                <button type="submit">Create Ticket</button>
+            <div className="space-y-1">
+                <label className="text-sm font-medium text-gray-700">タイトル</label>
+                <input
+                    type="text"
+                    placeholder="例: API設計チケット"
+                    className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400"
+                    name="title"
+                    required
+                />
+            </div>
 
-            </form>
-        </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {orderedPhases.map((phase, index) => (
+                    <div key={index} className="flex flex-col">
+                        <label className="text-sm font-medium text-gray-800">{phaseNameMap[phase]}</label>
+                        <div className="flex items-center gap-2">
+                            <input
+                                type="number"
+                                min={0}
+                                className="w-20 border border-gray-300 rounded-md px-2 py-1 text-sm focus:ring-2 focus:ring-green-400"
+                                name={`duration-${phase}`}
+                            />
+                            <span className="text-xs text-gray-500">days</span>
+                        </div>
+                    </div>
+                ))}
+            </div>
+
+            <div className="pt-2">
+                <button className="w-full bg-gradient-to-r from-green-500 to-green-700 text-white py-2 rounded-md font-semibold hover:from-green-600 hover:to-green-800 transition">
+                    Create Ticket
+                </button>
+            </div>
+        </form>
     );
 }

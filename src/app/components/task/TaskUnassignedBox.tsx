@@ -3,6 +3,7 @@ import { PlanedTask } from "@/app/models/PlanedTask";
 import { PlanningStatusService } from "@/app/service/PlanningStatusService";
 import { UUID } from "@/app/common/IdUtil";
 import UnassignedTasks from "./UnassignedTasks";
+import CardDesign from "../decorator/CardDesign";
 
 export default function TaskUnassignedBox(props: {
     taskManager: TaskManager,
@@ -20,8 +21,10 @@ export default function TaskUnassignedBox(props: {
     );
 
     return (
-        <div className="common-box" style={{ width: "100%", height: "100%" }}>
-            <h1>Unassigned Tasks </h1>
+        <CardDesign>
+            <div className="flex items-center gap-2 border-b pb-2">
+                <h2 className="text-lg font-semibold">Unassigned Tasks </h2>
+            </div>
             <div style={{ display: "flex", flexWrap: "wrap", width: "100%", height: "100%" }}>
                 <UnassignedTasks
                     unassignedTasks={unassignedTasks}
@@ -31,6 +34,6 @@ export default function TaskUnassignedBox(props: {
                     handleMoveTargetTask={handleMoveTargetTask}
                 />
             </div>
-        </div>
+        </CardDesign>
     );
 }

@@ -18,8 +18,8 @@ export default function UnassignedTasks(
 
     const sortedUnassignedTasks = unassignedTasks
         .sort((a, b) => a.duration - b.duration)
-        .sort((a, b) => phaseCompare(a.phase, b.phase))
-        .sort((a, b) => Number(a.tickeTitle) - Number(b.tickeTitle))
+        .sort((a, b) => phaseCompare(b.phase, a.phase))
+        .sort((a, b) => a.ticketId > b.ticketId ? 1 : -1)
         ;
 
     const onDoubleClick = (taskId: UUID, clientX: number, currentTarget: HTMLElement) => {

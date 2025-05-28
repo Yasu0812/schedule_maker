@@ -115,15 +115,13 @@ export default function SceduleMaker() {
 
             <GhostJelly taskId={moveTargetTaskId} taskManager={schdule.taskManager} />
 
-            <div>
-                <TaskUnassignedBox
-                    taskManager={schdule.taskManager}
-                    planedTaskManager={schdule.planedTaskManager}
-                    setTaskManager={handleTaskManagerChange}
-                    moveTargetTaskId={moveTargetTaskId}
-                    handleMoveTargetTask={handleMoveTargetTask}
-                />
-            </div>
+            <TaskUnassignedBox
+                taskManager={schdule.taskManager}
+                planedTaskManager={schdule.planedTaskManager}
+                setTaskManager={handleTaskManagerChange}
+                moveTargetTaskId={moveTargetTaskId}
+                handleMoveTargetTask={handleMoveTargetTask}
+            />
 
             <TicketManagementBox
                 ticketManager={schdule.ticketManager}

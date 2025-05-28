@@ -18,7 +18,7 @@ export default function Legend() {
 
 
     return (
-        <div className="legend">
+        <div className="legend common-box">
             {legends}
         </div>
     );
