@@ -1,5 +1,5 @@
 import { UUID } from "../common/IdUtil";
-import { isAfterPhase, isBeforePhase, PhaseEnum } from "../common/PhaseEnum";
+import { isBeforePhase, PhaseEnum } from "../common/PhaseEnum";
 import { difference } from "../common/SetOperationUtil";
 import { PlanedTask } from "../models/PlanedTask";
 import { TaskFinishedPolicy } from "../models/TaskFinishedPolicy";
@@ -79,23 +79,6 @@ export class PlanningStatusService {
         return isBeforePhaseFinished && isFinishedBeforePhaseWithDay;
 
     }
-
-    public isFinishedPhase(
-        ticketId: UUID,
-        phase: PhaseEnum,
-        taskManager: TaskManager,
-        planedTask: PlanedTask
-    ) {
-        const unassignedTasks = this.getUnassignedTask(taskManager, planedTask);
-        const unassignedTaskFromTicketPhase = unassignedTasks.every(task => {
-            return task.ticketId !== ticketId || isAfterPhase(task.phase, phase);
-        });
-
-        return unassignedTaskFromTicketPhase;
-
-    }
-
-
 
     public getTicketPhasePlanningStatus(
         ticketId: string,

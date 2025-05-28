@@ -46,7 +46,7 @@ export default function TicketRegistrationBox(props: {
                 />
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 ">
                 {orderedPhases.map((phase, index) => (
                     <div key={index} className="flex flex-col">
                         <label className="text-sm font-medium text-gray-800">{phaseNameMap[phase]}</label>
