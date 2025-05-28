@@ -28,6 +28,15 @@ export class DateUtil {
     }
 
     /**
+     * YYYY-MM-DD形式の文字列を日付オブジェクトに変換します。
+     * @param dateStr 
+     * @returns 
+     */
+    static parseDate(dateStr: string): Date {
+        return new Date(dateStr);
+    }
+
+    /**
      * 日付をmm/dd形式の文字列に変換します。
      * @param date 日付オブジェクト
      * @returns 

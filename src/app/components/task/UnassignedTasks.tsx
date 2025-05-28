@@ -4,17 +4,31 @@ import { UUID } from "crypto";
 import { TaskManager } from "@/app/models/TaskManager";
 import { phaseCompare } from "@/app/common/PhaseEnum";
 import TaskBeanDiv from "../atom/TaskBeanDiv";
+import { TaskAssignmentService } from "@/app/service/TaskAssignmentService";
+import { PlanedTask } from "@/app/models/PlanedTask";
+import { CalendarCellTaskManager } from "@/app/models/CalendarCellTask";
 
 export default function UnassignedTasks(
     props: {
         unassignedTasks: Task[],
         taskManager: TaskManager,
         moveTargetTaskId: UUID | undefined,
+        planedTaskManager: PlanedTask,
+        calandarManager: CalendarCellTaskManager,
         setTaskManager: (taskManager: TaskManager) => void,
         handleMoveTargetTask: (taskId: UUID | undefined) => void,
+        setPlanedTaskManager: (planedTaskManager: PlanedTask) => void,
     }
 ) {
-    const { unassignedTasks, taskManager, moveTargetTaskId, setTaskManager, handleMoveTargetTask } = props;
+    const { unassignedTasks,
+        taskManager,
+        moveTargetTaskId,
+        setTaskManager,
+        handleMoveTargetTask,
+        calandarManager,
+        planedTaskManager,
+        setPlanedTaskManager
+    } = props;
 
     const sortedUnassignedTasks = unassignedTasks
         .sort((a, b) => a.duration - b.duration)
@@ -62,6 +76,15 @@ export default function UnassignedTasks(
 
     }
 
+    const onContextmenu = (taskId: UUID) => {
+
+        const newPlanedTask = new TaskAssignmentService().autoAssignTask(taskId, planedTaskManager, taskManager, calandarManager);
+
+        setPlanedTaskManager(newPlanedTask);
+        handleMoveTargetTask(undefined);
+
+    }
+
     const isSameTaskId = (taskId: UUID) => {
         return taskId === moveTargetTaskId;
     }
@@ -84,6 +107,7 @@ export default function UnassignedTasks(
                     duration={task.duration}
                     moveTargetTaskId={moveTargetTaskId}
                     handleMouseDown={() => onMouseDown(task.id)}
+                    handleContextMenu={() => onContextmenu(task.id)}
                 />
             </div>
 

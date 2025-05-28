@@ -1,6 +1,6 @@
 import { DateUtil } from "../common/DateUtil";
 import { generateUUID, UUID } from "../common/IdUtil";
-import { Phase } from "../common/PhaseEnum";
+import { Phase, PhaseEnum } from "../common/PhaseEnum";
 
 /**
  * Calendarのセルに表示するタスクを表すクラス。
@@ -12,7 +12,7 @@ export class CalendarCellTask {
         public readonly taskName: string,
         public readonly taskId: UUID,
         public readonly taskDate: string,
-        public readonly taskPhase: string,
+        public readonly taskPhase: PhaseEnum,
         public readonly taskDescription: string,
     ) { }
 
@@ -113,6 +113,16 @@ export class CalendarCellTaskManager {
 
     getAllCalendarLineMap(): Map<string, CalendarLineTask> {
         return this._memberTaskMap;
+    }
+
+    getAllCell(): CalendarCellTask[] {
+        const allTasks: CalendarCellTask[] = [];
+        this._memberTaskMap.forEach((calendarLineTask) => {
+            calendarLineTask.taskMap.forEach((task) => {
+                allTasks.push(task);
+            });
+        });
+        return allTasks;
     }
 
 }

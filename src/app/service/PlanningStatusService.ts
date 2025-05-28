@@ -1,9 +1,9 @@
 import { UUID } from "../common/IdUtil";
 import { isBeforePhase, PhaseEnum } from "../common/PhaseEnum";
-import { difference } from "../common/SetOperationUtil";
 import { PlanedTask } from "../models/PlanedTask";
 import { TaskFinishedPolicy } from "../models/TaskFinishedPolicy";
 import { TaskManager } from "../models/TaskManager";
+import { TaskStatusPolicy } from "../models/TaskStatusPolicy";
 import { TicketManager } from "../models/Ticket";
 import { TicketFinishedPolicy } from "../models/TicketFinisedPolicy";
 
@@ -11,6 +11,7 @@ export class PlanningStatusService {
 
     private _taskFinishedPolicy: TaskFinishedPolicy = new TaskFinishedPolicy();
     private _ticketFinishedPolicy: TicketFinishedPolicy = new TicketFinishedPolicy();
+    private _taskStatusPolicy: TaskStatusPolicy = new TaskStatusPolicy();
 
     public getTaskPlanningStatus(
         taskId: UUID,
@@ -37,21 +38,6 @@ export class PlanningStatusService {
 
     }
 
-    public isAllAssignedBeforePhase(
-        ticketId: UUID,
-        phase: PhaseEnum,
-        taskManager: TaskManager,
-        planedTask: PlanedTask,
-    ) {
-        const unassignedTasks = this.getUnassignedTask(taskManager, planedTask);
-        const unassignedTaskFromTicketBeforePhase = unassignedTasks.every(task => {
-            return task.ticketId !== ticketId || !isBeforePhase(task.phase, phase);
-        });
-
-        return unassignedTaskFromTicketBeforePhase;
-
-    }
-
     public isFinishedBeforePhaseWithDay(
         ticketId: UUID,
         phase: PhaseEnum,
@@ -60,7 +46,7 @@ export class PlanningStatusService {
         startDay: Date,
     ) {
 
-        const isBeforePhaseFinished = this.isAllAssignedBeforePhase(
+        const isBeforePhaseFinished = this._taskStatusPolicy.isAllAssignedBeforePhase(
             ticketId,
             phase,
             taskManager,
@@ -131,16 +117,4 @@ export class PlanningStatusService {
 
     }
 
-    public getUnassignedTask(
-        taskManager: TaskManager,
-        planedTask: PlanedTask
-    ) {
-
-        const taskIds = new Set(taskManager.getTaskIds());
-        const assignedTaskIds = new Set(planedTask.getList(taskIds).map(assignedTask => assignedTask.taskId));
-        const unassignedTaskIds = difference(taskIds, assignedTaskIds);
-        const unassignedTasks = taskManager.getTaskList(Array.from(unassignedTaskIds));
-
-        return unassignedTasks;
-    }
 }

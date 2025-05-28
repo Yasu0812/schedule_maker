@@ -118,9 +118,11 @@ export default function SceduleMaker() {
             <TaskUnassignedBox
                 taskManager={schdule.taskManager}
                 planedTaskManager={schdule.planedTaskManager}
+                calendarManager={schdule.calandarManager}
                 setTaskManager={handleTaskManagerChange}
                 moveTargetTaskId={moveTargetTaskId}
                 handleMoveTargetTask={handleMoveTargetTask}
+                setPlanedTaskManager={handlePlanedTaskManagerChange}
             />
 
             <TicketManagementBox
