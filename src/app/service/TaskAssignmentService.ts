@@ -6,10 +6,13 @@ import { CalendarDayCalculator } from "../models/CalendarDayCalculator";
 import { PlanedTask } from "../models/PlanedTask";
 import { Task } from "../models/Task";
 import { TaskManager } from "../models/TaskManager";
+import { TaskStatusPolicy } from "../models/TaskStatusPolicy";
 
 export class TaskAssignmentService {
 
     private _calendarDayCalculator = new CalendarDayCalculator();
+
+    private _taskStatusPolicy = new TaskStatusPolicy();
 
     public assignTask(
         task: Task,
@@ -63,6 +66,18 @@ export class TaskAssignmentService {
         if (!task) {
             throw new Error(`Task not found: ${taskId}`);
         }
+
+        const isAllAssignedBeforePhase = this._taskStatusPolicy.isAllAssignedBeforePhase(
+            task.ticketId,
+            task.phase,
+            taskManager,
+            planedTask
+        );
+
+        if (!isAllAssignedBeforePhase) {
+            return planedTask;
+        }
+
         const prePhase = previousPhase(task.phase);
 
         const ticketPhaseFinishDay = this._calendarDayCalculator.getTicketPhaseFinishDay(
