@@ -1,8 +1,12 @@
 import { UUID } from "../common/IdUtil";
+import { PhaseEnum, previousPhase } from "../common/PhaseEnum";
+import { PhaseCalculator } from "./PhaseCalculator";
 import { PlanedTask } from "./PlanedTask";
 import { TaskManager } from "./TaskManager";
 
 export default class TaskAssignablePolicy {
+
+    private _phaseCalculator = new PhaseCalculator();
     /**
      * タスクが割り当て可能かどうかを判定します。  
      * あらゆるポリシーを考慮して、メンバーにタスクを割り当てることができるかどうかを判断します。  
@@ -30,14 +34,23 @@ export default class TaskAssignablePolicy {
         const phase = task.phase;
 
         // 前工程の終了日がstartDayより前であることを確認
+        const isPrePhaseEnd = this.isPhaseFinishedWithDay(
+            task.ticketId,
+            previousPhase(phase),
+            startDay,
+            taskManager,
+            planedTask
+        )
 
+        //TODO 必須タスクがある場合、必須タスクの終了日がstartDayより前であることを確認
 
+        //TODO マイルストーンのフェーズに含まれているかどうかを確認
 
         // カレンダー上の空きを確認
         const isFree = planedTask.isFree(memberId, taskId, startDay, task.duration);
 
 
-        return true;
+        return isPrePhaseEnd && isFree;
     }
 
     /**
@@ -67,4 +80,27 @@ export default class TaskAssignablePolicy {
 
         return isFree;
     }
+
+    public isPhaseFinishedWithDay(
+        ticketId: UUID,
+        phase: PhaseEnum | undefined,
+        day: Date,
+        taskManager: TaskManager,
+        planedTask: PlanedTask
+    ): boolean {
+        const phaseEndDay = this._phaseCalculator.ticketPhaseEndDay(
+            ticketId,
+            phase,
+            taskManager,
+            planedTask
+        );
+
+        if (!phaseEndDay) {
+            return false; // フェーズの終了日が未定の場合はfalse
+        }
+
+        // 指定された日がフェーズより後であることを確認
+        return day > phaseEndDay;
+    }
+
 }

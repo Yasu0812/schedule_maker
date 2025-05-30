@@ -56,7 +56,7 @@ export class PhaseCalculator {
      * @param planedTask 
      * @returns 
      */
-    public ticketPhaseEndDay(
+    public ticketPhasesEndDays(
         ticketId: UUID,
         taskManager: TaskManager,
         planedTask: PlanedTask
@@ -117,4 +117,29 @@ export class PhaseCalculator {
 
     }
 
+    /**
+     * 該当チケットの該当フェーズの終了日を返します。
+     * フェーズの終了日が未定の場合はundefinedを返します。
+     * @param ticketId 
+     * @param phase 
+     * @param taskManager 
+     * @param planedTask 
+     * @returns 
+     */
+    public ticketPhaseEndDay(
+        ticketId: UUID,
+        phase: PhaseEnum | undefined,
+        taskManager: TaskManager,
+        planedTask: PlanedTask
+    ): Date | undefined {
+
+        if (!phase) {
+            //TODO Dateの最小値をロジカルに取得するようにしたい
+            return new Date(-8640000000000000);
+        }
+
+
+        const phaseEndDays = this.ticketPhasesEndDays(ticketId, taskManager, planedTask);
+        return phaseEndDays.get(phase);
+    }
 }
