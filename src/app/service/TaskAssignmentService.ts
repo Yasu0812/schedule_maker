@@ -4,7 +4,6 @@ import { previousPhase } from "../common/PhaseEnum";
 import { CalendarCellTaskManager } from "../models/CalendarCellTask";
 import { CalendarDayCalculator } from "../models/CalendarDayCalculator";
 import { PlanedTask } from "../models/PlanedTask";
-import { Task } from "../models/Task";
 import TaskAssignablePolicy from "../models/TaskAssignablePolicy";
 import { TaskManager } from "../models/TaskManager";
 import { TicketFinishedPolicy } from "../models/TicketFinisedPolicy";

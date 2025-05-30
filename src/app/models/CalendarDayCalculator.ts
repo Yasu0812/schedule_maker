@@ -33,7 +33,7 @@ export class CalendarDayCalculator {
             .map(dateStr => DateUtil.parseDate(dateStr));
 
         if (calendarCellsDay.length === 0) {
-            return undefined;
+            return DateUtil.getAddDate(calandarManager.firstDate, -1);
         }
 
         const maxFinishDay = DateUtil.getLatestDay(calendarCellsDay);
