@@ -5,29 +5,17 @@ import { CalendarCellTaskManager } from "../models/CalendarCellTask";
 import { CalendarDayCalculator } from "../models/CalendarDayCalculator";
 import { PlanedTask } from "../models/PlanedTask";
 import { Task } from "../models/Task";
+import TaskAssignablePolicy from "../models/TaskAssignablePolicy";
 import { TaskManager } from "../models/TaskManager";
-import { TaskStatusPolicy } from "../models/TaskStatusPolicy";
+import { TicketFinishedPolicy } from "../models/TicketFinisedPolicy";
 
 export class TaskAssignmentService {
 
     private _calendarDayCalculator = new CalendarDayCalculator();
 
-    private _taskStatusPolicy = new TaskStatusPolicy();
+    private _ticketfinishedPolicy = new TicketFinishedPolicy();
 
-    public assignTask(
-        task: Task,
-        memberId: string,
-        startDay: Date,
-        planedTask: PlanedTask,
-
-    ): PlanedTask {
-
-
-        if (planedTask.isTaskAssingnable(memberId, task.id, startDay, task.duration)) {
-            planedTask.assignTask(task, memberId, startDay, task.duration);
-        }
-        return planedTask;
-    }
+    private _taskAssignablePolicy = new TaskAssignablePolicy();
 
     public disassignTask(
         assignedId: UUID,
@@ -53,7 +41,21 @@ export class TaskAssignmentService {
         if (!task) {
             throw new Error(`Task not found: ${taskId}`);
         }
-        return this.assignTask(task, memberId, startDay, planedTask);
+
+        const isTaskAssignable = this._taskAssignablePolicy.isTaskAssignableForce(
+            taskId,
+            memberId,
+            startDay,
+            planedTask,
+            taskManager
+        );
+
+        if (isTaskAssignable) {
+            planedTask.assignTask(task, memberId, startDay, task.duration);
+        }
+
+        return planedTask;
+
     }
 
     public autoAssignTask(
@@ -67,7 +69,7 @@ export class TaskAssignmentService {
             throw new Error(`Task not found: ${taskId}`);
         }
 
-        const isAllAssignedBeforePhase = this._taskStatusPolicy.isAllAssignedBeforePhase(
+        const isAllAssignedBeforePhase = this._ticketfinishedPolicy.isAllAssignedBeforePhase(
             task.ticketId,
             task.phase,
             taskManager,
@@ -96,8 +98,15 @@ export class TaskAssignmentService {
         let currentDay = fastestAssignableDay;
         while (currentDay < DateUtil.getAddDate(calandarManager.lastDate, -task.duration)) {
             for (const memberId of calandarManager.memberList) {
-                if (planedTask.isTaskAssingnable(memberId, task.id, currentDay, task.duration)) {
-                    return this.assignTask(task, memberId, currentDay, planedTask);
+                const isTaskAssignable = this._taskAssignablePolicy.isTaskAssignableForce(
+                    taskId,
+                    memberId,
+                    currentDay,
+                    planedTask,
+                    taskManager
+                );
+                if (isTaskAssignable) {
+                    return planedTask.assignTask(task, memberId, currentDay, task.duration);;
                 }
             }
             currentDay = DateUtil.getEndDateNoHoliday(currentDay, 1);

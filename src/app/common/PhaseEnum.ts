@@ -32,12 +32,20 @@ export const orderedPhases: PhaseEnum[] = [
     Phase.INTEGRATION_TEST_EXTERNAL,
 ];
 
-export const nextPhase = (currentPhase: PhaseEnum): PhaseEnum | undefined => {
+export const afterPhase = (currentPhase: PhaseEnum): PhaseEnum | undefined => {
     const currentIndex = orderedPhases.indexOf(currentPhase);
     if (currentIndex === -1 || currentIndex === orderedPhases.length - 1) {
         return undefined; // No next phase
     }
     return orderedPhases[currentIndex + 1];
+}
+
+export const afterPhases = (currentPhase: PhaseEnum): PhaseEnum[] => {
+    const currentIndex = orderedPhases.indexOf(currentPhase);
+    if (currentIndex === -1 || currentIndex === orderedPhases.length - 1) {
+        return []; // No next phases
+    }
+    return orderedPhases.slice(currentIndex + 1);
 }
 
 export const previousPhase = (currentPhase: PhaseEnum): PhaseEnum | undefined => {

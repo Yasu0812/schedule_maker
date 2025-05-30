@@ -59,12 +59,21 @@ export class PlanedTask {
         this._assignedTasks.delete(taskId);
     }
 
-    public isTaskAssingnable(memberId: string, planId: UUID, startDay: Date, duration: number): boolean {
-        const planTask = this.get(planId);
+    /**
+     * 指定されたメンバーに対して、指定された期間がフリーかどうかを判定します。  
+     * このメソッドはあくまで物理的に割り当て可能かどうかを判定するものであり、  
+     * ビジネスロジックに基づく割り当て可能性の判定ではありません。  
+     * @param memberId 
+     * @param planTaskId 
+     * @param startDay 
+     * @param duration 
+     * @returns 
+     */
+    public isFree(memberId: string, planTaskId: UUID, startDay: Date, duration: number): boolean {
         const endDay = DateUtil.getEndDateNoHoliday(startDay, duration - 1);
 
         return this._list.every(task => {
-            const isSameTask = task.taskId === planTask?.taskId;
+            const isSameTask = task.taskId === planTaskId;
             const isSameMember = task.memberId === memberId;
             const isOverlapping = (task.startDay <= endDay && task.endDay >= startDay);
             return isSameTask || !(isSameMember && isOverlapping);

@@ -1,5 +1,5 @@
 import { UUID } from "../common/IdUtil";
-import { isBeforePhase, PhaseEnum } from "../common/PhaseEnum";
+import { PhaseEnum } from "../common/PhaseEnum";
 import { PlanedTask } from "../models/PlanedTask";
 import { TaskFinishedPolicy } from "../models/TaskFinishedPolicy";
 import { TaskManager } from "../models/TaskManager";
@@ -46,23 +46,13 @@ export class PlanningStatusService {
         startDay: Date,
     ) {
 
-        const isBeforePhaseFinished = this._taskStatusPolicy.isAllAssignedBeforePhase(
+        return this._ticketFinishedPolicy.isFinishedBeforePhaseWithDay(
             ticketId,
             phase,
             taskManager,
-            planedTask
+            planedTask,
+            startDay
         );
-
-        const assignedTasks = planedTask.getFromTicketId(ticketId);
-        const isFinishedBeforePhaseWithDay = assignedTasks.every(assignedTask => {
-            const task = taskManager.getTask(assignedTask.taskId);
-            if (!task) {
-                throw new Error(`Task with ID ${assignedTask.taskId} not found`);
-            }
-            return !isBeforePhase(task.phase, phase) || assignedTask.endDay < startDay;
-        });
-
-        return isBeforePhaseFinished && isFinishedBeforePhaseWithDay;
 
     }
 

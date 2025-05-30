@@ -8,25 +8,6 @@ import { TaskManager } from "./TaskManager";
 export class TaskResolver {
 
     /**
-     * タスクIDからAssignedTaskを解決する
-     * @param taskId 
-     * @param taskManager 
-     * @param planedTask 
-     * @returns 
-     */
-    public resolveTask(
-        taskId: UUID,
-        planedTask: PlanedTask
-    ): AssignedTask {
-        const assignedTask = planedTask.get(taskId);
-        if (!assignedTask) {
-            throw new Error(`AssignedTask with ID ${taskId} not found`);
-        }
-
-        return assignedTask;
-    }
-
-    /**
      * タスクIDからTaskとAssignedTaskを解決する
      * @param taskId 
      * @param taskManager 
@@ -51,6 +32,16 @@ export class TaskResolver {
 
         return { task, assignedTask };
     }
+
+    public resolveAssignedTaskWithPhase(
+        taskId: UUID,
+        taskManager: TaskManager,
+        planedTask: PlanedTask
+    ): { assignedTask: AssignedTask, phase: PhaseEnum } {
+        const { task, assignedTask } = this.resolveTaskAndAssigned(taskId, taskManager, planedTask);
+        return { assignedTask, phase: task.phase };
+    }
+
 
     public resolveAssignedTaskPhase(
         taskId: UUID,

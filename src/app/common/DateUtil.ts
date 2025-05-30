@@ -90,4 +90,18 @@ export class DateUtil {
         const day = date.getDay();
         return day === 0 || day === 6;
     }
+
+    static getFastestDay(dates: Date[]): Date {
+        if (dates.length === 0) {
+            throw new Error("Date list is empty");
+        }
+        return dates.reduce((earliest, current) => current < earliest ? current : earliest);
+    }
+
+    static getLatestDay(dates: Date[]): Date {
+        if (dates.length === 0) {
+            throw new Error("Date list is empty");
+        }
+        return dates.reduce((latest, current) => current > latest ? current : latest);
+    }
 }
