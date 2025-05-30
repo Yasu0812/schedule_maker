@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import CalendarBox from "../components/calendar/CalendarBox";
 import TicketManagementBox from "../components/ticket/TicketManagementBox";
 import { TicketManager } from "../models/Ticket";
@@ -74,6 +74,10 @@ export default function SceduleMaker() {
             );
         });
     }
+
+    useEffect(() => {
+        localStorage.setItem('app-data', JSON.stringify(toSerializable(schdule)));
+    }, [schdule]);
 
     const handleMoveTargetTask = (taskId: UUID | undefined) => {
         setMoveTargetTaskId(taskId);
