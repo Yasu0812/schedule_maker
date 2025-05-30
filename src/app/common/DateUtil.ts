@@ -104,4 +104,28 @@ export class DateUtil {
         }
         return dates.reduce((latest, current) => current > latest ? current : latest);
     }
+
+    /**
+     * もし日付がundefined、または与えられていないなら、最小値の日付を返します。
+     * @param date 
+     * @returns 
+     */
+    static ifUndefinedGetMinDate(date?: Date | undefined): Date {
+        if (date === undefined) {
+            return new Date(-8640000000000000); // 最小値を返す
+        }
+        return date;
+    }
+
+    /**
+     *もし日付がundefined、または与えられていないなら、最大値の日付を返します。
+     * @param date 
+     * @returns 
+     */
+    static ifUndefinedGetMaxDate(date?: Date | undefined): Date {
+        if (date === undefined) {
+            return new Date(8640000000000000); // 最大値を返す
+        }
+        return date;
+    }
 }

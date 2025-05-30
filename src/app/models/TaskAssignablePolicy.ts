@@ -1,5 +1,7 @@
 import { UUID } from "../common/IdUtil";
 import { PhaseEnum, previousPhase } from "../common/PhaseEnum";
+import MileStoneCalculator from "./MileStoneCalculator";
+import { MileStoneManager } from "./MileStoneManager";
 import { PhaseCalculator } from "./PhaseCalculator";
 import { PlanedTask } from "./PlanedTask";
 import { TaskManager } from "./TaskManager";
@@ -7,6 +9,8 @@ import { TaskManager } from "./TaskManager";
 export default class TaskAssignablePolicy {
 
     private _phaseCalculator = new PhaseCalculator();
+
+    private _mileStoneCalculator = new MileStoneCalculator();
     /**
      * タスクが割り当て可能かどうかを判定します。  
      * あらゆるポリシーを考慮して、メンバーにタスクを割り当てることができるかどうかを判断します。  
@@ -24,7 +28,8 @@ export default class TaskAssignablePolicy {
         memberId: string,
         startDay: Date,
         planedTask: PlanedTask,
-        taskManager: TaskManager
+        taskManager: TaskManager,
+        mileStoneManager: MileStoneManager
     ): boolean {
         const task = taskManager.getTask(taskId);
         if (!task) {
@@ -43,14 +48,16 @@ export default class TaskAssignablePolicy {
         )
 
         //TODO 必須タスクがある場合、必須タスクの終了日がstartDayより前であることを確認
+        const requiredTasks = true; // ここでは仮にtrueとしています。実際には必要なロジックを実装してください。
 
-        //TODO マイルストーンのフェーズに含まれているかどうかを確認
+        // マイルストーンのフェーズに含まれているかどうかを確認
+        const isInMileStone = mileStoneManager.isInPhasePeriod(phase, startDay);
 
         // カレンダー上の空きを確認
         const isFree = planedTask.isFree(memberId, taskId, startDay, task.duration);
 
 
-        return isPrePhaseEnd && isFree;
+        return isPrePhaseEnd && isInMileStone && isFree && requiredTasks;
     }
 
     /**

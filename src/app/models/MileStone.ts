@@ -1,3 +1,4 @@
+import { DateUtil } from "../common/DateUtil";
 import { UUID } from "../common/IdUtil";
 import { PhaseEnum } from "../common/PhaseEnum";
 
@@ -8,11 +9,11 @@ export class MileStone {
     public endDay: Date;
     public phases: PhaseEnum[] = [];
 
-    constructor(id: UUID, name: string, startDay: Date, endDay: Date, phases:PhaseEnum[]) {
+    constructor(id: UUID, name: string, phases: PhaseEnum[], startDay?: Date, endDay?: Date) {
         this.id = id;
         this.name = name;
-        this.startDay = startDay;
-        this.endDay = endDay;
+        this.startDay = DateUtil.ifUndefinedGetMinDate(startDay);
+        this.endDay = DateUtil.ifUndefinedGetMaxDate(endDay);
         this.phases = phases;
 
     }

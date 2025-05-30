@@ -69,7 +69,7 @@ export class PhaseCalculator {
         )
 
         const phaseEndDays: Map<PhaseEnum, Date | undefined> = new Map();
-        let trackingDate: Date | undefined = new Date(-8640000000000000); // 最小値を設定
+        let trackingDate: Date | undefined = DateUtil.ifUndefinedGetMinDate(); // 最小値を設定
         for (const phase of orderedPhases) {
             if (!trackingDate) {
                 // 前のフェーズが未定ならこのフェーズも未定
@@ -135,7 +135,7 @@ export class PhaseCalculator {
 
         if (!phase) {
             //TODO Dateの最小値をロジカルに取得するようにしたい
-            return new Date(-8640000000000000);
+            return DateUtil.ifUndefinedGetMinDate();
         }
 
 

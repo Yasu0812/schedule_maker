@@ -22,41 +22,39 @@ export class MileStoneManager {
         this._mileStones.delete(id);
     }
 
-    public isIncludedInMileStone(
-        mileStoneId: UUID,
-        phase: PhaseEnum,
-        judgeDay: Date,
-    ): boolean {
-        const mileStone = this.getMileStone(mileStoneId);
-        if (!mileStone) {
-            return false;
-        }
-
-        // マイルストーンのフェーズに指定されたフェーズが含まれているか確認
-        if (!mileStone.phases.includes(phase)) {
-            return false;
-        }
-
-        // マイルストーンの開始日と終了日を確認
-        return judgeDay >= mileStone.startDay && judgeDay <= mileStone.endDay;
-
+    public getMileStonesByPhase(phase: PhaseEnum): MileStone[] {
+        return Array.from(this._mileStones.values()).filter(mileStone => mileStone.phases.includes(phase));
     }
 
     /**
-     * 指定されたフェーズと日付が、どのマイルストーンにも含まれているかを確認します。
+     * 該当するフェーズのマイルストーンの期間を取得します。
+     * 指定したフェーズにマイルストーンが存在しない場合は、undefinedを返します。
      * @param phase 
-     * @param judgeDay 
      * @returns 
      */
-    public isIncludedInAnyMileStone(
-        phase: PhaseEnum,
-        judgeDay: Date,
-    ): boolean {
-        for (const mileStone of this.getAllMileStones()) {
-            if (this.isIncludedInMileStone(mileStone.id, phase, judgeDay)) {
-                return true;
-            }
+    public getPhasePeriod(phase: PhaseEnum): { startDay: Date, endDay: Date } | undefined {
+        const phaseMileStones = this.getMileStonesByPhase(phase);
+        if (phaseMileStones.length === 0) {
+            return undefined;
         }
-        return false;
+        const startDay = new Date(Math.min(...phaseMileStones.map(m => m.startDay.getTime())));
+        const endDay = new Date(Math.max(...phaseMileStones.map(m => m.endDay.getTime())));
+
+        return { startDay, endDay };
+    }
+
+    /**
+     * 指定したフェーズの期間内に指定した日付が含まれるかどうかを判定します。
+     * フェーズに対応するマイルストーンがない場合は、無条件でtrueを返します。
+     * @param phase 
+     * @param baseDate 
+     * @returns 
+     */
+    public isInPhasePeriod(phase: PhaseEnum, baseDate: Date): boolean {
+        const period = this.getPhasePeriod(phase);
+        if (!period) {
+            return true; // フェーズに対応するマイルストーンがない場合は無条件でtrue
+        }
+        return baseDate >= period.startDay && baseDate <= period.endDay;
     }
 }
