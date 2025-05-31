@@ -59,6 +59,15 @@ export class PlanedTask {
         this._assignedTasks.delete(taskId);
     }
 
+    public removeTaskFromTicketId(taskId: UUID): PlanedTask {
+        const assignedTasks = this.getFromTicketId(taskId);
+        assignedTasks.forEach(assignedTask => {
+            this._assignedTasks.delete(assignedTask.taskId);
+        });
+
+        return this;
+    }
+
     public updateTaskDuration(taskId: UUID, duration: number): PlanedTask {
         if (duration <= 0) {
             this.removeTask(taskId);

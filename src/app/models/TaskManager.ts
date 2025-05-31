@@ -66,6 +66,14 @@ export class TaskManager {
         return this;
     }
 
+    public removeTasksFromTicketId(ticketId: UUID): TaskManager {
+        const taskList = this.getTaskFromTicketId(ticketId);
+        taskList.forEach(task => {
+            this._taskMap.delete(task.id);
+        });
+        return this;
+    }
+
     public getTask(id: UUID | undefined): Task | undefined {
         if (!id) {
             return undefined;

@@ -41,14 +41,24 @@ export default function TicketManagementBox(props: {
         const { ticketManager: newTicketManager, taskManager: newTaskManager, planedTaskManager: newPlanedTaskManager } = increment ?
             ticketUpdateService.incrementDuration(ticketId, phase, ticketManager, taskManager, planedTask) :
             ticketUpdateService.decrementDuration(ticketId, phase, ticketManager, taskManager, planedTask);
-            
+
+        setTicketManager(newTicketManager);
+        setTaskManager(newTaskManager);
+        setPlanedTask(newPlanedTaskManager);
+    }
+
+    const deleteHandler = (ticketId: UUID) => {
+        const newTicketManager = ticketManager.removeTicket(ticketId);
+        const newTaskManager = taskManager.removeTasksFromTicketId(ticketId);
+        const newPlanedTaskManager = planedTask.removeTaskFromTicketId(ticketId);
+
         setTicketManager(newTicketManager);
         setTaskManager(newTaskManager);
         setPlanedTask(newPlanedTaskManager);
     }
 
     const ticketBoxes = ticketManager?.getTicketList().map((ticket) => {
-        return <TicketBox key={ticket.id} tikcet={ticket} changeHandler={changeHandler} />;
+        return <TicketBox key={ticket.id} tikcet={ticket} changeHandler={changeHandler} deleteHandler={() => deleteHandler(ticket.id)} />;
     })
 
     return (

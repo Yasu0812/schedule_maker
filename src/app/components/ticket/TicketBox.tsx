@@ -5,7 +5,8 @@ import { UUID } from "@/app/common/IdUtil";
 
 export default function TicketBox(props: {
     tikcet: Ticket
-    changeHandler: (ticketId: UUID, phase: PhaseEnum, increment:boolean) => void;
+    changeHandler: (ticketId: UUID, phase: PhaseEnum, increment: boolean) => void;
+    deleteHandler: () => void;
 }) {
 
 
@@ -22,7 +23,7 @@ export default function TicketBox(props: {
         <div>
             <div>
                 <h1>Ticket ID: {props.tikcet.id}</h1>
-                <p>チケット番号: {props.tikcet.title}</p>
+                <p>チケット番号: {props.tikcet.title}</p><p onClick={props.deleteHandler}>aaa</p>
                 <p>合計日数: {props.tikcet.totalDuration}</p>
                 <p>チケットの説明: {props.tikcet.description}</p>
                 <p>チケットの詳細:</p>
