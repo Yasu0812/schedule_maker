@@ -55,6 +55,7 @@ export default function SceduleMaker() {
 
     const handlePlanedTaskManagerChange = (planedTaskManager: PlanedTask) => {
         setSchedule((prevSchedule) => {
+            console.log("handlePlanedTaskManagerChange", planedTaskManager);
             const newCalendarManager = new GetCalendarService().fromPlanedDatas(
                 prevSchedule.calandarManager.firstDate,
                 prevSchedule.calandarManager.lastDate,
@@ -132,8 +133,10 @@ export default function SceduleMaker() {
             <TicketManagementBox
                 ticketManager={schdule.ticketManager}
                 taskManager={schdule.taskManager}
+                planedTask={schdule.planedTaskManager}
                 setTicketManager={handleTicketManagerChange}
                 setTaskManager={handleTaskManagerChange}
+                setPlanedTask={handlePlanedTaskManagerChange}
             />
             <Legend />
         </div>

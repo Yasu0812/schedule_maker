@@ -59,6 +59,26 @@ export class PlanedTask {
         this._assignedTasks.delete(taskId);
     }
 
+    public updateTaskDuration(taskId: UUID, duration: number): PlanedTask {
+        if (duration <= 0) {
+            this.removeTask(taskId);
+        } else {
+            const assignedTask = this.get(taskId);
+            if (assignedTask) {
+                this._assignedTasks.set(taskId, new AssignedTask(
+                    assignedTask.id,
+                    assignedTask.ticketId,
+                    assignedTask.taskId,
+                    assignedTask.memberId,
+                    assignedTask.startDay,
+                    duration
+                ));
+            }
+        }
+
+        return this;
+    }
+
     /**
      * 指定されたメンバーに対して、指定された期間がフリーかどうかを判定します。  
      * このメソッドはあくまで物理的に割り当て可能かどうかを判定するものであり、  

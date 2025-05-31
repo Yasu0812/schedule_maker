@@ -160,4 +160,74 @@ export class TicketManager {
         }
         return undefined;
     }
+
+    changeTicketPhase(
+        ticketId: string,
+        phase: PhaseEnum,
+        duration: number,
+        description: string
+    ): TicketManager {
+        const ticket = this.getTicket(ticketId);
+        if (!ticket) {
+            throw new Error(`Ticket with ID ${ticketId} not found`);
+        }
+
+        const existingPhase = ticket.getPhase(phase);
+        if (existingPhase) {
+            // 既存のフェーズを更新
+            const updatedPhase = new TicketPhase(
+                existingPhase.phaseId,
+                duration,
+                phase,
+                description
+            );
+            ticket.phases.set(phase, updatedPhase);
+        } else {
+            // 新しいフェーズを追加
+            const newPhase = new TicketPhase(generateUUID(), duration, phase, description);
+            ticket.phases.set(phase, newPhase);
+        }
+
+        return this;
+    }
+
+    replaceDurationToPhase(
+        ticketId: string,
+        phase: PhaseEnum,
+        duration: number,
+    ): TicketManager {
+        const ticket = this.getTicket(ticketId);
+        if (!ticket) {
+            throw new Error(`Ticket with ID ${ticketId} not found`);
+        }
+
+        if (duration < 0) {
+            throw new Error(`Duration must be non-negative, but got ${duration}`);
+        }
+
+        const existingPhase = ticket.getPhase(phase);
+
+
+        if (duration < 1) {
+            // フェーズの削除
+            ticket.phases.delete(phase);
+        } else if (existingPhase === undefined) {
+            // 新しいフェーズの追加
+            const newPhase = new TicketPhase(generateUUID(), duration, phase, "");
+            ticket.phases.set(phase, newPhase);
+
+        } else {
+            // フェーズの更新
+            const updatedPhase = new TicketPhase(
+                existingPhase.phaseId,
+                duration,
+                phase,
+                existingPhase.description
+            );
+            ticket.phases.set(phase, updatedPhase);
+        }
+
+        return this;
+    }
+
 }
