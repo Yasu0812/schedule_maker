@@ -27,20 +27,20 @@ export class AssignedTaskSelector {
         //TODO: 未実装
         throw new Error("getUnassignableTasks is not implemented yet");
 
-        const prePhases = previousPhases(phase);
-        const aftPhases = [phase, ...afterPhases(phase)];
-        const unassignedPreTasks = this._unassignedTaskSelector.getUnassignedTaskFromTicketIdAndPhases(ticketId, prePhases, taskManager, planedTask);
+        // const prePhases = previousPhases(phase);
+        // const aftPhases = [phase, ...afterPhases(phase)];
+        // const unassignedPreTasks = this._unassignedTaskSelector.getUnassignedTaskFromTicketIdAndPhases(ticketId, prePhases, taskManager, planedTask);
 
-        const afterPhaseAssigned = planedTask.getFromTicketId(ticketId).filter(assignedTask => {
-            const resolvePhase = this._taskResolver.resolveAssignedTaskPhase(assignedTask.taskId, taskManager, planedTask);
-            return aftPhases.includes(resolvePhase);
-        })
+        // const afterPhaseAssigned = planedTask.getFromTicketId(ticketId).filter(assignedTask => {
+        //     const resolvePhase = this._taskResolver.resolveAssignedTaskPhase(assignedTask.taskId, taskManager, planedTask);
+        //     return aftPhases.includes(resolvePhase);
+        // })
 
-        if (unassignedPreTasks.length > 0) {
-            return afterPhaseAssigned;
-        }
+        // if (unassignedPreTasks.length > 0) {
+        //     return afterPhaseAssigned;
+        // }
 
-        return []
+        // return []
 
     }
 
