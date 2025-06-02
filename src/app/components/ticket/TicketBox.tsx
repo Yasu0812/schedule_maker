@@ -2,6 +2,7 @@ import { Ticket } from "@/app/models/Ticket";
 import TicketDetail from "./TicketDetail";
 import { PhaseEnum } from "@/app/common/PhaseEnum";
 import { UUID } from "@/app/common/IdUtil";
+import TrashIcon from "../atom/TrashIcon";
 
 export default function TicketBox(props: {
     tikcet: Ticket
@@ -22,8 +23,8 @@ export default function TicketBox(props: {
     return (
         <div>
             <div>
-                <h1>Ticket ID: {props.tikcet.id}</h1>
-                <p>チケット番号: {props.tikcet.title}</p><p onClick={props.deleteHandler}>aaa</p>
+                <h1><div className="flex">Ticket ID: {props.tikcet.id}<TrashIcon onClick={props.deleteHandler} /></div></h1>
+                <p>チケット番号: {props.tikcet.title}</p>
                 <p>合計日数: {props.tikcet.totalDuration}</p>
                 <p>チケットの説明: {props.tikcet.description}</p>
                 <p>チケットの詳細:</p>

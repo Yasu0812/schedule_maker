@@ -28,7 +28,7 @@ export default function TaskUnassignedBox(props: {
             <div className="flex items-center gap-2 border-b pb-2">
                 <h2 className="text-lg font-semibold">Unassigned Tasks </h2>
             </div>
-            <div style={{ display: "flex", flexWrap: "wrap", width: "100%", height: "100%" }}>
+            <div className="" style={{ display: "flex", flexWrap: "wrap", width: "100%", height: "100%" }}>
                 <UnassignedTasks
                     unassignedTasks={unassignedTasks}
                     taskManager={taskManager}

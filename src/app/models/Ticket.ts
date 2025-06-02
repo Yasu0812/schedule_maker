@@ -33,7 +33,6 @@ export class TicketPhase {
  * @param details チケットの詳細。PhaseEnumをキーに、TicketDetailを値に持つMap
  */
 export class Ticket {
-    private _phaseList: readonly TicketPhase[] = [];
 
     constructor(
         public readonly id: UUID,
@@ -41,7 +40,6 @@ export class Ticket {
         public readonly description: string,
         public readonly phases: Map<PhaseEnum, TicketPhase>,
     ) {
-        this._phaseList = Array.from(phases.values());
     }
 
     public static TicketFactory(
@@ -68,15 +66,15 @@ export class Ticket {
 
 
     get totalDuration(): number {
-        return this._phaseList.reduce((total, detail) => total + detail.duration, 0);
+        return Array.from(this.phaseList).reduce((total, detail) => total + detail.duration, 0);
     }
 
     public getPhase(phase: PhaseEnum): TicketPhase | undefined {
         return this.phases.get(phase);
     }
 
-    public getPhaseList(): readonly TicketPhase[] {
-        return this._phaseList;
+    get phaseList(): readonly TicketPhase[] {
+        return Array.from(this.phases.values());
     }
 
 

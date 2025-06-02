@@ -20,9 +20,8 @@ export default function TicketDetail(props: {
         const phaseInfo = props.ticketPhases.get(phase);
         return (
             <div key={phase}>
-                <h3>{phaseNameMap[phase]}</h3>
-                <p>工数: {phaseInfo?.duration || 0} 日</p><p><PlusButton onClick={() => props.pushPlus(phase)} />&nbsp;<MinusButton onClick={() => props.pushMinus(phase)} /></p>
-                <p>備考: {phaseInfo?.description}</p>
+                <h3 className="flex mb-2">{phaseNameMap[phase]}</h3>
+                <div className="flex mb-2 px-2"><MinusButton onClick={() => props.pushMinus(phase)} />{phaseInfo?.duration || 0} 日<PlusButton onClick={() => props.pushPlus(phase)} /></div>
             </div>
         );
     }
