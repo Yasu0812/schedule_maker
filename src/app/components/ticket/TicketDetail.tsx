@@ -1,6 +1,7 @@
 import { orderedPhases, PhaseEnum, phaseNameMap } from "@/app/common/PhaseEnum";
 import MinusButton from "../atom/MinusButton";
 import PlusButton from "../atom/PlusButton";
+import { JellyBean } from "../decorator/JellyBean";
 
 interface TicketPhaseInfo {
     phaseId: string;
@@ -15,14 +16,23 @@ export default function TicketDetail(props: {
     pushMinus: (phase: PhaseEnum) => void;
 }) {
 
+    const isDisabled = (phase: PhaseEnum): boolean => {
+        const phaseInfo = props.ticketPhases.get(phase);
+        if (!phaseInfo) return true;
+        return phaseInfo.duration <= 0;
+    }
+
 
     const phases = orderedPhases.map((phase) => {
         const phaseInfo = props.ticketPhases.get(phase);
         return (
-            <div key={phase}>
-                <h3 className="flex mb-2">{phaseNameMap[phase]}</h3>
-                <div className="flex mb-2 px-2"><MinusButton onClick={() => props.pushMinus(phase)} />{phaseInfo?.duration || 0} 日<PlusButton onClick={() => props.pushPlus(phase)} /></div>
-            </div>
+            <div key={phase} className="mb-4">
+                <div className="flex mb-2"><JellyBean phase={phase} width={300} height={30} selected={false}>{phaseNameMap[phase]} <div className="ps-1">({phaseInfo?.duration || 0} days)</div></JellyBean></div>
+                <div className="flex mb-2 px-2 items-center">
+                    <div className="pe-1"><MinusButton onClick={() => props.pushMinus(phase)} isDisabled={isDisabled(phase)} /></div>
+                    <div className="pe-1"><PlusButton onClick={() => props.pushPlus(phase)} /></div>
+                </div>
+            </div >
         );
     }
     );
