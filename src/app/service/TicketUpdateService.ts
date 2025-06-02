@@ -102,9 +102,15 @@ export class TicketUpdateService {
             throw new Error(`Ticket with ID ${ticketId} not found`);
         }
 
+
         const beforeDuration = ticketManager.getTicketPhase(ticketId, phase)?.duration || 0; // Default to 0 if phase not found
 
         const newDuration = beforeDuration + 1;
+
+        if (newDuration > 255) {
+            return { ticketManager, taskManager, planedTaskManager }; // Duration cannot exceed 255
+        }
+
 
         return this.changeDuration(ticketId, phase, newDuration, ticketManager, taskManager, planedTaskManager);
     }

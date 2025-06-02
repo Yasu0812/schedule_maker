@@ -54,6 +54,7 @@ export default function TicketRegistrationBox(props: {
                             <input
                                 type="number"
                                 min={0}
+                                max={255}
                                 className="w-20 border border-gray-300 rounded-md px-2 py-1 text-sm focus:ring-2 focus:ring-green-400"
                                 name={`duration-${phase}`}
                             />
