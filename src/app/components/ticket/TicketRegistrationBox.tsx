@@ -39,7 +39,7 @@ export default function TicketRegistrationBox(props: {
                 <label className="text-sm font-medium text-gray-700">タイトル</label>
                 <input
                     type="text"
-                    placeholder="例: API設計チケット"
+                    placeholder="例: #9999"
                     className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400"
                     name="title"
                     required
