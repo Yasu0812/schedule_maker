@@ -1,14 +1,20 @@
 import { UUID } from "../common/IdUtil";
 import { PhaseEnum } from "../common/PhaseEnum";
+import { ManagedTaskMerger } from "../models/ManagedTaskMerger";
 import { PlanedTask } from "../models/PlanedTask";
 import { TaskManager } from "../models/TaskManager";
 import TaskUpdateApplier from "../models/TaskUpdateApplier";
 import { TicketManager } from "../models/Ticket";
+import { UnassignedTaskSelector } from "../models/UnassignedTaskSelector";
 
 
 export class TicketUpdateService {
 
     private _taskUpdateApplier: TaskUpdateApplier = new TaskUpdateApplier();
+
+    private _unassignedTaskSelector: UnassignedTaskSelector = new UnassignedTaskSelector();
+
+    private _managedTaskMerger: ManagedTaskMerger = new ManagedTaskMerger();
 
     public taskAndPlanSync(
         taskManager: TaskManager,
@@ -47,17 +53,28 @@ export class TicketUpdateService {
             return { ticketManager, taskManager, planedTaskManager };
         }
 
+        const beforeUnassignedTask = this._unassignedTaskSelector
+            .getMinDurationTask(ticketId, phase, taskManager, planedTaskManager);
+
         const newTicketManager = ticketManager.replaceDurationToPhase(
             ticketId,
             phase,
             duration
         );
 
-        const newTaskManager = taskManager.addOrSubDurationToTask(
+        const changeDurations = taskManager.addOrSubDurationToTask(
             ticketId,
             ticket.title,
             phase,
             diffDuration
+        );
+
+        const newTaskManager = changeDurations.taskManager;
+        const newTask = changeDurations.task;
+
+        const mergedTaskManager = this._managedTaskMerger.getMergedTaskManager(
+            [beforeUnassignedTask?.id, newTask?.id],
+            newTaskManager
         );
 
         const newPlanedTaskManager = this._taskUpdateApplier.updateApply(
@@ -68,7 +85,7 @@ export class TicketUpdateService {
 
         return {
             ticketManager: newTicketManager,
-            taskManager: newTaskManager,
+            taskManager: mergedTaskManager,
             planedTaskManager: newPlanedTaskManager
         };
     }

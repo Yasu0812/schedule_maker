@@ -70,4 +70,22 @@ export class UnassignedTaskSelector {
         return unassignedTasks;
     }
 
+    public getMinDurationTask(
+        ticketId: UUID,
+        phase: PhaseEnum,
+        taskManager: TaskManager,
+        planedTask: PlanedTask,
+    ) {
+        const unassignedTasks = this.getUnassignedTaskFromTicketIdAndPhase(ticketId, phase, taskManager, planedTask);
+        if (unassignedTasks.length === 0) {
+            return undefined;
+        }
+        const minDurationTask = unassignedTasks.reduce((minTask, currentTask) => {
+            return currentTask.duration < minTask.duration ? currentTask : minTask;
+        });
+
+        return minDurationTask;
+    }
+        
+
 }

@@ -124,7 +124,7 @@ export class TaskManager {
         ticketTitle: string,
         phase: PhaseEnum,
         duration: number,
-    ): TaskManager {
+    ): { taskManager: TaskManager, task: Task } {
         if (duration <= 0) {
             throw new Error(`Duration must be greater than 0: ${duration}`);
         }
@@ -136,7 +136,7 @@ export class TaskManager {
             duration,
         );
         this.addTask(newTask);
-        return this;
+        return { taskManager: this, task: newTask };
     }
 
     /**
@@ -202,13 +202,13 @@ export class TaskManager {
         ticketTitle: string,
         phase: PhaseEnum,
         duration: number,
-    ): TaskManager {
+    ): { taskManager: TaskManager, readonly task?: Task } {
         if (duration > 0) {
             return this.addDurationToTask(ticketId, ticketTitle, phase, duration);
         } else if (duration < 0) {
-            return this.subDurationFromTask(ticketId, phase, -duration);
+            return { taskManager: this.subDurationFromTask(ticketId, phase, -duration), task: undefined };
         }
-        return this;
+        return { taskManager: this, task: undefined };
     }
 
 }

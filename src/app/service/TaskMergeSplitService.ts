@@ -1,8 +1,11 @@
 import { UUID } from "../common/IdUtil";
+import { ManagedTaskMerger } from "../models/ManagedTaskMerger";
 import { TaskManager } from "../models/TaskManager";
 import { TaskMergeSplitter } from "../models/TaskMergeSplitter";
 
 export class TaskMergeSplitService {
+
+    private _managedTaskMerger: ManagedTaskMerger = new ManagedTaskMerger();
 
     public splitTaskLeftDuration(taskId: UUID, taskManager: TaskManager, leftDuration: number): TaskManager {
         const task = taskManager.getTask(taskId);
@@ -36,12 +39,8 @@ export class TaskMergeSplitService {
 
 
     public mergeTasks(taskIds: UUID[], taskManager: TaskManager): TaskManager {
-        const tasks = taskIds.map(id => taskManager.getTask(id)).filter(task => task !== undefined);
-
         try {
-            const mergedTask = new TaskMergeSplitter().mergeTasks(tasks);
-            const newTaskManager = taskManager.removeTasks(taskIds).addTask(mergedTask);
-            return newTaskManager;
+            return this._managedTaskMerger.getMergedTaskManager(taskIds, taskManager);
 
         } catch (error) {
             console.error("Error merging tasks:", error);
