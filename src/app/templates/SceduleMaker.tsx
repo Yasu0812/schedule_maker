@@ -11,7 +11,6 @@ import { GetCalendarService } from "../service/GetCalendarService";
 import { UUID } from "../common/IdUtil";
 import { toSerializable } from "../common/JsonUtil";
 import { GhostJelly } from "../components/ghostTask/GhostJelly";
-import Legend from "../components/atom/Legend";
 
 export default function SceduleMaker() {
 
@@ -137,7 +136,6 @@ export default function SceduleMaker() {
                 setTaskManager={handleTaskManagerChange}
                 setPlanedTask={handlePlanedTaskManagerChange}
             />
-            <Legend />
         </div>
 
     );

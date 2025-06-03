@@ -1,5 +1,4 @@
 import { Ticket, TicketManager } from "@/app/models/Ticket";
-import TicketBox from "./TicketBox";
 import { TicketMaterial } from "@/app/types/TicketType";
 import TicketRegistrationBox from "./TicketRegistrationBox";
 import { TaskManager } from "@/app/models/TaskManager";
@@ -8,6 +7,7 @@ import { TicketUpdateService } from "@/app/service/TicketUpdateService";
 import { UUID } from "@/app/common/IdUtil";
 import { PhaseEnum } from "@/app/common/PhaseEnum";
 import { PlanedTask } from "@/app/models/PlanedTask";
+import TicketInfoBox from "./TicketInfoBox";
 
 
 export default function TicketManagementBox(props: {
@@ -57,12 +57,8 @@ export default function TicketManagementBox(props: {
         setPlanedTask(newPlanedTaskManager);
     }
 
-    const ticketBoxes = ticketManager?.getTicketList().map((ticket) => {
-        return <TicketBox key={ticket.id} tikcet={ticket} changeHandler={changeHandler} deleteHandler={() => deleteHandler(ticket.id)} />;
-    })
-
     return (
-        <>
+        <div className="flex gap-4">
             <div className="max-w-xl">
                 <CardDesign>
                     <TicketRegistrationBox addTicket={addTicket} />
@@ -70,9 +66,9 @@ export default function TicketManagementBox(props: {
             </div>
             <div className="max-w-xl">
                 <CardDesign>
-                    {ticketBoxes}
+                    <TicketInfoBox ticketManager={ticketManager} taskManager={taskManager} planedTask={planedTask} changeHandler={changeHandler} deleteHandler={deleteHandler} />
                 </CardDesign>
             </div>
-        </>
+        </div>
     );
 }
