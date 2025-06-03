@@ -99,3 +99,15 @@ export const phaseNameMap: Record<PhaseEnum, string> = {
     [Phase.INTEGRATION_TEST_EXTERNAL_DOCUMENT_CREATION]: '外部結合テスト仕様書作成',
     [Phase.INTEGRATION_TEST_EXTERNAL]: '外部結合テスト',
 };
+
+export const phaseNameShortMap: Record<PhaseEnum, string> = {
+    [Phase.REQUIREMENTS_DEFINITION]: '要件',
+    [Phase.DESIGN]: '設計',
+    [Phase.DEVELOPMENT]: '製造',
+    [Phase.UNIT_TEST_DOCUMENT_CREATION]: '単体仕様',
+    [Phase.UNIT_TEST]: '単体',
+    [Phase.INTEGRATION_TEST_INTERNAL_DOCUMENT_CREATION]: '内結仕様',
+    [Phase.INTEGRATION_TEST_INTERNAL]: '内結',
+    [Phase.INTEGRATION_TEST_EXTERNAL_DOCUMENT_CREATION]: '外結仕様',
+    [Phase.INTEGRATION_TEST_EXTERNAL]: '外結',
+};

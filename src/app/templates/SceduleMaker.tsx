@@ -11,6 +11,7 @@ import { GetCalendarService } from "../service/GetCalendarService";
 import { UUID } from "../common/IdUtil";
 import { toSerializable } from "../common/JsonUtil";
 import { GhostJelly } from "../components/ghostTask/GhostJelly";
+import CardDesign from "../components/decorator/CardDesign";
 
 export default function SceduleMaker() {
 
@@ -81,18 +82,20 @@ export default function SceduleMaker() {
     }
 
     return (
-        <div style={{ padding: '1rem', backgroundColor: '#f0f0f0' }}>
-            <div style={{ display: 'flex', overflow: 'scroll', justifyContent: 'space-between', marginBottom: '1rem' }}>
-                <CalendarBox
-                    calendarManager={schdule.calandarManager}
-                    taskManager={schdule.taskManager}
-                    planedTaskManager={schdule.planedTaskManager}
-                    setPlanedTaskManager={handlePlanedTaskManagerChange}
-                    moveTargetTaskId={moveTargetTaskId}
-                    handleMoveTargetTask={handleMoveTargetTask}
-                />
+        <div style={{ padding: '1rem', backgroundColor: '#cccccc' }}>
+            <CardDesign>
+                <div style={{ display: 'flex', overflow: 'scroll' }}>
+                    <CalendarBox
+                        calendarManager={schdule.calandarManager}
+                        taskManager={schdule.taskManager}
+                        planedTaskManager={schdule.planedTaskManager}
+                        setPlanedTaskManager={handlePlanedTaskManagerChange}
+                        moveTargetTaskId={moveTargetTaskId}
+                        handleMoveTargetTask={handleMoveTargetTask}
+                    />
 
-            </div>
+                </div>
+            </CardDesign>
             {process.env.NODE_ENV === "development" && (
                 <div style={{
                     position: 'fixed',

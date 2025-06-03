@@ -46,6 +46,12 @@ body {
   user-select: none;
 }
 
+.ticket-summary-cell {
+  border-style: none none solid none;
+  border-color: #000080;
+  border-width: 2px;
+}
+
 .calendar-line-item>.saturday {
   background: repeating-linear-gradient(120deg,
       #cceeff,

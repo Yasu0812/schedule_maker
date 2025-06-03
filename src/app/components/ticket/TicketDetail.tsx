@@ -1,7 +1,8 @@
-import { orderedPhases, PhaseEnum, phaseNameMap } from "@/app/common/PhaseEnum";
+import { orderedPhases, Phase, PhaseEnum, phaseNameMap } from "@/app/common/PhaseEnum";
 import MinusButton from "../atom/MinusButton";
 import PlusButton from "../atom/PlusButton";
 import { JellyBean } from "../decorator/JellyBean";
+import PhaseDurationInput from "./PhaseDurationInput";
 
 interface TicketPhaseInfo {
     phaseId: string;
@@ -16,27 +17,18 @@ export default function TicketDetail(props: {
     pushMinus: (phase: PhaseEnum) => void;
 }) {
 
-    const isMinusDisabled = (phase: PhaseEnum): boolean => {
-        const phaseInfo = props.ticketPhases.get(phase);
-        if (!phaseInfo) return true;
-        return phaseInfo.duration <= 0
-    }
-
-    const isPlusDisabled = (phase: PhaseEnum): boolean => {
-        const phaseInfo = props.ticketPhases.get(phase);
-        if (!phaseInfo) return false;
-        return phaseInfo.duration >= 255;
-    }
-
-
     const phases = orderedPhases.map((phase) => {
         const phaseInfo = props.ticketPhases.get(phase);
         return (
             <div key={phase} className="mb-4 flex">
-                <div className="flex mb-2"><JellyBean phase={phase} width={300} height={30} selected={false}>{phaseNameMap[phase]} <div className="ps-1">({phaseInfo?.duration || 0} days)</div></JellyBean></div>
+                <div className="flex mb-2"><JellyBean phase={phase} width={250} height={30} selected={false}>{phaseNameMap[phase]}</JellyBean></div>
                 <div className="flex mb-2 px-2 items-center">
-                    <div className="pe-1"><MinusButton onClick={() => props.pushMinus(phase)} isDisabled={isMinusDisabled(phase)} /></div>
-                    <div className="pe-1"><PlusButton onClick={() => props.pushPlus(phase)} isDisabled={isPlusDisabled(phase)} /></div>
+                    <PhaseDurationInput
+                        phase={phase}
+                        duration={phaseInfo ? phaseInfo.duration : 0}
+                        incrementHandler={() => props.pushPlus(phase)}
+                        decrementHandler={() => props.pushMinus(phase)}
+                    />
                 </div>
             </div >
         );

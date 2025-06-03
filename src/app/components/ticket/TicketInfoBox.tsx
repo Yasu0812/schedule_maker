@@ -5,6 +5,8 @@ import { TicketManager } from "@/app/models/Ticket";
 import TicketBox from "./TicketBox";
 import { UUID } from "@/app/common/IdUtil";
 import { useState } from "react";
+import TicketSummaryBox from "./TicketSummaryBox";
+import CardDesign from "../decorator/CardDesign";
 
 export default function TicketInfoBox(props: {
     ticketManager: TicketManager,
@@ -18,9 +20,9 @@ export default function TicketInfoBox(props: {
 
     const [selectedTicketId, setSelectedTicketId] = useState<UUID>();
 
-    const ticketTitleList = ticketManager.getTicketList().map((ticket) => {
-        return <div key={ticket.id} onClick={() => setSelectedTicketId(ticket.id)} className="max-w-xl">{ticket.title}</div>;
-    });
+    const handleSelectTicket = (ticketId: UUID) => {
+        setSelectedTicketId(ticketId);
+    }
 
     const ticketBox = () => {
         if (!selectedTicketId) {
@@ -36,9 +38,13 @@ export default function TicketInfoBox(props: {
     return (
         <div className="flex">
             <div>
-                {ticketTitleList}
+                <CardDesign>
+                    <TicketSummaryBox ticketManager={ticketManager} handleSelectTicket={handleSelectTicket} selectedId={selectedTicketId} />
+                </CardDesign>
             </div>
-            {ticketBox()}
+            <CardDesign>
+                {ticketBox()}
+            </CardDesign>
         </div>
     );
 }

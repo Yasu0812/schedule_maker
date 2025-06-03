@@ -64,10 +64,8 @@ export default function TicketManagementBox(props: {
                     <TicketRegistrationBox addTicket={addTicket} />
                 </CardDesign>
             </div>
-            <div className="max-w-xl">
-                <CardDesign>
-                    <TicketInfoBox ticketManager={ticketManager} taskManager={taskManager} planedTask={planedTask} changeHandler={changeHandler} deleteHandler={deleteHandler} />
-                </CardDesign>
+            <div className="max-w-full">
+                <TicketInfoBox ticketManager={ticketManager} taskManager={taskManager} planedTask={planedTask} changeHandler={changeHandler} deleteHandler={deleteHandler} />
             </div>
         </div>
     );

@@ -10,7 +10,7 @@ export default function PlusButton(props: {
 
 
     return (
-        <JellyBean width={30} height={30} phase={""} selected={false}>
+        <JellyBean width={25} height={25} phase={""} selected={false}>
 
             <button
                 className={"bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" + " " + disabledStyle}

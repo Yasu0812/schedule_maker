@@ -22,9 +22,7 @@ export default function TicketBox(props: {
 
     return (
         <div>
-            <h1><div className="flex">Ticket ID: {props.tikcet.id}<TrashIcon onClick={props.deleteHandler} /></div></h1>
-            <p>チケット名: {props.tikcet.title}</p>
-            <p>合計日数: {props.tikcet.totalDuration}</p>
+            <div className="flex">チケット名: {props.tikcet.title}<TrashIcon onClick={props.deleteHandler} /></div>
             <TicketDetail ticketPhases={props.tikcet.phases} pushPlus={pushPlus} pushMinus={pushMinus} />
         </div>
     );
