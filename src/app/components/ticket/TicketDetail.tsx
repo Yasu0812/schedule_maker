@@ -1,6 +1,4 @@
-import { orderedPhases, Phase, PhaseEnum, phaseNameMap } from "@/app/common/PhaseEnum";
-import MinusButton from "../atom/MinusButton";
-import PlusButton from "../atom/PlusButton";
+import { orderedPhases, PhaseEnum, phaseNameMap } from "@/app/common/PhaseEnum";
 import { JellyBean } from "../decorator/JellyBean";
 import PhaseDurationInput from "./PhaseDurationInput";
 
