@@ -46,6 +46,9 @@ body {
   user-select: none;
 }
 
+.ticket-summary-box .selected {
+}
+
 .ticket-summary-cell {
   border-style: none none solid none;
   border-color: #000080;

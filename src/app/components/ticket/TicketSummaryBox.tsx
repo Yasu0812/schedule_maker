@@ -10,40 +10,36 @@ export default function TicketSummaryBox(props: {
 }) {
 
     const selectedClass = (ticketId: UUID) => {
-        return props.selectedId === ticketId ? " bg-blue-100" : "";
+        return props.selectedId === ticketId ? " selected bg-blue-100" : "";
     }
 
     return (
-        <div className="text-sm font-medium">
-            <table>
-                <thead>
-                    <tr>
-                        <th className="text-left">チケット</th>
-                        {orderedPhases.map((phase) => (
-                            <th key={phase} className=""><JellyBean width={80} height={30} phase={phase} selected={false}>{phaseNameShortMap[phase]}</JellyBean></th>
-                        ))}
-                    </tr>
-                </thead>
-                <tbody>
-                    {props.ticketManager.getTicketList().map((ticket) => (
-                        <tr key={ticket.id} onClick={() => props.handleSelectTicket(ticket.id)} className={"cursor-pointer" + " " + selectedClass(ticket.id)}>
-                            <td className="border px-4 py-2 ticket-summary-cell ">{ticket.title}</td>
+        <div className="ticket-summary-box">
+            <h2 className="text-lg font-semibold mb-4">Ticket Summary</h2>
+
+            <div className="text-sm font-medium overflow-y-auto max-h-[400px]">
+                <table>
+                    <thead>
+                        <tr>
+                            <th className="sticky text-left top-0 bg-white z-10">チケット</th>
                             {orderedPhases.map((phase) => (
-                                <td key={phase} className="border px-4 py-2 ticket-summary-cell ">
-                                    {ticket.getPhase(phase)?.duration ?? 0}
-                                </td>
+                                <th key={phase} className="sticky  top-0 z-10"><JellyBean width={80} height={30} phase={phase} selected={false}>{phaseNameShortMap[phase]}</JellyBean></th>
                             ))}
                         </tr>
-                    ))}
-                </tbody>
-            </table>
-            <div className="mt-4">
-                <h2 className="text-lg font-semibold">チケットの概要</h2>
-                <p>現在のチケット数: {props.ticketManager.getTicketList().length}</p>
-                {/* <p>完了したチケット数: {props.ticketManager.getCompletedTickets().length}</p>
-                <p>進行中のチケット数: {props.ticketManager.getInProgressTickets().length}</p>
-                <p>保留中のチケット数: {props.ticketManager.getPendingTickets().length}</p>
-                <p>キャンセルされたチケット数: {props.ticketManager.getCancelledTickets().length}</p> */}
+                    </thead>
+                    <tbody>
+                        {props.ticketManager.getTicketList().map((ticket) => (
+                            <tr key={ticket.id} onClick={() => props.handleSelectTicket(ticket.id)} className={"cursor-pointer" + " " + selectedClass(ticket.id)}>
+                                <td className="border px-4 py-2 ticket-summary-cell ">{ticket.title}</td>
+                                {orderedPhases.map((phase) => (
+                                    <td key={phase} className="border px-4 py-2 ticket-summary-cell ">
+                                        {ticket.getPhase(phase)?.duration ?? "-"}
+                                    </td>
+                                ))}
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
             </div>
         </div>
     );
