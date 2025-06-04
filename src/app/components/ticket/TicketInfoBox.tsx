@@ -16,7 +16,7 @@ export default function TicketInfoBox(props: {
     deleteHandler: (ticketId: UUID) => void;
 }) {
 
-    const { ticketManager, changeHandler, deleteHandler } = props;
+    const { ticketManager, taskManager, planedTask, changeHandler, deleteHandler } = props;
 
     const [selectedTicketId, setSelectedTicketId] = useState<UUID>();
 
@@ -39,7 +39,13 @@ export default function TicketInfoBox(props: {
         <div className="flex">
             <div>
                 <CardDesign>
-                    <TicketSummaryBox ticketManager={ticketManager} handleSelectTicket={handleSelectTicket} selectedId={selectedTicketId} />
+                    <TicketSummaryBox
+                        ticketManager={ticketManager}
+                        taskManager={taskManager}
+                        planedManager={planedTask}
+                        handleSelectTicket={handleSelectTicket}
+                        selectedId={selectedTicketId}
+                    />
                 </CardDesign>
             </div>
             <CardDesign>

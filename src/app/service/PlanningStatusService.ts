@@ -1,39 +1,17 @@
 import { UUID } from "../common/IdUtil";
 import { PhaseEnum } from "../common/PhaseEnum";
+import { TicketAssignStatusEnum } from "../common/TicketAssignStatusEnum";
+import { PhaseStatusPolicy } from "../models/PhaseStatusPolicy";
 import { PlanedTask } from "../models/PlanedTask";
-import { TaskFinishedPolicy } from "../models/TaskFinishedPolicy";
 import { TaskManager } from "../models/TaskManager";
 import { TicketFinishedPolicy } from "../models/TicketFinisedPolicy";
 
 export class PlanningStatusService {
 
-    private _taskFinishedPolicy: TaskFinishedPolicy = new TaskFinishedPolicy();
     private _ticketFinishedPolicy: TicketFinishedPolicy = new TicketFinishedPolicy();
 
-    public getTaskPlanningStatus(
-        taskId: UUID,
-        taskManager: TaskManager,
-        planedTask: PlanedTask
-    ) {
-        const task = taskManager.getTask(taskId);
-        if (!task) {
-            throw new Error(`Task with ID ${taskId} not found`);
-        }
+    private _phaseStatusPolicy: PhaseStatusPolicy = new PhaseStatusPolicy();
 
-        const assignedTask = planedTask.get(task.id);
-
-        if (!assignedTask) {
-            throw new Error(`AssignedTask with ID ${task.id} not found`);
-        }
-
-        const plannningStatus = this._taskFinishedPolicy.getAssignmentStatus(
-            task.duration,
-            assignedTask.duration,
-        );
-
-        return plannningStatus;
-
-    }
 
     public isFinishedBeforePhaseWithDay(
         ticketId: UUID,
@@ -51,6 +29,19 @@ export class PlanningStatusService {
             startDay
         );
 
+    }
+
+    public getTicketPhaseStatuses(
+        ticketId: UUID,
+        taskManager: TaskManager,
+        planedTask: PlanedTask,
+    ): Map<PhaseEnum, TicketAssignStatusEnum> {
+
+        return this._phaseStatusPolicy.getTicketAssignStatuses(
+            ticketId,
+            taskManager,
+            planedTask
+        );
     }
 
 }

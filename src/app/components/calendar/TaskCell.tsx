@@ -10,7 +10,6 @@ import { PlanningStatusService } from "@/app/service/PlanningStatusService";
 
 export default function TaskCell(
     props: {
-        colIndex: number,
         task: CalendarCellTask | undefined,
         taskManager: TaskManager,
         planedTaskManager: PlanedTask,
@@ -22,7 +21,6 @@ export default function TaskCell(
     }
 ) {
     const {
-        colIndex,
         task,
         taskManager,
         planedTaskManager,
@@ -37,7 +35,6 @@ export default function TaskCell(
 
 
     const onMouseUp = () => {
-        console.log("onMouseUp", member, colIndex, moveTargetTaskId);
         const planedTask = planedTaskManager.get(moveTargetTaskId);
 
         if (planedTask?.memberId === member && (planedTask?.startDay <= startDay && planedTask?.endDay >= startDay)) {

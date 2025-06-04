@@ -2,16 +2,24 @@ import { UUID } from "@/app/common/IdUtil";
 import { orderedPhases, phaseNameShortMap } from "@/app/common/PhaseEnum";
 import { TicketManager } from "@/app/models/Ticket";
 import { JellyBean } from "../decorator/JellyBean";
+import { PlanedTask } from "@/app/models/PlanedTask";
+import TicketSummaryRow from "./TicketSummaryRow";
+import { PlanningStatusService } from "@/app/service/PlanningStatusService";
+import { TaskManager } from "@/app/models/TaskManager";
 
 export default function TicketSummaryBox(props: {
-    ticketManager: TicketManager
+    ticketManager: TicketManager,
+    taskManager: TaskManager,
+    planedManager: PlanedTask,
     handleSelectTicket: (ticketId: UUID) => void;
     selectedId: UUID | undefined;
 }) {
 
-    const selectedClass = (ticketId: UUID) => {
-        return props.selectedId === ticketId ? " selected bg-blue-100" : "";
-    }
+    const getPhaseStatus = (ticketId: UUID) => new PlanningStatusService().getTicketPhaseStatuses(
+        ticketId,
+        props.taskManager,
+        props.planedManager
+    );
 
     return (
         <div className="ticket-summary-box">
@@ -29,14 +37,13 @@ export default function TicketSummaryBox(props: {
                     </thead>
                     <tbody>
                         {props.ticketManager.getTicketList().map((ticket) => (
-                            <tr key={ticket.id} onClick={() => props.handleSelectTicket(ticket.id)} className={"cursor-pointer" + " " + selectedClass(ticket.id)}>
-                                <td className="border px-4 py-2 ticket-summary-cell ">{ticket.title}</td>
-                                {orderedPhases.map((phase) => (
-                                    <td key={phase} className="border px-4 py-2 ticket-summary-cell ">
-                                        {ticket.getPhase(phase)?.duration ?? "-"}
-                                    </td>
-                                ))}
-                            </tr>
+                            <TicketSummaryRow
+                                key={ticket.id}
+                                ticket={ticket}
+                                isSelected={props.selectedId === ticket.id}
+                                onClick={props.handleSelectTicket}
+                                phaseStatuses={getPhaseStatus(ticket.id)}
+                            />
                         ))}
                     </tbody>
                 </table>

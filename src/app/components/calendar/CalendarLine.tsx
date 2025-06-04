@@ -40,7 +40,6 @@ export default function CalendarLine(
                 <DayColor dayString={dayString}>
                     <CalendarCell>
                         {!isHoliday && <TaskCell
-                            colIndex={index}
                             task={task}
                             taskManager={taskManager}
                             planedTaskManager={planedTaskManager}

@@ -38,6 +38,10 @@ export class PlanedTask {
         return assignedTasks.filter(assignedTask => assignedTask !== undefined);
     }
 
+    public getAll(): AssignedTask[] {
+        return this._list;
+    }
+
     public getFromAssignedId(assignedId: string): AssignedTask | undefined {
         const assignedTask = this._list.find(assignedTask => assignedTask.id === assignedId);
         return assignedTask;

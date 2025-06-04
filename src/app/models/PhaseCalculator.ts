@@ -134,7 +134,6 @@ export class PhaseCalculator {
     ): Date | undefined {
 
         if (!phase) {
-            //TODO Dateの最小値をロジカルに取得するようにしたい
             return DateUtil.ifUndefinedGetMinDate();
         }
 

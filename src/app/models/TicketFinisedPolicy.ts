@@ -1,4 +1,3 @@
-import { AssignmentStatus, AssignmentStatusEnum } from "../common/AssignmentStatusEnum";
 import { UUID } from "../common/IdUtil";
 import { isBeforePhase, PhaseEnum, previousPhases } from "../common/PhaseEnum";
 import { PlanedTask } from "./PlanedTask";
@@ -9,14 +8,8 @@ export class TicketFinishedPolicy {
 
     private _unassignedTaskSelector: UnassignedTaskSelector = new UnassignedTaskSelector();
 
-    public isTicketPlanned(
-        assignmentStatuses: AssignmentStatusEnum[],
-    ): boolean {
-        return assignmentStatuses.some((status) => status === AssignmentStatus.FULL);
-    }
-
     /**
-     * チケットが指定されたフェーズより前にすべて完了しているかどうかを判定します。
+     * チケットが指定された日時より前にすべて完了しているかどうかを判定します。
      * @param ticketId チケットID
      * @param phase 判定基準となるフェーズ
      * @param taskManager タスク管理オブジェクト
