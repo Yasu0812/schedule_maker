@@ -14,7 +14,7 @@ export default function TicketSummaryRow(props: {
 
     const selectedClass = props.isSelected ? " selected bg-blue-100" : "";
 
-    const phaseStatus = (phase: PhaseEnum) => phaseStatuses.get(phase);
+    const phaseStatus = (phase: PhaseEnum) => phaseStatuses.get(phase) || "none";
 
     return (
         <tr onClick={() => onClick(ticket.id)} className={"cursor-pointer" + " " + selectedClass}>

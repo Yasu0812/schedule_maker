@@ -67,7 +67,7 @@ table .full{
 }
 
 table .startable{
-  background-color: #f0ad4e;
+  background-color: #e7a044;
   font-weight: bold;
   text-shadow: 0 1px 0 rgba(255, 255, 255, 0.3);
 }
@@ -76,7 +76,7 @@ table .disable{
 }
 
 table .violation {
-  background-color: #db7055;
+  background-color: #db6344;
   color: #000;
   font-weight: bold;
   text-shadow: 0 1px 0 rgba(255, 255, 255, 0.3);
