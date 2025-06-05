@@ -2,6 +2,7 @@ import { UUID } from "../common/IdUtil";
 import { PhaseEnum } from "../common/PhaseEnum";
 import { difference } from "../common/SetOperationUtil";
 import { PlanedTask } from "./PlanedTask";
+import { Task } from "./Task";
 import { TaskManager } from "./TaskManager";
 
 export class UnassignedTaskSelector {
@@ -67,7 +68,7 @@ export class UnassignedTaskSelector {
         ticketId: UUID,
         taskManager: TaskManager,
         planedTask: PlanedTask,
-    ) {
+    ): { assignedTasks: Task[], unassignedTasks: Task[] } {
         const { assignedTasks, unassignedTasks } = this.splitUnAndAssignedTask(taskManager, planedTask);
         const assignedTasksFromTicket = assignedTasks.filter(task => task.ticketId === ticketId);
         const unassignedTasksFromTicket = unassignedTasks.filter(task => task.ticketId === ticketId);

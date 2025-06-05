@@ -37,7 +37,7 @@ export class PlanningStatusService {
         planedTask: PlanedTask,
     ): Map<PhaseEnum, TicketAssignStatusEnum> {
 
-        return this._phaseStatusPolicy.getTicketAssignStatuses(
+        return this._phaseStatusPolicy.judgePhaseStatuses(
             ticketId,
             taskManager,
             planedTask

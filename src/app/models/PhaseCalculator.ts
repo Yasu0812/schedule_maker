@@ -15,7 +15,9 @@ export class PhaseCalculator {
 
     /**
      * 割り当て済みのタスクの開始日と終了日をフェーズごとに計算します。  
-     * 割り当て済みのタスクが存在しないフェーズはスキップされます。  
+     * 割り当て済みのタスクも未割り当てのタスクも存在しない場合は、返り値から除外されます。  
+     * 未割り当てのタスクが存在するフェーズは、開始日を最も早いタスクの開始日、終了日は未定とします。  
+     * 割り当て済みのタスクが存在するフェーズは、開始日を最も早いタスクの開始日、終了日は最も遅いタスクの終了日とします。   
      * 返り値のリストの順序は、フェーズの定義に従います。
      * @param ticketId 
      * @param taskManager 
@@ -26,22 +28,54 @@ export class PhaseCalculator {
         ticketId: UUID,
         taskManager: TaskManager,
         planedTask: PlanedTask
-    ): Map<PhaseEnum, { startDay: Date, endDay: Date }> {
+    ): Map<PhaseEnum, { startDay: Date | undefined, endDay: Date | undefined }> {
 
-        const assignedTasks = this._assignedTaskSelector.getAssignedTaskAndPhase(ticketId, taskManager, planedTask);
+        const { assignedTasks, unassignedTasks } = this._unassignedTaskSelector.getSplitTaskFromTicketId(ticketId, taskManager, planedTask);
+        const assignedTaskMap = Map.groupBy(assignedTasks, assignedTask => assignedTask.phase);
+        const unassignedTaskMap = Map.groupBy(unassignedTasks, unassignedTask => unassignedTask.phase);
 
 
-        const phaseStartEndDays: Map<PhaseEnum, { startDay: Date, endDay: Date }> = new Map();
+        const phaseStartEndDays: Map<PhaseEnum, { startDay: Date | undefined, endDay: Date | undefined }> = new Map();
         for (const phase of orderedPhases) {
-            const assignedTasksForPhase = assignedTasks.get(phase) || [];
-            if (assignedTasksForPhase.length === 0) {
-                continue;
-            }
-            // フェーズ内のタスクの開始日と終了日を取得
-            const startDay = DateUtil.getFastestDay(assignedTasksForPhase.map(at => at.assignedTask.startDay));
-            const endDay = DateUtil.getLatestDay(assignedTasksForPhase.map(at => at.assignedTask.endDay));
+            const assignedTasksForPhase = assignedTaskMap.get(phase) || [];
+            const planedTasksForPhase = planedTask.getList(assignedTasksForPhase.map(at => at.id));
+            const unassignedTasksForPhase = unassignedTaskMap.get(phase) || [];
 
-            phaseStartEndDays.set(phase, { startDay: startDay, endDay: endDay });
+            const isExistUnassigedTask = unassignedTasksForPhase.length > 0;
+            const isExistAssignedTask = assignedTasksForPhase.length > 0;
+
+            if (!isExistUnassigedTask && !isExistAssignedTask) {
+                // 割り当て済みのタスクも未割り当てのタスクも存在しない
+                continue;
+            } else if (isExistUnassigedTask && !isExistAssignedTask) {
+                // 割り当て済みのタスクが存在しないが、未割り当てのタスクが存在する場合
+                phaseStartEndDays.set(phase, {
+                    startDay: undefined,
+                    endDay: undefined
+                });
+                continue;
+
+            } else if (!isExistUnassigedTask && isExistAssignedTask) {
+                // 割り当て済みのタスクが存在するが、未割り当てのタスクが存在しない場合
+                const startDay = DateUtil.getFastestDay(planedTasksForPhase.map(at => at.startDay));
+                const endDay = DateUtil.getLatestDay(planedTasksForPhase.map(at => at.endDay));
+                phaseStartEndDays.set(phase, {
+                    startDay: startDay,
+                    endDay: endDay
+                });
+                continue;
+
+            } else if (isExistUnassigedTask && isExistAssignedTask) {
+                // 割り当て済みのタスクと未割り当てのタスクが両方存在する場合
+                const startDay = DateUtil.getFastestDay(planedTasksForPhase.map(at => at.startDay));
+                phaseStartEndDays.set(phase, {
+                    startDay: startDay,
+                    endDay: undefined
+                });
+                continue;
+
+            }
+
         }
 
         return phaseStartEndDays;
@@ -77,6 +111,21 @@ export class PhaseCalculator {
                 continue;
             }
 
+            // 未割り当てのタスクが存在するかどうかを確認
+            const isExistUnassigedTask = this._unassignedTaskSelector.getUnassignedTaskFromTicketIdAndPhase(
+                ticketId,
+                phase,
+                taskManager,
+                planedTask
+            ).length > 0;
+
+            if (isExistUnassigedTask) {
+                // 未割り当てのタスクが存在する場合、終了日は未定
+                trackingDate = undefined;
+                phaseEndDays.set(phase, undefined);
+                continue;
+            }
+
             const assignedDatesForPhase = ticketPhaseStartDayAndEndDay.get(phase);
             if (!assignedDatesForPhase) {
                 // フェーズに割り当てられたタスクがない場合は追跡日を更新しない
@@ -94,21 +143,7 @@ export class PhaseCalculator {
 
             trackingDate = assignedDatesForPhase ? assignedDatesForPhase.endDay : trackingDate;
 
-            // 未割り当てのタスクが存在するかどうかを確認
-            const isExistUnassigedTask = this._unassignedTaskSelector.getUnassignedTaskFromTicketIdAndPhase(
-                ticketId,
-                phase,
-                taskManager,
-                planedTask
-            ).length > 0;
 
-
-            if (isExistUnassigedTask) {
-                // 未割り当てのタスクが存在する場合、終了日は未定
-                trackingDate = undefined;
-                phaseEndDays.set(phase, undefined);
-                continue;
-            }
 
             phaseEndDays.set(phase, new Date(trackingDate));
         }

@@ -14,15 +14,13 @@ export default function TicketSummaryRow(props: {
 
     const selectedClass = props.isSelected ? " selected bg-blue-100" : "";
 
-    const isPhaseFinished = (phase: PhaseEnum) => phaseStatuses.get(phase);
-
-
+    const phaseStatus = (phase: PhaseEnum) => phaseStatuses.get(phase);
 
     return (
         <tr onClick={() => onClick(ticket.id)} className={"cursor-pointer" + " " + selectedClass}>
             <td className="border px-4 py-2 ticket-summary-cell ">{ticket.title}</td>
             {orderedPhases.map((phase) => (
-                <td key={phase} className={"border px-4 py-2 ticket-summary-cell " + isPhaseFinished(phase)}>
+                <td key={phase} className={"border px-4 py-2 ticket-summary-cell " + phaseStatus(phase)}>
                     {ticket.getPhase(phase)?.duration ?? "-"}
                 </td>
             ))}

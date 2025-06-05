@@ -5,114 +5,156 @@ import { TaskManager } from "./TaskManager";
 import { UnassignedTaskSelector } from "./UnassignedTaskSelector";
 import { PhaseStatus, PhaseStatusEnum } from "../common/PhaseStatusEnum";
 import { TicketAssignStatus, TicketAssignStatusEnum } from "../common/TicketAssignStatusEnum";
+import { PhaseCalculator } from "./PhaseCalculator";
 
 export class PhaseStatusPolicy {
 
     private _unassignedTaskSelecter = new UnassignedTaskSelector();
 
+    private _phaseCalculator = new PhaseCalculator();
+
+
     /**
-     * チケットとフェーズに基づいて、タスクの状態を取得します。  
-     * チケットの状態、制約、前後関係は考慮せず、タスクの割り当て状況のみを考慮します。
+     * 各フェーズのステータスを返します。
+     * 以下のロジックに基づいて返します。
+     * - フェーズが存在しない場合、`TicketAssignStatusEnum.NONE`を返す
+     * - 前のフェーズが`TicketAssignStatusEnum.VIOLATION`または`TicketAssignStatusEnum.DISABLE`の場合
+     *  - 現在のフェーズが`PhaseStatusEnum.UNASSIGNED`の場合、`TicketAssignStatusEnum.DISABLE`を返す
+     *  - 現在のフェーズが`PhaseStatusEnum.PARTIAL`または`PhaseStatusEnum.FULL`の場合、`TicketAssignStatusEnum.VIOLATION`を返す
+     * - 前のフェーズが`TicketAssignStatusEnum.STARTABLE`の場合
+     *  - 現在のフェーズが`PhaseStatusEnum.UNASSIGNED`の場合、`TicketAssignStatusEnum.DISABLE`を返す
+     *  - 現在のフェーズが`PhaseStatusEnum.PARTIAL`の場合、`TicketAssignStatusEnum.VIOLATION`を返す
+     * - 前のフェーズが`TicketAssignStatusEnum.FULL`の場合
+     *  - 現在のフェーズが`PhaseStatusEnum.UNASSIGNED`の場合、`TicketAssignStatusEnum.STARTABLE`を返す
+     *  - 現在のフェーズが`PhaseStatusEnum.PARTIAL`の場合、`TicketAssignStatusEnum.STARTABLE`を返す
+     *  - 現在のフェーズが`PhaseStatusEnum.FULL`の場合、`TicketAssignStatusEnum.FULL`を返す
      * @param ticketId 
-     * @param phase 
      * @param taskManager 
      * @param planedTask 
      * @returns 
      */
-    public getPhaseStatus(
-        ticketId: UUID,
-        phase: PhaseEnum,
-        taskManager: TaskManager,
-        planedTask: PlanedTask,
-    ): PhaseStatusEnum {
-        const { assignedTasks, unassignedTasks } = this._unassignedTaskSelecter.getSplitTaskFromTicketIdAndPhase(
-            ticketId,
-            phase,
-            taskManager,
-            planedTask,
-        );
-
-        const existAssignedTasks = assignedTasks.length > 0;
-        const existUnassignedTasks = unassignedTasks.length > 0;
-
-        if (!existAssignedTasks && !existUnassignedTasks) {
-            return PhaseStatus.NONE;
-        } else if (existAssignedTasks && !existUnassignedTasks) {
-            return PhaseStatus.FULL;
-        } else if (!existAssignedTasks && existUnassignedTasks) {
-            return PhaseStatus.UNASSIGNED;
-        } else if (existAssignedTasks && existUnassignedTasks) {
-            return PhaseStatus.PARTIAL;
-        } else {
-            throw new Error("Unexpected condition in getPhaseStatus");
-        }
-
-    }
-
-    public getTicketAssignStatuses(
+    public judgePhaseStatuses(
         ticketId: UUID,
         taskManager: TaskManager,
         planedTask: PlanedTask,
     ): Map<PhaseEnum, TicketAssignStatusEnum> {
-        const phaseStatuses = orderedPhases.map(phase => this.getPhaseStatus(ticketId, phase, taskManager, planedTask));
-        const combinatedList: TicketAssignStatusEnum[] = [];
-        let beforeStatus: TicketAssignStatusEnum | undefined = undefined;
-        const phaseStatusesWithTicketAssignStatus = phaseStatuses.map(phaseStatus => {
-            const ticketAssignStatus = this.convertPhaseStatusToTicketAssignStatus(phaseStatus, beforeStatus);
-            if (ticketAssignStatus !== TicketAssignStatus.NONE) {
-                beforeStatus = ticketAssignStatus;
-            }
-            combinatedList.push(ticketAssignStatus);
-            return ticketAssignStatus;
-        });
+        const phaseDays = this._phaseCalculator.ticketPhaseStartDayAndEndDay(ticketId, taskManager, planedTask);
 
         const phaseStatusMap = new Map<PhaseEnum, TicketAssignStatusEnum>();
-        orderedPhases.forEach((phase, index) => {
-            phaseStatusMap.set(phase, phaseStatusesWithTicketAssignStatus[index]);
+        let preJudgedPhaseStatus: TicketAssignStatusEnum = TicketAssignStatus.FULL;
+        let preJudgedDays: { startDay: Date | undefined, endDay: Date | undefined } | undefined = undefined;
+        orderedPhases.forEach(phase => {
+            const phaseDaysForPhase = phaseDays.get(phase);
+            const phaseStatus = this.getPhaseStatusFromDaysWithPrePhase(phaseDaysForPhase, preJudgedPhaseStatus);
+
+            if (phaseStatus === TicketAssignStatus.NONE) {
+                // フェーズが存在しない場合は、何もしない
+                return;
+            }
+
+            if (phaseStatus === TicketAssignStatus.FULL || phaseStatus === TicketAssignStatus.STARTABLE) {
+                if (preJudgedDays && preJudgedDays.startDay && preJudgedDays.endDay
+                    && phaseDaysForPhase && phaseDaysForPhase.startDay && phaseDaysForPhase.endDay
+                ) {
+                    const isPhaseStartAfterPrePhaseEnd = phaseDaysForPhase.startDay > preJudgedDays.endDay;
+                    if (!isPhaseStartAfterPrePhaseEnd) {
+                        // 前のフェーズの終了日よりも、現在のフェーズの開始日が後の場合は、ステータスをSTARTABLEにする
+                        preJudgedPhaseStatus = TicketAssignStatus.VIOLATION;
+                        preJudgedDays = phaseDaysForPhase;
+
+                        phaseStatusMap.set(phase, TicketAssignStatus.VIOLATION);
+                        return;
+                    }
+
+                }
+            }
+
+
+            // 前のフェーズのステータスを更新
+            preJudgedPhaseStatus = phaseStatus;
+            preJudgedDays = phaseDaysForPhase;
+
+            // フェーズのステータスをマップに追加
+            phaseStatusMap.set(phase, phaseStatus);
+
         });
 
         return phaseStatusMap;
+    }
+
+    /**
+     * フェーズのスケジュール状態から、フェーズのステータスを取得します。
+     * inputが存在しない場合は`PhaseStatusEnum.NONE`を返します。
+     * もし、startDayとendDayの両方が存在する場合は`PhaseStatusEnum.FULL`を返します。
+     * もし、startDayまたはendDayのどちらかが存在する場合は`PhaseStatusEnum.PARTIAL`を返します。
+     * もし、startDayとendDayの両方が存在しない場合は`PhaseStatusEnum.UNASSIGNED`を返します。
+     * @param days
+     * @returns 
+     */
+    public getPhaseStatusFromDays(
+        days: { startDay: Date | undefined, endDay: Date | undefined } | undefined
+    ): PhaseStatusEnum {
+        if (!days) {
+            return PhaseStatus.NONE;
+        }
+
+        if (days.startDay && days.endDay) {
+            return PhaseStatus.FULL;
+        } else if (days.startDay || days.endDay) {
+            return PhaseStatus.PARTIAL;
+        } else {
+            return PhaseStatus.UNASSIGNED;
+        }
 
     }
 
     /**
-     * 
-     * @param phaseStatus 現在のステータス
-     * @param beforeStatus 一つ前のフェーズ、存在しない場合はundefined  一つ前がNoneの場合は、再帰的に遡ったステータスを与えてください。
+     * フェーズの予定期間と、前のフェーズのステータスから、フェーズのステータスを取得します。
+     * もし、予定期間が存在しない場合は`TicketAssignStatusEnum.NONE`を返します。
+     * @param days 
+     * @param prePhaseStatus 
      * @returns 
      */
-    private convertPhaseStatusToTicketAssignStatus(phaseStatus: PhaseStatusEnum, beforeStatus: TicketAssignStatusEnum | undefined): TicketAssignStatusEnum {
-
-        if (beforeStatus === TicketAssignStatus.NONE) {
-            // Noneはskipされるべきステータスのため、ここに到達してはいけない
-            throw new Error("beforeStatus should not be NONE when converting phase status to ticket assign status.");
-        }
+    public getPhaseStatusFromDaysWithPrePhase(
+        days: { startDay: Date | undefined, endDay: Date | undefined } | undefined,
+        prePhaseStatus: TicketAssignStatusEnum
+    ): TicketAssignStatusEnum {
+        const phaseStatus = this.getPhaseStatusFromDays(days);
 
         if (phaseStatus === PhaseStatus.NONE) {
-            // 存在しない場合は、"存在しない"ステータスを返す
             return TicketAssignStatus.NONE;
-        } else if (beforeStatus === undefined) {
-            // 先頭のフェーズだった場合、制約がないため、フェーズのステータスに応じて割り当てステータスを返す
-            return phaseStatus === PhaseStatus.FULL ? TicketAssignStatus.FULL : TicketAssignStatus.STARTABLE;
-
-        } else if (beforeStatus === TicketAssignStatus.FULL) {
-            // 前のフェーズがFULLの場合、制約がないため、フェーズのステータスに応じて割り当てステータスを返す
-            return phaseStatus === PhaseStatus.FULL ? TicketAssignStatus.FULL : TicketAssignStatus.STARTABLE;
-
-        } else if (beforeStatus === TicketAssignStatus.VIOLATION) {
-            // 前のフェーズが違反の場合、割当をしていなければ、割当不可、割当をしていれば連帯して違反
-            return phaseStatus === PhaseStatus.UNASSIGNED ? TicketAssignStatus.DISABLE : TicketAssignStatus.VIOLATION;
-
-        } else if (beforeStatus === TicketAssignStatus.STARTABLE) {
-            // 前のフェーズが割り当て可能状態の時、割当をしていなければ、割当不可、割当をしていれば違反
-            return phaseStatus === PhaseStatus.UNASSIGNED ? TicketAssignStatus.DISABLE : TicketAssignStatus.VIOLATION;
-        } else if (beforeStatus === TicketAssignStatus.DISABLE) {
-
-            // 前のフェーズが割当不可状態の時、割当をしていなければ、割当不可、割当をしていれば違反
-            return phaseStatus === PhaseStatus.UNASSIGNED ? TicketAssignStatus.DISABLE : TicketAssignStatus.VIOLATION;
+        } else if (phaseStatus === PhaseStatus.UNASSIGNED) {
+            if (prePhaseStatus === TicketAssignStatus.VIOLATION || prePhaseStatus === TicketAssignStatus.DISABLE) {
+                return TicketAssignStatus.DISABLE;
+            } else if (prePhaseStatus === TicketAssignStatus.STARTABLE) {
+                return TicketAssignStatus.DISABLE;
+            } else if (prePhaseStatus === TicketAssignStatus.FULL) {
+                return TicketAssignStatus.STARTABLE;
+            }
+        } else if (phaseStatus === PhaseStatus.PARTIAL) {
+            if (prePhaseStatus === TicketAssignStatus.VIOLATION || prePhaseStatus === TicketAssignStatus.DISABLE) {
+                return TicketAssignStatus.VIOLATION;
+            } else if (prePhaseStatus === TicketAssignStatus.STARTABLE) {
+                return TicketAssignStatus.VIOLATION;
+            } else if (prePhaseStatus === TicketAssignStatus.FULL) {
+                return TicketAssignStatus.STARTABLE;
+            }
+        } else if (phaseStatus === PhaseStatus.FULL) {
+            if (prePhaseStatus === TicketAssignStatus.VIOLATION || prePhaseStatus === TicketAssignStatus.DISABLE) {
+                return TicketAssignStatus.VIOLATION;
+            } else if (prePhaseStatus === TicketAssignStatus.STARTABLE) {
+                return TicketAssignStatus.VIOLATION;
+            } else if (prePhaseStatus === TicketAssignStatus.FULL) {
+                return TicketAssignStatus.FULL;
+            }
+        } else {
+            console.warn(`Unexpected phase status: ${phaseStatus}`);
+            return TicketAssignStatus.NONE;
         }
 
-        throw new Error("Unexpected condition in convertPhaseStatusToTicketAssignStatus");
-
+        // ここに到達することはないはずですが、念のためのフォールバック
+        console.warn(`Unexpected prePhaseStatus: ${prePhaseStatus}`);
+        return TicketAssignStatus.NONE;
     }
+
 }
