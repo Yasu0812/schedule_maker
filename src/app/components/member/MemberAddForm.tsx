@@ -6,7 +6,7 @@ export default function MemberAddForm(props: {
     handleMemberManagerChange: (memberManager: MemberManager) => void,
 }) {
 
-    const handleAddMember = (formData: FormData) => {
+    const handleAddMember = () => {
 
         const memberManager = props.memberManager.addMember("name");
 
