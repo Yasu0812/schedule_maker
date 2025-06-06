@@ -1,7 +1,5 @@
 import { DateUtil } from "@/app/common/DateUtil";
 
-
-
 export default function CalendarHeader(props: { dayListItems: Date[] }) {
     const dayList = props.dayListItems;
 

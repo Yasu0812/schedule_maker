@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import CalendarBox from "../components/calendar/CalendarBox";
 import TicketManagementBox from "../components/ticket/TicketManagementBox";
 import { TicketManager } from "../models/Ticket";
@@ -17,10 +17,10 @@ import MemberAddForm from "../components/member/MemberAddForm";
 
 export default function SceduleMaker() {
 
-    const [schdule, setSchedule] = useState<ScheduleStateManager>(ScheduleStateManager.ScheduleStateManagerFactory(new Date("2025-4-01"), new Date("2025-6-30")));
+    const [schdule, setSchedule] = useState<ScheduleStateManager>(ScheduleStateManager.ScheduleStateManagerFactory(new Date("2025-04-01"), new Date("2025-06-30")));
     const [moveTargetTaskId, setMoveTargetTaskId] = useState<UUID | undefined>();
 
-    const handleTicketManagerChange = (ticketManager: TicketManager) => {
+    const handleTicketManagerChange = useCallback((ticketManager: TicketManager) => {
         setSchedule((prevSchedule) => {
             return new ScheduleStateManager(
                 prevSchedule.calandarManager,
@@ -30,9 +30,9 @@ export default function SceduleMaker() {
                 prevSchedule.memberManager,
             );
         });
-    }
+    }, []);
 
-    const handleTaskManagerChange = (taskManager: TaskManager) => {
+    const handleTaskManagerChange = useCallback((taskManager: TaskManager) => {
         setSchedule((prevSchedule) => {
             return new ScheduleStateManager(
                 prevSchedule.calandarManager,
@@ -42,9 +42,9 @@ export default function SceduleMaker() {
                 prevSchedule.memberManager,
             );
         });
-    }
+    }, []);
 
-    const handlePlanedTaskManagerChange = (planedTaskManager: PlanedTask) => {
+    const handlePlanedTaskManagerChange = useCallback((planedTaskManager: PlanedTask) => {
         setSchedule((prevSchedule) => {
             const newCalendarManager = new GetCalendarService().fromPlanedDatas(
                 prevSchedule.calandarManager.firstDate,
@@ -63,9 +63,9 @@ export default function SceduleMaker() {
                 prevSchedule.memberManager,
             );
         });
-    }
+    }, [])
 
-    const handleMemberManagerChange = (memberManager: MemberManager) => {
+    const handleMemberManagerChange = useCallback((memberManager: MemberManager) => {
         setSchedule((prevSchedule) => {
             const newCalendarManager = new GetCalendarService().fromPlanedDatas(
                 prevSchedule.calandarManager.firstDate,
@@ -83,15 +83,15 @@ export default function SceduleMaker() {
                 memberManager,
             );
         });
-    }
+    }, [])
 
     useEffect(() => {
         localStorage.setItem('app-data', JSON.stringify(toSerializable(schdule)));
     }, [schdule]);
 
-    const handleMoveTargetTask = (taskId: UUID | undefined) => {
+    const handleMoveTargetTask = useCallback((taskId: UUID | undefined) => {
         setMoveTargetTaskId(taskId);
-    }
+    }, []);
 
     return (
         <div style={{ padding: '1rem', backgroundColor: '#cccccc' }}>

@@ -10,9 +10,8 @@ import DayColor from "../decorator/DayColor";
 
 export default function CalendarLine(
     props: {
-        rowIndex: number,
         dayListItems: Date[],
-        member: string| undefined,
+        member: string | undefined,
         memberId: UUID,
         lineTask: CalendarLineTask,
         taskManager: TaskManager,

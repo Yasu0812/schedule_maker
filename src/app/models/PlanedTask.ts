@@ -20,6 +20,10 @@ export class PlanedTask {
         return Array.from(this._assignedTasks.values());
     }
 
+    public get assignedTaskIds(): Set<UUID> {
+        return new Set(this._assignedTasks.values().map(assignedTask => assignedTask.id));
+    }
+
     public get(taskId: UUID | undefined): AssignedTask | undefined {
         if (!taskId) {
             return undefined;
@@ -53,7 +57,8 @@ export class PlanedTask {
     }
 
     public assignTask(task: { id: UUID, ticketId: UUID }, memberId: UUID, startDay: Date, duration: number): PlanedTask {
-        const assignedTask = new AssignedTask(generateUUID(), task.ticketId, task.id, memberId, startDay, duration);
+        const assignId = generateUUID()
+        const assignedTask = new AssignedTask(assignId, task.ticketId, task.id, memberId, startDay, duration);
         this._assignedTasks.set(task.id, assignedTask);
 
         return this;
