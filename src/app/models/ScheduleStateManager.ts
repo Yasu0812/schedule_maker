@@ -1,5 +1,6 @@
 import { UUID } from "../common/IdUtil";
 import { CalendarCellTask, CalendarCellTaskManager } from "./CalendarCellTask";
+import { MemberManager } from "./MemberManager";
 import { PlanedTask } from "./PlanedTask";
 import { Task } from "./Task";
 import { TaskManager } from "./TaskManager";
@@ -12,17 +13,20 @@ export class ScheduleStateManager {
     private _taskManager: TaskManager;
     private _ticketManager: TicketManager;
     private _planedTaskManager: PlanedTask;
+    private _memberManager: MemberManager;
 
     constructor(
         calandarManager: CalendarCellTaskManager,
         taskManager: TaskManager,
         ticketManager: TicketManager,
         planedTaskManager: PlanedTask,
+        memberManager: MemberManager,
     ) {
         this._calandarManager = calandarManager;
         this._taskManager = taskManager;
         this._ticketManager = ticketManager;
         this._planedTaskManager = planedTaskManager;
+        this._memberManager = memberManager;
     }
 
     get calandarManager(): CalendarCellTaskManager {
@@ -41,17 +45,24 @@ export class ScheduleStateManager {
         return this._planedTaskManager;
     }
 
-    public static ScheduleStateManagerFactory(): ScheduleStateManager {
-        const calandarManager = new CalendarCellTaskManager(["a", "b", "c", "d", "e", "f", "g"], new Map<string, Map<string, CalendarCellTask>>(), new Date("2025-04-01"), new Date("2025-06-30"));
+    get memberManager(): MemberManager {
+        return this._memberManager;
+    }
+
+    public static ScheduleStateManagerFactory(firstDate: Date, lastDate: Date): ScheduleStateManager {
+        const calandarManager = new CalendarCellTaskManager([], new Map<string, Map<string, CalendarCellTask>>(), firstDate, lastDate);
         const taskManager = new TaskManager(new Map<UUID, Task>());
         const ticketManager = new TicketManager([]);
         const planedTaskManager = new PlanedTask();
+        const memberManager = new MemberManager(new Map<UUID, string>());
 
         return new ScheduleStateManager(
             calandarManager,
             taskManager,
             ticketManager,
             planedTaskManager,
+            memberManager,
+
         );
     }
 

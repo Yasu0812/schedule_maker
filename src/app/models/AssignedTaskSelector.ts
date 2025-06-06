@@ -1,10 +1,10 @@
-import { UUID } from "crypto";
 import { AssignedTask } from "./AssignedTask";
 import { PlanedTask } from "./PlanedTask";
 import { TaskManager } from "./TaskManager";
 import { UnassignedTaskSelector } from "./UnassignedTaskSelector";
 import { PhaseEnum } from "../common/PhaseEnum";
 import { TaskResolver } from "./TaskResolver";
+import { UUID } from "../common/IdUtil";
 
 export class AssignedTaskSelector {
 

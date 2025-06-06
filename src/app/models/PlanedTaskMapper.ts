@@ -1,4 +1,5 @@
 import { DateUtil } from "../common/DateUtil";
+import { UUID } from "../common/IdUtil";
 import { CalendarCellTask } from "./CalendarCellTask";
 import { PlanedTask } from "./PlanedTask";
 import { TaskManager } from "./TaskManager";
@@ -9,7 +10,7 @@ export class PlanedTaskMapper {
     public toCalender(
         firstDate: Date,
         lastDate: Date,
-        memberList: string[],
+        memberIdList: UUID[],
         tikcketManager: TicketManager,
         taskManager: TaskManager,
         planedTasks: PlanedTask
@@ -18,9 +19,9 @@ export class PlanedTaskMapper {
         // value: CalendarCellTask
         const taskMap: Map<string, Map<string, CalendarCellTask>> = new Map<string, Map<string, CalendarCellTask>>();
 
-        for (const member of memberList) {
+        for (const memberId of memberIdList) {
             const taskMapForMember: Map<string, CalendarCellTask> = new Map<string, CalendarCellTask>();
-            const assignedTaskList = planedTasks.getAssignedFromMemberId(member);
+            const assignedTaskList = planedTasks.getAssignedFromMemberId(memberId);
 
             for (const assignedTask of assignedTaskList) {
                 const task = taskManager.getTask(assignedTask.taskId);
@@ -48,7 +49,7 @@ export class PlanedTaskMapper {
                     taskMapForMember.set(dateString, cellTask);
                 }
             }
-            taskMap.set(member, taskMapForMember);
+            taskMap.set(memberId, taskMapForMember);
         }
 
         return taskMap;

@@ -1,4 +1,3 @@
-import { UUID } from "crypto";
 import { orderedPhases, PhaseEnum } from "../common/PhaseEnum";
 import { PlanedTask } from "./PlanedTask";
 import { TaskManager } from "./TaskManager";
@@ -6,6 +5,7 @@ import { UnassignedTaskSelector } from "./UnassignedTaskSelector";
 import { PhaseStatus, PhaseStatusEnum } from "../common/PhaseStatusEnum";
 import { TicketAssignStatus, TicketAssignStatusEnum } from "../common/TicketAssignStatusEnum";
 import { PhaseCalculator } from "./PhaseCalculator";
+import { UUID } from "../common/IdUtil";
 
 export class PhaseStatusPolicy {
 

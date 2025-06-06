@@ -16,7 +16,7 @@ export default function TaskCell(
         setPlanedTaskManager: (planedTaskManager: PlanedTask) => void,
         moveTargetTaskId: UUID | undefined,
         handleMoveTargetTask: (taskId: UUID | undefined) => void,
-        member: string,
+        memberId: UUID,
         startDay: Date,
     }
 ) {
@@ -27,7 +27,7 @@ export default function TaskCell(
         setPlanedTaskManager,
         moveTargetTaskId,
         handleMoveTargetTask,
-        member,
+        memberId,
         startDay,
     } = props;
     const className = `calendar-task-cell`;
@@ -37,7 +37,7 @@ export default function TaskCell(
     const onMouseUp = () => {
         const planedTask = planedTaskManager.get(moveTargetTaskId);
 
-        if (planedTask?.memberId === member && (planedTask?.startDay <= startDay && planedTask?.endDay >= startDay)) {
+        if (planedTask?.memberId === memberId && (planedTask?.startDay <= startDay && planedTask?.endDay >= startDay)) {
             handleMoveTargetTask(moveTargetTaskId);
             return;
         }
@@ -45,7 +45,7 @@ export default function TaskCell(
         if (moveTargetTaskId) {
             const newPlanedTask = new TaskAssignmentService().assignTaskFromTaskId(
                 moveTargetTaskId,
-                member,
+                memberId,
                 startDay,
                 planedTaskManager,
                 taskManager,

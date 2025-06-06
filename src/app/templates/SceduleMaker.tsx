@@ -3,7 +3,6 @@ import CalendarBox from "../components/calendar/CalendarBox";
 import TicketManagementBox from "../components/ticket/TicketManagementBox";
 import { TicketManager } from "../models/Ticket";
 import { ScheduleStateManager } from "../models/ScheduleStateManager";
-import { CalendarCellTaskManager } from "../models/CalendarCellTask";
 import { TaskManager } from "../models/TaskManager";
 import TaskUnassignedBox from "../components/task/TaskUnassignedBox";
 import { PlanedTask } from "../models/PlanedTask";
@@ -12,12 +11,14 @@ import { UUID } from "../common/IdUtil";
 import { toSerializable } from "../common/JsonUtil";
 import { GhostJelly } from "../components/ghostTask/GhostJelly";
 import CardDesign from "../components/decorator/CardDesign";
+import TicketRegistrationBox from "../components/ticket/TicketRegistrationBox";
+import { MemberManager } from "../models/MemberManager";
+import MemberAddForm from "../components/member/MemberAddForm";
 
 export default function SceduleMaker() {
 
-    const [schdule, setSchedule] = useState<ScheduleStateManager>(ScheduleStateManager.ScheduleStateManagerFactory());
+    const [schdule, setSchedule] = useState<ScheduleStateManager>(ScheduleStateManager.ScheduleStateManagerFactory(new Date("2025-4-01"), new Date("2025-6-30")));
     const [moveTargetTaskId, setMoveTargetTaskId] = useState<UUID | undefined>();
-
 
     const handleTicketManagerChange = (ticketManager: TicketManager) => {
         setSchedule((prevSchedule) => {
@@ -26,18 +27,7 @@ export default function SceduleMaker() {
                 prevSchedule.taskManager,
                 ticketManager,
                 prevSchedule.planedTaskManager,
-            );
-        });
-    }
-
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const handleCalendarManagerChange = (calendarManager: CalendarCellTaskManager) => {
-        setSchedule((prevSchedule) => {
-            return new ScheduleStateManager(
-                calendarManager,
-                prevSchedule.taskManager,
-                prevSchedule.ticketManager,
-                prevSchedule.planedTaskManager,
+                prevSchedule.memberManager,
             );
         });
     }
@@ -49,6 +39,7 @@ export default function SceduleMaker() {
                 taskManager,
                 prevSchedule.ticketManager,
                 prevSchedule.planedTaskManager,
+                prevSchedule.memberManager,
             );
         });
     }
@@ -58,7 +49,7 @@ export default function SceduleMaker() {
             const newCalendarManager = new GetCalendarService().fromPlanedDatas(
                 prevSchedule.calandarManager.firstDate,
                 prevSchedule.calandarManager.lastDate,
-                [...prevSchedule.calandarManager.memberList],
+                prevSchedule.memberManager,
                 prevSchedule.ticketManager,
                 prevSchedule.taskManager,
                 planedTaskManager,
@@ -69,6 +60,27 @@ export default function SceduleMaker() {
                 prevSchedule.taskManager,
                 prevSchedule.ticketManager,
                 planedTaskManager,
+                prevSchedule.memberManager,
+            );
+        });
+    }
+
+    const handleMemberManagerChange = (memberManager: MemberManager) => {
+        setSchedule((prevSchedule) => {
+            const newCalendarManager = new GetCalendarService().fromPlanedDatas(
+                prevSchedule.calandarManager.firstDate,
+                prevSchedule.calandarManager.lastDate,
+                memberManager,
+                prevSchedule.ticketManager,
+                prevSchedule.taskManager,
+                prevSchedule.planedTaskManager,
+            );
+            return new ScheduleStateManager(
+                newCalendarManager,
+                prevSchedule.taskManager,
+                prevSchedule.ticketManager,
+                prevSchedule.planedTaskManager,
+                memberManager,
             );
         });
     }
@@ -87,12 +99,15 @@ export default function SceduleMaker() {
                 <div style={{ display: 'flex', overflow: 'scroll' }}>
                     <CalendarBox
                         calendarManager={schdule.calandarManager}
+                        memberManager={schdule.memberManager}
                         taskManager={schdule.taskManager}
                         planedTaskManager={schdule.planedTaskManager}
                         setPlanedTaskManager={handlePlanedTaskManagerChange}
                         moveTargetTaskId={moveTargetTaskId}
                         handleMoveTargetTask={handleMoveTargetTask}
-                    />
+                    >
+                        <MemberAddForm memberManager={schdule.memberManager} handleMemberManagerChange={handleMemberManagerChange} />
+                    </CalendarBox>
 
                 </div>
             </CardDesign>
@@ -123,6 +138,7 @@ export default function SceduleMaker() {
 
             <TaskUnassignedBox
                 taskManager={schdule.taskManager}
+                memberids={schdule.memberManager.ids}
                 planedTaskManager={schdule.planedTaskManager}
                 calendarManager={schdule.calandarManager}
                 setTaskManager={handleTaskManagerChange}
@@ -130,6 +146,15 @@ export default function SceduleMaker() {
                 handleMoveTargetTask={handleMoveTargetTask}
                 setPlanedTaskManager={handlePlanedTaskManagerChange}
             />
+
+            <CardDesign>
+                <TicketRegistrationBox
+                    ticketManager={schdule.ticketManager}
+                    taskManager={schdule.taskManager}
+                    setTicketManager={handleTicketManagerChange}
+                    setTaskManager={handleTaskManagerChange}
+                />
+            </CardDesign>
 
             <TicketManagementBox
                 ticketManager={schdule.ticketManager}

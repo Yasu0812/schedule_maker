@@ -25,7 +25,7 @@ export default class TaskAssignablePolicy {
      */
     public isTaskAssignable(
         taskId: UUID,
-        memberId: string,
+        memberId: UUID,
         startDay: Date,
         planedTask: PlanedTask,
         taskManager: TaskManager,
@@ -72,7 +72,7 @@ export default class TaskAssignablePolicy {
      */
     public isTaskAssignableForce(
         taskId: UUID,
-        memberId: string,
+        memberId: UUID,
         startDay: Date,
         planedTask: PlanedTask,
         taskManager: TaskManager

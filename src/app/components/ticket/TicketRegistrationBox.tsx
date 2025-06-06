@@ -1,9 +1,29 @@
 import { orderedPhases, phaseNameMap } from "@/app/common/PhaseEnum";
+import { TaskManager } from "@/app/models/TaskManager";
+import { Ticket, TicketManager } from "@/app/models/Ticket";
 import { TicketMaterial } from "@/app/types/TicketType";
 
 export default function TicketRegistrationBox(props: {
-    addTicket: (ticketInfo: TicketMaterial) => void;
+
+    ticketManager: TicketManager;
+    setTicketManager: (ticketManager: TicketManager) => void;
+    taskManager: TaskManager;
+    setTaskManager: (taskManager: TaskManager) => void;
 }) {
+
+    const { ticketManager, setTicketManager, taskManager, setTaskManager } = props;
+
+
+    const addTicket = (
+        ticketInfo: TicketMaterial
+    ) => {
+        const newTicket = Ticket.TicketFactory(ticketInfo);
+        const newTicketManager = ticketManager.addTicket(newTicket);
+        const newTaskManager = taskManager.addTaskFromTicket(newTicket);
+
+        setTicketManager(newTicketManager);
+        setTaskManager(newTaskManager);
+    }
 
     const handleCreateTicket = (formData: FormData) => {
         const title = formData.get("title")?.toString();
@@ -26,7 +46,7 @@ export default function TicketRegistrationBox(props: {
             description: description,
             phases: phases,
         };
-        props.addTicket(ticket);
+        addTicket(ticket);
     };
 
     return (

@@ -47,12 +47,12 @@ export class PlanedTask {
         return assignedTask;
     }
 
-    public getAssignedFromMemberId(memberId: string): AssignedTask[] {
+    public getAssignedFromMemberId(memberId: UUID): AssignedTask[] {
         const assignedTasks = this._list.filter(assignedTask => assignedTask.memberId === memberId);
         return assignedTasks;
     }
 
-    public assignTask(task: { id: UUID, ticketId: UUID }, memberId: string, startDay: Date, duration: number): PlanedTask {
+    public assignTask(task: { id: UUID, ticketId: UUID }, memberId: UUID, startDay: Date, duration: number): PlanedTask {
         const assignedTask = new AssignedTask(generateUUID(), task.ticketId, task.id, memberId, startDay, duration);
         this._assignedTasks.set(task.id, assignedTask);
 
@@ -102,7 +102,7 @@ export class PlanedTask {
      * @param duration 
      * @returns 
      */
-    public isFree(memberId: string, planTaskId: UUID, startDay: Date, duration: number): boolean {
+    public isFree(memberId: UUID, planTaskId: UUID, startDay: Date, duration: number): boolean {
         const endDay = DateUtil.getEndDateNoHoliday(startDay, duration - 1);
 
         return this._list.every(task => {

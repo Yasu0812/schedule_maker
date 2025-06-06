@@ -8,6 +8,7 @@ import { CalendarCellTaskManager } from "@/app/models/CalendarCellTask";
 
 export default function TaskUnassignedBox(props: {
     taskManager: TaskManager,
+    memberids: UUID[],
     planedTaskManager: PlanedTask,
     calendarManager: CalendarCellTaskManager,
     setTaskManager: (taskManager: TaskManager) => void,
@@ -16,7 +17,7 @@ export default function TaskUnassignedBox(props: {
     setPlanedTaskManager: (planedTaskManager: PlanedTask) => void,
 }) {
 
-    const { taskManager, planedTaskManager, setTaskManager, moveTargetTaskId, handleMoveTargetTask, calendarManager, setPlanedTaskManager } = props;
+    const { taskManager, memberids, planedTaskManager, setTaskManager, moveTargetTaskId, handleMoveTargetTask, calendarManager, setPlanedTaskManager } = props;
 
     const unassignedTasks = new UnassignedTaskService().getUnassignedTasks(
         taskManager,
@@ -32,6 +33,7 @@ export default function TaskUnassignedBox(props: {
                 <UnassignedTasks
                     unassignedTasks={unassignedTasks}
                     taskManager={taskManager}
+                    memberids={memberids}
                     moveTargetTaskId={moveTargetTaskId}
                     planedTaskManager={planedTaskManager}
                     calandarManager={calendarManager}

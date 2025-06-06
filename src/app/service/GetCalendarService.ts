@@ -1,4 +1,6 @@
+import { UUID } from "crypto";
 import { CalendarCellTask, CalendarCellTaskManager } from "../models/CalendarCellTask";
+import { MemberManager } from "../models/MemberManager";
 import { PlanedTask } from "../models/PlanedTask";
 import { PlanedTaskMapper } from "../models/PlanedTaskMapper";
 import { TaskManager } from "../models/TaskManager";
@@ -7,18 +9,18 @@ import { TicketManager } from "../models/Ticket";
 export class GetCalendarService {
 
     public getCalendar(
-        memberList: string[],
+        memberIds: UUID[],
         taskMap: Map<string, Map<string, CalendarCellTask>>,
         firstDate: Date,
         lastDate: Date,
     ): CalendarCellTaskManager {
-        return new CalendarCellTaskManager(memberList, taskMap, firstDate, lastDate);
+        return new CalendarCellTaskManager(memberIds, taskMap, firstDate, lastDate);
     }
 
     public fromPlanedDatas(
         firstDate: Date,
         lastDate: Date,
-        memberList: string[],
+        memberManager: MemberManager,
         tikcketManager: TicketManager,
         taskManager: TaskManager,
         planedTasks: PlanedTask,
@@ -27,13 +29,13 @@ export class GetCalendarService {
         const planedTaskMapper = new PlanedTaskMapper().toCalender(
             firstDate,
             lastDate,
-            memberList,
+            memberManager.ids,
             tikcketManager,
             taskManager,
             planedTasks,
         );
 
-        return this.getCalendar(memberList, planedTaskMapper, firstDate, lastDate);
+        return this.getCalendar(memberManager.ids, planedTaskMapper, firstDate, lastDate);
 
     }
 }   

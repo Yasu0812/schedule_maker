@@ -4,20 +4,24 @@ import { CalendarCellTaskManager } from "@/app/models/CalendarCellTask";
 import { PlanedTask } from "@/app/models/PlanedTask";
 import { UUID } from "@/app/common/IdUtil";
 import { TaskManager } from "@/app/models/TaskManager";
+import { MemberManager } from "@/app/models/MemberManager";
 
 export default function CalendarBox(
     props: {
         calendarManager: CalendarCellTaskManager,
+        memberManager: MemberManager,
         taskManager: TaskManager,
         planedTaskManager: PlanedTask,
         setPlanedTaskManager: (planedTaskManager: PlanedTask) => void,
         moveTargetTaskId: UUID | undefined,
         handleMoveTargetTask: (taskId: UUID | undefined) => void,
+        children?: React.ReactNode,
     }
 ) {
 
     const {
         calendarManager,
+        memberManager,
         taskManager,
         planedTaskManager,
         setPlanedTaskManager,
@@ -26,7 +30,6 @@ export default function CalendarBox(
     } = props;
     const dayList = calendarManager.dayList;
 
-    const memberList = calendarManager.memberList;
     const allTaskMap = calendarManager.getAllCalendarLineMap();
 
     return (
@@ -38,7 +41,7 @@ export default function CalendarBox(
                 <tbody>
                     <CalendarLineBox
                         dayListItems={dayList}
-                        memberList={memberList}
+                        memberManager={memberManager}
                         allTaskMap={allTaskMap}
                         taskManager={taskManager}
                         planedTaskManager={planedTaskManager}
@@ -48,8 +51,8 @@ export default function CalendarBox(
 
                     />
                 </tbody>
-
             </table>
+            {props.children}
         </div>
     );
 }

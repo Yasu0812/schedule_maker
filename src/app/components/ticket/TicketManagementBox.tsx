@@ -1,8 +1,5 @@
-import { Ticket, TicketManager } from "@/app/models/Ticket";
-import { TicketMaterial } from "@/app/types/TicketType";
-import TicketRegistrationBox from "./TicketRegistrationBox";
+import { TicketManager } from "@/app/models/Ticket";
 import { TaskManager } from "@/app/models/TaskManager";
-import CardDesign from "../decorator/CardDesign";
 import { TicketUpdateService } from "@/app/service/TicketUpdateService";
 import { UUID } from "@/app/common/IdUtil";
 import { PhaseEnum } from "@/app/common/PhaseEnum";
@@ -20,17 +17,6 @@ export default function TicketManagementBox(props: {
 }) {
 
     const { ticketManager, taskManager, planedTask, setTicketManager, setTaskManager, setPlanedTask } = props;
-
-    const addTicket = (
-        ticketInfo: TicketMaterial
-    ) => {
-        const newTicket = Ticket.TicketFactory(ticketInfo);
-        const newTicketManager = ticketManager.addTicket(newTicket);
-        const newTaskManager = taskManager.addTaskFromTicket(newTicket);
-
-        setTicketManager(newTicketManager);
-        setTaskManager(newTaskManager);
-    }
 
     const changeHandler = (
         ticketId: UUID,
@@ -59,19 +45,12 @@ export default function TicketManagementBox(props: {
 
     return (
         <div className="flex gap-4">
-            <div className="max-w-xl">
-                <CardDesign>
-                    <TicketRegistrationBox addTicket={addTicket} />
-                </CardDesign>
-            </div>
-            <div className="max-w-full">
-                <TicketInfoBox
-                    ticketManager={ticketManager}
-                    taskManager={taskManager}
-                    planedTask={planedTask}
-                    changeHandler={changeHandler}
-                    deleteHandler={deleteHandler} />
-            </div>
+            <TicketInfoBox
+                ticketManager={ticketManager}
+                taskManager={taskManager}
+                planedTask={planedTask}
+                changeHandler={changeHandler}
+                deleteHandler={deleteHandler} />
         </div>
     );
 }

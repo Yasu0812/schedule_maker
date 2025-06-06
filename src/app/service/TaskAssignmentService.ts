@@ -31,7 +31,7 @@ export class TaskAssignmentService {
 
     public assignTaskFromTaskId(
         taskId: UUID,
-        memberId: string,
+        memberId: UUID,
         startDay: Date,
         planedTask: PlanedTask,
         taskManager: TaskManager,
@@ -62,6 +62,7 @@ export class TaskAssignmentService {
         planedTask: PlanedTask,
         taskManager: TaskManager,
         calandarManager: CalendarCellTaskManager,
+        memberIds: UUID[],
     ): PlanedTask {
         const task = taskManager.getTask(taskId);
         if (!task) {
@@ -96,7 +97,7 @@ export class TaskAssignmentService {
 
         let currentDay = fastestAssignableDay;
         while (currentDay < DateUtil.getAddDate(calandarManager.lastDate, -task.duration)) {
-            for (const memberId of calandarManager.memberList) {
+            for (const memberId of memberIds) {
                 const isTaskAssignable = this._taskAssignablePolicy.isTaskAssignableForce(
                     taskId,
                     memberId,

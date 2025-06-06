@@ -1,6 +1,6 @@
 import { DateUtil } from "../common/DateUtil";
-import { generateUUID, UUID } from "../common/IdUtil";
-import { Phase, PhaseEnum } from "../common/PhaseEnum";
+import { UUID } from "../common/IdUtil";
+import { PhaseEnum } from "../common/PhaseEnum";
 
 /**
  * Calendarのセルに表示するタスクを表すクラス。
@@ -27,11 +27,11 @@ export class CalendarLineTask {
     /**
      * コンストラクタ。
      * 
-     * @param memberName メンバーの名前を表す文字列。
+     * @param memberId メンバーのIDを表す文字列。
      * @param taskMap タスクのマップ。キーはYYYY-MM-DD、値は `CalendarCellTask` オブジェクト。
      */
     constructor(
-        public readonly memberName: string,
+        public readonly memberId: string,
         public taskMap: Map<string, CalendarCellTask>,
     ) { }
 
@@ -55,60 +55,31 @@ export class CalendarLineTask {
  */
 export class CalendarCellTaskManager {
 
-    private _memberTaskMap: Map<string, CalendarLineTask> = new Map<string, CalendarLineTask>();
-    private _memberList: readonly string[];
+    private _memberTaskMap: Map<UUID, CalendarLineTask> = new Map<UUID, CalendarLineTask>();
     public readonly firstDate: Date;
     public readonly lastDate: Date;
     public readonly dayList: Date[];
 
     constructor(
-        memberList: string[],
+        memberIds: UUID[],
         taskMap: Map<string, Map<string, CalendarCellTask>>,
         firstDate: Date,
         lastDate: Date,
     ) {
-        this._memberList = memberList;
-        this._memberTaskMap = new Map<string, CalendarLineTask>();
+        this._memberTaskMap = new Map<UUID, CalendarLineTask>();
         this.firstDate = firstDate;
         this.lastDate = lastDate;
         this.dayList = DateUtil.generateDayList(DateUtil.formatDate(firstDate), DateUtil.formatDate(lastDate));
 
         // メンバーリストを元に、メンバーごとのタスクマップを初期化する
-        for (const member of memberList) {
-            const taskMapForMember = taskMap.get(member) || new Map<string, CalendarCellTask>();
-            this._memberTaskMap.set(member, new CalendarLineTask(member, taskMapForMember));
+        for (const memberId of memberIds) {
+            const taskMapForMember = taskMap.get(memberId) || new Map<string, CalendarCellTask>();
+            this._memberTaskMap.set(memberId, new CalendarLineTask(memberId, taskMapForMember));
         }
     }
 
-    get memberList(): readonly string[] {
-        return this._memberList;
-    }
-
-    static createMockData(): CalendarCellTaskManager {
-        const memberList = ["Alice", "Bob", "Charlie", "David", "Eve"];
-        const taskMap = new Map<string, Map<string, CalendarCellTask>>();
-        let j = 0;
-
-        // メンバーごとのタスクを初期化
-        for (const member of memberList) {
-            const taskMapForMember = new Map<string, CalendarCellTask>();
-            for (let i = 1; i <= 20; i++) {
-                const date = `2025-04-${i < 10 ? '0' + i : i}`;
-
-                const phase = i % 2 === 0 ? Phase.DEVELOPMENT : Phase.UNIT_TEST;
-                const task = new CalendarCellTask(`Task ${i}-${j}`, generateUUID(), date, phase, `Task ${i} description`);
-                taskMapForMember.set(date, task);
-
-            }
-            j++;
-            taskMap.set(member, taskMapForMember);
-        }
-
-        return new CalendarCellTaskManager(memberList, taskMap, new Date("2025-04-01"), new Date("2025-04-20"));
-    }
-
-    getCalendarLine(member: string): CalendarLineTask {
-        return this._memberTaskMap.get(member) || new CalendarLineTask(member, new Map<string, CalendarCellTask>());
+    getCalendarLine(memberId: UUID): CalendarLineTask {
+        return this._memberTaskMap.get(memberId) || new CalendarLineTask(memberId, new Map<string, CalendarCellTask>());
     }
 
     getAllCalendarLineMap(): Map<string, CalendarLineTask> {

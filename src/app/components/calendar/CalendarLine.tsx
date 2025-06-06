@@ -12,7 +12,8 @@ export default function CalendarLine(
     props: {
         rowIndex: number,
         dayListItems: Date[],
-        member: string,
+        member: string| undefined,
+        memberId: UUID,
         lineTask: CalendarLineTask,
         taskManager: TaskManager,
         planedTaskManager: PlanedTask,
@@ -24,6 +25,7 @@ export default function CalendarLine(
     const dayList = props.dayListItems;
     const lineTask = props.lineTask;
     const member = props.member;
+    const memberId = props.memberId;
     const taskManager = props.taskManager;
     const handleMoveTargetTask = props.handleMoveTargetTask;
     const planedTaskManager = props.planedTaskManager;
@@ -46,7 +48,7 @@ export default function CalendarLine(
                             setPlanedTaskManager={setPlanedTaskManager}
                             moveTargetTaskId={moveTargetTaskId}
                             handleMoveTargetTask={handleMoveTargetTask}
-                            member={member}
+                            memberId={memberId}
                             startDay={day}
                         />}
                     </CalendarCell>

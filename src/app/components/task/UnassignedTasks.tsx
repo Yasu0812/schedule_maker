@@ -1,16 +1,17 @@
 import { Task } from "@/app/models/Task";
 import { TaskMergeSplitService } from "@/app/service/TaskMergeSplitService";
-import { UUID } from "crypto";
 import { TaskManager } from "@/app/models/TaskManager";
 import { phaseCompare } from "@/app/common/PhaseEnum";
 import TaskBeanDiv from "../atom/TaskBeanDiv";
 import { TaskAssignmentService } from "@/app/service/TaskAssignmentService";
 import { PlanedTask } from "@/app/models/PlanedTask";
 import { CalendarCellTaskManager } from "@/app/models/CalendarCellTask";
+import { UUID } from "@/app/common/IdUtil";
 
 export default function UnassignedTasks(
     props: {
         unassignedTasks: Task[],
+        memberids: UUID[],
         taskManager: TaskManager,
         moveTargetTaskId: UUID | undefined,
         planedTaskManager: PlanedTask,
@@ -20,7 +21,9 @@ export default function UnassignedTasks(
         setPlanedTaskManager: (planedTaskManager: PlanedTask) => void,
     }
 ) {
-    const { unassignedTasks,
+    const { 
+        unassignedTasks,
+        memberids,
         taskManager,
         moveTargetTaskId,
         setTaskManager,
@@ -78,7 +81,7 @@ export default function UnassignedTasks(
 
     const onContextmenu = (taskId: UUID) => {
 
-        const newPlanedTask = new TaskAssignmentService().autoAssignTask(taskId, planedTaskManager, taskManager, calandarManager);
+        const newPlanedTask = new TaskAssignmentService().autoAssignTask(taskId, planedTaskManager, taskManager, calandarManager, memberids);
 
         setPlanedTaskManager(newPlanedTask);
         handleMoveTargetTask(undefined);
