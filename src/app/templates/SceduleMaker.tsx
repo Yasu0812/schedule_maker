@@ -94,7 +94,7 @@ export default function SceduleMaker() {
     }, []);
 
     return (
-        <div style={{ padding: '1rem', backgroundColor: '#cccccc' }}>
+        <div style={{ padding: '0.5rem', backgroundColor: '#cccccc' }}>
             <CardDesign>
                 <div style={{ display: 'flex', overflow: 'scroll' }}>
                     <CalendarBox
@@ -147,6 +147,15 @@ export default function SceduleMaker() {
                 setPlanedTaskManager={handlePlanedTaskManagerChange}
             />
 
+            <TicketManagementBox
+                ticketManager={schdule.ticketManager}
+                taskManager={schdule.taskManager}
+                planedTask={schdule.planedTaskManager}
+                setTicketManager={handleTicketManagerChange}
+                setTaskManager={handleTaskManagerChange}
+                setPlanedTask={handlePlanedTaskManagerChange}
+            />
+
             <CardDesign>
                 <TicketRegistrationBox
                     ticketManager={schdule.ticketManager}
@@ -156,14 +165,7 @@ export default function SceduleMaker() {
                 />
             </CardDesign>
 
-            <TicketManagementBox
-                ticketManager={schdule.ticketManager}
-                taskManager={schdule.taskManager}
-                planedTask={schdule.planedTaskManager}
-                setTicketManager={handleTicketManagerChange}
-                setTaskManager={handleTaskManagerChange}
-                setPlanedTask={handlePlanedTaskManagerChange}
-            />
+
         </div>
 
     );

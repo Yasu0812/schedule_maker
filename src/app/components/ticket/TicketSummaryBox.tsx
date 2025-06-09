@@ -29,9 +29,9 @@ export default function TicketSummaryBox(props: {
                 <table>
                     <thead>
                         <tr>
-                            <th className="sticky text-left top-0 bg-white z-10">チケット</th>
+                            <th className="sticky text-left top-0 bg-white z-5">チケット</th>
                             {orderedPhases.map((phase) => (
-                                <th key={phase} className="sticky  top-0 z-10"><JellyBean width={80} height={30} phase={phase} selected={false}>{phaseNameShortMap[phase]}</JellyBean></th>
+                                <th key={phase} className="sticky  top-0 z-5"><JellyBean width={80} height={30} phase={phase} selected={false}>{phaseNameShortMap[phase]}</JellyBean></th>
                             ))}
                         </tr>
                     </thead>

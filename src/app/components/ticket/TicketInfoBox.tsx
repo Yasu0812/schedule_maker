@@ -24,6 +24,10 @@ export default function TicketInfoBox(props: {
         setSelectedTicketId(ticketId);
     }
 
+    const handleCancelSelect = () => {
+        setSelectedTicketId(undefined);
+    }
+
     const ticketBox = () => {
         if (!selectedTicketId) {
             return null;
@@ -32,7 +36,14 @@ export default function TicketInfoBox(props: {
         if (!ticket) {
             return null;
         }
-        return <TicketBox key={ticket.id} tikcet={ticket} changeHandler={changeHandler} deleteHandler={() => deleteHandler(ticket.id)} />;
+        return <TicketBox
+            key={ticket.id}
+            tikcet={ticket}
+            changeHandler={changeHandler}
+            deleteHandler={() => deleteHandler(ticket.id)}
+            cancelHander={handleCancelSelect}
+
+        />;
     }
 
     return (
@@ -48,9 +59,15 @@ export default function TicketInfoBox(props: {
                     />
                 </CardDesign>
             </div>
-            <CardDesign>
-                {ticketBox()}
-            </CardDesign>
+            <div className="relative">
+                {selectedTicketId &&
+                    <div className="absolute z-10">
+                        <CardDesign>
+                            {ticketBox()}
+                        </CardDesign>
+                    </div>
+                }
+            </div>
         </div>
     );
 }
