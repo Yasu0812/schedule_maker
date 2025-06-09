@@ -62,7 +62,7 @@ export default function TicketInfoBox(props: {
             <div className="relative">
                 {selectedTicketId &&
                     <div className="absolute z-10">
-                        <CardDesign>
+                        <CardDesign popup={true}>
                             {ticketBox()}
                         </CardDesign>
                     </div>

@@ -1,11 +1,20 @@
 
 export default function CardDesign(
     props: {
-        children: React.ReactNode;
+        popup?: boolean;
+        children?: React.ReactNode;
     }
 ) {
+
+    const { popup = false } = props;
+
+    const popupClass = popup ? "shadow-xl/30 ring-2" : "shadow-lg";
+
+    const className = `w-full h-full bg-white rounded-xl p-6 space-y-6 font-sans ${popupClass}`;
+
+
     return (
-        <div className="mx-auto bg-white shadow-lg rounded-xl p-6 space-y-6 font-sans">
+        <div className={className}>
             {props.children}
         </div>
     );

@@ -94,23 +94,25 @@ export default function SceduleMaker() {
     }, []);
 
     return (
-        <div style={{ padding: '0.5rem', backgroundColor: '#cccccc' }}>
-            <CardDesign>
-                <div style={{ display: 'flex', overflow: 'scroll' }}>
-                    <CalendarBox
-                        calendarManager={schdule.calandarManager}
-                        memberManager={schdule.memberManager}
-                        taskManager={schdule.taskManager}
-                        planedTaskManager={schdule.planedTaskManager}
-                        setPlanedTaskManager={handlePlanedTaskManagerChange}
-                        moveTargetTaskId={moveTargetTaskId}
-                        handleMoveTargetTask={handleMoveTargetTask}
-                    >
-                        <MemberAddForm memberManager={schdule.memberManager} handleMemberManagerChange={handleMemberManagerChange} />
-                    </CalendarBox>
+        <div className="" style={{ padding: '0.5rem', backgroundColor: '#cccccc' }}>
+            <div style={{ width: '100%' }}>
+                <CardDesign>
+                    <div style={{ display: 'flex', overflow: 'scroll' }}>
+                        <CalendarBox
+                            calendarManager={schdule.calandarManager}
+                            memberManager={schdule.memberManager}
+                            taskManager={schdule.taskManager}
+                            planedTaskManager={schdule.planedTaskManager}
+                            setPlanedTaskManager={handlePlanedTaskManagerChange}
+                            moveTargetTaskId={moveTargetTaskId}
+                            handleMoveTargetTask={handleMoveTargetTask}
+                        >
+                            <MemberAddForm memberManager={schdule.memberManager} handleMemberManagerChange={handleMemberManagerChange} />
+                        </CalendarBox>
 
-                </div>
-            </CardDesign>
+                    </div>
+                </CardDesign>
+            </div>
             {process.env.NODE_ENV === "development" && (
                 <div style={{
                     position: 'fixed',
@@ -136,34 +138,38 @@ export default function SceduleMaker() {
 
             <GhostJelly taskId={moveTargetTaskId} taskManager={schdule.taskManager} />
 
-            <TaskUnassignedBox
-                taskManager={schdule.taskManager}
-                memberids={schdule.memberManager.ids}
-                planedTaskManager={schdule.planedTaskManager}
-                calendarManager={schdule.calandarManager}
-                setTaskManager={handleTaskManagerChange}
-                moveTargetTaskId={moveTargetTaskId}
-                handleMoveTargetTask={handleMoveTargetTask}
-                setPlanedTaskManager={handlePlanedTaskManagerChange}
-            />
-
-            <TicketManagementBox
-                ticketManager={schdule.ticketManager}
-                taskManager={schdule.taskManager}
-                planedTask={schdule.planedTaskManager}
-                setTicketManager={handleTicketManagerChange}
-                setTaskManager={handleTaskManagerChange}
-                setPlanedTask={handlePlanedTaskManagerChange}
-            />
-
-            <CardDesign>
-                <TicketRegistrationBox
+            <div className="w-2/3">
+                <TaskUnassignedBox
+                    taskManager={schdule.taskManager}
+                    memberids={schdule.memberManager.ids}
+                    planedTaskManager={schdule.planedTaskManager}
+                    calendarManager={schdule.calandarManager}
+                    setTaskManager={handleTaskManagerChange}
+                    moveTargetTaskId={moveTargetTaskId}
+                    handleMoveTargetTask={handleMoveTargetTask}
+                    setPlanedTaskManager={handlePlanedTaskManagerChange}
+                />
+            </div>
+            <div className="w-1/2">
+                <TicketManagementBox
                     ticketManager={schdule.ticketManager}
                     taskManager={schdule.taskManager}
+                    planedTask={schdule.planedTaskManager}
                     setTicketManager={handleTicketManagerChange}
                     setTaskManager={handleTaskManagerChange}
+                    setPlanedTask={handlePlanedTaskManagerChange}
                 />
-            </CardDesign>
+            </div>
+            <div className="w-1/3">
+                <CardDesign>
+                    <TicketRegistrationBox
+                        ticketManager={schdule.ticketManager}
+                        taskManager={schdule.taskManager}
+                        setTicketManager={handleTicketManagerChange}
+                        setTaskManager={handleTaskManagerChange}
+                    />
+                </CardDesign>
+            </div>
 
 
         </div>
