@@ -95,58 +95,59 @@ export class PhaseCalculator {
         taskManager: TaskManager,
         planedTask: PlanedTask
     ): Map<PhaseEnum, Date | undefined> {
-
-        const ticketPhaseStartDayAndEndDay = this.ticketPhaseStartDayAndEndDay(
-            ticketId,
-            taskManager,
-            planedTask
-        )
-
+        console.log("ticketPhasesEndDays called", ticketId, taskManager, planedTask);
         const phaseEndDays: Map<PhaseEnum, Date | undefined> = new Map();
-        let trackingDate: Date | undefined = DateUtil.ifUndefinedGetMinDate(); // 最小値を設定
-        for (const phase of orderedPhases) {
-            if (!trackingDate) {
-                // 前のフェーズが未定ならこのフェーズも未定
-                phaseEndDays.set(phase, undefined);
-                continue;
-            }
 
-            // 未割り当てのタスクが存在するかどうかを確認
-            const isExistUnassigedTask = this._unassignedTaskSelector.getUnassignedTaskFromTicketIdAndPhase(
-                ticketId,
-                phase,
-                taskManager,
-                planedTask
-            ).length > 0;
+        // const ticketPhaseStartDayAndEndDay = this.ticketPhaseStartDayAndEndDay(
+        //     ticketId,
+        //     taskManager,
+        //     planedTask
+        // )
 
-            if (isExistUnassigedTask) {
-                // 未割り当てのタスクが存在する場合、終了日は未定
-                trackingDate = undefined;
-                phaseEndDays.set(phase, undefined);
-                continue;
-            }
+        // let trackingDate: Date | undefined = DateUtil.ifUndefinedGetMinDate(); // 最小値を設定
+        // for (const phase of orderedPhases) {
+        //     if (!trackingDate) {
+        //         // 前のフェーズが未定ならこのフェーズも未定
+        //         phaseEndDays.set(phase, undefined);
+        //         continue;
+        //     }
 
-            const assignedDatesForPhase = ticketPhaseStartDayAndEndDay.get(phase);
-            if (!assignedDatesForPhase) {
-                // フェーズに割り当てられたタスクがない場合は追跡日を更新しない
-                phaseEndDays.set(phase, trackingDate);
-                continue;
-            }
+        //     // 未割り当てのタスクが存在するかどうかを確認
+        //     const isExistUnassigedTask = this._unassignedTaskSelector.getUnassignedTaskFromTicketIdAndPhase(
+        //         ticketId,
+        //         phase,
+        //         taskManager,
+        //         planedTask
+        //     ).length > 0;
 
-            const isOveredStartDay = trackingDate >= assignedDatesForPhase.startDay;
-            if (isOveredStartDay) {
-                // 前のフェーズの終了日が現在のフェーズの開始日を超えている場合、終了日は未定
-                trackingDate = undefined;
-                phaseEndDays.set(phase, undefined);
-                continue;
-            }
+        //     if (isExistUnassigedTask) {
+        //         // 未割り当てのタスクが存在する場合、終了日は未定
+        //         trackingDate = undefined;
+        //         phaseEndDays.set(phase, undefined);
+        //         continue;
+        //     }
 
-            trackingDate = assignedDatesForPhase ? assignedDatesForPhase.endDay : trackingDate;
+        //     const assignedDatesForPhase = ticketPhaseStartDayAndEndDay.get(phase);
+        //     if (!assignedDatesForPhase) {
+        //         // フェーズに割り当てられたタスクがない場合は追跡日を更新しない
+        //         phaseEndDays.set(phase, trackingDate);
+        //         continue;
+        //     }
+
+        //     const isOveredStartDay = trackingDate >= assignedDatesForPhase.startDay;
+        //     if (isOveredStartDay) {
+        //         // 前のフェーズの終了日が現在のフェーズの開始日を超えている場合、終了日は未定
+        //         trackingDate = undefined;
+        //         phaseEndDays.set(phase, undefined);
+        //         continue;
+        //     }
+
+        //     trackingDate = assignedDatesForPhase ? assignedDatesForPhase.endDay : trackingDate;
 
 
 
-            phaseEndDays.set(phase, new Date(trackingDate));
-        }
+        //     phaseEndDays.set(phase, new Date(trackingDate));
+        // }
 
         return phaseEndDays;
 

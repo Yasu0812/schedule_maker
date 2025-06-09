@@ -52,7 +52,7 @@ export default function CalendarLine(
                         />}
                     </CalendarCell>
                 </DayColor>
-            </td >
+            </td>
         );
     });
 

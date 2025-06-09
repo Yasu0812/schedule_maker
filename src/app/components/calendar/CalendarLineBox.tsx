@@ -22,8 +22,9 @@ export default function CalendarLineBox(
     const memberManager = props.memberManager;
     const handleMoveTargetTask = props.handleMoveTargetTask;
     const moveTargetTaskId = props.moveTargetTaskId;
+    const memberIds = memberManager.ids;
 
-    const calendarLineItems = memberManager.ids.map((memberId) => {
+    const calendarLineItems = memberIds.map((memberId) => {
         const taskMap = props.allTaskMap.get(memberId) || new CalendarLineTask(memberId, new Map<string, CalendarCellTask>());
         const member = memberManager.getMember(memberId);
         return (
