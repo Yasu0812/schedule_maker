@@ -1,4 +1,5 @@
 import { MemberManager } from "@/app/models/MemberManager";
+import { JellyBean } from "../decorator/JellyBean";
 
 
 export default function MemberAddForm(props: {
@@ -14,9 +15,12 @@ export default function MemberAddForm(props: {
     };
 
     return (
-        <form action={handleAddMember} className="calendar-box-form">
-            <button type="submit" className="btn btn-primary">[+]</button>
-
+        <form action={handleAddMember} className="calendar-box-form ">
+            <JellyBean width={25} height={25} phase={""} selected={false}>
+                <button type="submit" className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                    +
+                </button>
+            </JellyBean>
         </form>
     );
 }
