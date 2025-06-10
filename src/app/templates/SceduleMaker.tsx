@@ -94,7 +94,7 @@ export default function SceduleMaker() {
     }, []);
 
     return (
-        <div className="" style={{ padding: '0.5rem', backgroundColor: '#cccccc' }}>
+        <div className="flex flex-wrap" style={{ padding: '0.5rem', backgroundColor: '#cccccc' }}>
             <div style={{ width: '100%' }}>
                 <CardDesign>
                     <div style={{ display: 'flex', overflow: 'scroll' }}>
@@ -138,7 +138,7 @@ export default function SceduleMaker() {
 
             <GhostJelly taskId={moveTargetTaskId} taskManager={schdule.taskManager} />
 
-            <div className="w-2/3">
+            <div className="w-full">
                 <TaskUnassignedBox
                     taskManager={schdule.taskManager}
                     memberids={schdule.memberManager.ids}
@@ -148,16 +148,6 @@ export default function SceduleMaker() {
                     moveTargetTaskId={moveTargetTaskId}
                     handleMoveTargetTask={handleMoveTargetTask}
                     setPlanedTaskManager={handlePlanedTaskManagerChange}
-                />
-            </div>
-            <div className="w-1/2">
-                <TicketManagementBox
-                    ticketManager={schdule.ticketManager}
-                    taskManager={schdule.taskManager}
-                    planedTask={schdule.planedTaskManager}
-                    setTicketManager={handleTicketManagerChange}
-                    setTaskManager={handleTaskManagerChange}
-                    setPlanedTask={handlePlanedTaskManagerChange}
                 />
             </div>
             <div className="w-1/3">
@@ -170,6 +160,17 @@ export default function SceduleMaker() {
                     />
                 </CardDesign>
             </div>
+            <div className="w-2/3">
+                <TicketManagementBox
+                    ticketManager={schdule.ticketManager}
+                    taskManager={schdule.taskManager}
+                    planedTask={schdule.planedTaskManager}
+                    setTicketManager={handleTicketManagerChange}
+                    setTaskManager={handleTaskManagerChange}
+                    setPlanedTask={handlePlanedTaskManagerChange}
+                />
+            </div>
+
 
 
         </div>

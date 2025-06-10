@@ -48,7 +48,7 @@ export default function TicketInfoBox(props: {
 
     return (
         <div className="flex">
-            <div>
+            <div className="w-full">
                 <CardDesign>
                     <TicketSummaryBox
                         ticketManager={ticketManager}
@@ -59,7 +59,7 @@ export default function TicketInfoBox(props: {
                     />
                 </CardDesign>
             </div>
-            <div className="relative">
+            <div className="relative w-0">
                 {selectedTicketId &&
                     <div className="absolute z-10">
                         <CardDesign popup={true}>

@@ -44,7 +44,7 @@ export default function TicketManagementBox(props: {
     }
 
     return (
-        <div className="flex gap-4">
+        <div className="w-full">
             <TicketInfoBox
                 ticketManager={ticketManager}
                 taskManager={taskManager}

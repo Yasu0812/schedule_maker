@@ -3,7 +3,7 @@ import Image from "next/image";
 
 export default function Header() {
     return (
-        <header className="text-white p-4 sticky top-0 bg-blue-100 shadow-md z-50 rounded-b-lg">
+        <header className="text-white px-4 py-2 sticky top-0 bg-blue-100 shadow-md z-50 rounded-b-lg">
             <div className="flex items-center justify-between">
                 <div className="flex items-center">
                     <Image src={logo} alt={""} width={150} />
