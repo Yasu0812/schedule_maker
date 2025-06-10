@@ -21,7 +21,7 @@ export class GetCalendarService {
         firstDate: Date,
         lastDate: Date,
         memberManager: MemberManager,
-        tikcketManager: TicketManager,
+        ticketManager: TicketManager,
         taskManager: TaskManager,
         planedTasks: PlanedTask,
 
@@ -30,7 +30,7 @@ export class GetCalendarService {
             firstDate,
             lastDate,
             memberManager.ids,
-            tikcketManager,
+            ticketManager,
             taskManager,
             planedTasks,
         );
