@@ -8,8 +8,6 @@ import { TicketManager } from "./Ticket";
 export class PlanedTaskMapper {
 
     public toCalender(
-        firstDate: Date,
-        lastDate: Date,
         memberIdList: UUID[],
         tikcketManager: TicketManager,
         taskManager: TaskManager,
@@ -37,7 +35,8 @@ export class PlanedTaskMapper {
                 const startDate = assignedTask.startDay;
                 const endDate = assignedTask.endDay;
 
-                for (let date = new Date(startDate); date <= endDate; date.setDate(date.getDate() + 1)) {
+                //TODO date周りのクソ挙動を修正する new Dateは使わずに、DateUtilで標準時を扱うようにする
+                for (let date = new Date(startDate); date <= new Date(endDate); date.setDate(date.getDate() + 1)) {
                     const dateString = DateUtil.formatDate(date);
                     const cellTask = new CalendarCellTask(
                         ticket.title,

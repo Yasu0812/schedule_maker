@@ -17,6 +17,9 @@ export class MemberManager {
         return new MemberManager(memberMap);
     }
 
+    public get memberMap(): Map<UUID, string> {
+        return this._memberMap;
+    }
 
     public get ids(): UUID[] {
         return Array.from(this._memberMap.keys());

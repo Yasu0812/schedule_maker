@@ -1,4 +1,5 @@
 import { UUID } from "../common/IdUtil";
+import { AssignedTask } from "./AssignedTask";
 import { CalendarCellTask, CalendarCellTaskManager } from "./CalendarCellTask";
 import { MemberManager } from "./MemberManager";
 import { PlanedTask } from "./PlanedTask";
@@ -53,7 +54,7 @@ export class ScheduleStateManager {
         const calandarManager = new CalendarCellTaskManager([], new Map<string, Map<string, CalendarCellTask>>(), firstDate, lastDate);
         const taskManager = new TaskManager(new Map<UUID, Task>());
         const ticketManager = new TicketManager([]);
-        const planedTaskManager = new PlanedTask();
+        const planedTaskManager = new PlanedTask(new Map<UUID, AssignedTask>());
         const memberManager = new MemberManager(new Map<UUID, string>());
 
         return new ScheduleStateManager(

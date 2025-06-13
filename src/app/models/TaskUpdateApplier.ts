@@ -1,3 +1,5 @@
+import { UUID } from "../common/IdUtil";
+import { AssignedTask } from "./AssignedTask";
 import { PlanedTask } from "./PlanedTask";
 import { TaskManager } from "./TaskManager";
 
@@ -9,7 +11,7 @@ export default class TaskUpdateApplier {
         planedTask: PlanedTask,
     ): PlanedTask {
         const taskList = planedTask.getList(taskManager.getTaskIds());
-        const newPlanedTask = new PlanedTask();
+        const newPlanedTask = new PlanedTask(new Map<UUID, AssignedTask>());
         taskList.forEach(assignedTask => {
             const task = taskManager.getTask(assignedTask.taskId);
 

@@ -12,8 +12,10 @@ export class PlanedTask {
 
     private _assignedTasks: Map<UUID, AssignedTask> = new Map<UUID, AssignedTask>();
 
-    constructor() {
-
+    constructor(
+        assignedTasks: Map<UUID, AssignedTask>
+    ) {
+        this._assignedTasks = assignedTasks;
     }
 
     private get _list(): AssignedTask[] {
@@ -44,6 +46,10 @@ export class PlanedTask {
 
     public getAll(): AssignedTask[] {
         return this._list;
+    }
+
+    public getMap(): Map<UUID, AssignedTask> {
+        return this._assignedTasks;
     }
 
     public getFromAssignedId(assignedId: string): AssignedTask | undefined {

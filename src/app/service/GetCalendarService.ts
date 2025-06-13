@@ -27,8 +27,6 @@ export class GetCalendarService {
 
     ) {
         const planedTaskMapper = new PlanedTaskMapper().toCalender(
-            firstDate,
-            lastDate,
             memberManager.ids,
             ticketManager,
             taskManager,

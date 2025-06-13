@@ -14,10 +14,11 @@ import CardDesign from "../components/decorator/CardDesign";
 import TicketRegistrationBox from "../components/ticket/TicketRegistrationBox";
 import { MemberManager } from "../models/MemberManager";
 import MemberAddForm from "../components/member/MemberAddForm";
+import { ScheduleStateJson } from "../models/serialize/ScheduleStateJson";
 
 export default function SceduleMaker() {
 
-    const [schdule, setSchedule] = useState<ScheduleStateManager>(ScheduleStateManager.ScheduleStateManagerFactory(new Date("2025-04-01"), new Date("2025-06-30")));
+    const [schdule, setSchedule] = useState<ScheduleStateManager>(ScheduleStateManager.ScheduleStateManagerFactory(new Date("2025-04-01T00:00:00Z"), new Date("2025-06-30T00:00:00Z")));
     const [moveTargetTaskId, setMoveTargetTaskId] = useState<UUID | undefined>();
 
     const handleTicketManagerChange = useCallback((ticketManager: TicketManager) => {
@@ -86,7 +87,23 @@ export default function SceduleMaker() {
     }, [])
 
     useEffect(() => {
-        localStorage.setItem('app-data', JSON.stringify(toSerializable(schdule)));
+        const data = localStorage.getItem('app-data');
+        if (data) {
+            try {
+                setSchedule(ScheduleStateJson.fromJson(data));
+            } catch (error) {
+                console.error("Failed to load schedule data from localStorage:", error);
+                // Fallback to default schedule if loading fails
+                setSchedule(ScheduleStateManager.ScheduleStateManagerFactory(new Date("2025-04-01T00:00:00Z"), new Date("2025-06-30T00:00:00Z")));
+            }
+
+        }
+    }, []);
+
+
+    useEffect(() => {
+        if (!schdule) return;
+        localStorage.setItem('app-data', ScheduleStateJson.toJson(schdule));
     }, [schdule]);
 
     const handleMoveTargetTask = useCallback((taskId: UUID | undefined) => {
@@ -132,7 +149,7 @@ export default function SceduleMaker() {
                 }}>
                     <strong>🛠 Debug State</strong>
                     <pre>{JSON.stringify(moveTargetTaskId, null, 2)}</pre>
-                    <pre>{JSON.stringify(toSerializable(schdule), null, 2)}</pre>
+                    <pre>{schdule && ScheduleStateJson.toJson(schdule)}</pre>
                 </div>
             )}
 

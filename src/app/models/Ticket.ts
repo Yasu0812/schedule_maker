@@ -87,12 +87,12 @@ export class Ticket {
  * 
  */
 export class TicketManager {
-    private _ticketMap: Map<string, Ticket> = new Map<string, Ticket>();
+    private _ticketMap: Map<UUID, Ticket> = new Map<UUID, Ticket>();
     private _ticketList: Ticket[] = [];
 
     constructor(ticketList: Ticket[]) {
         this._ticketList = ticketList;
-        this._ticketMap = new Map<string, Ticket>(ticketList.map(ticket => [ticket.id, ticket]));
+        this._ticketMap = new Map<UUID, Ticket>(ticketList.map(ticket => [ticket.id, ticket]));
     }
 
     public static TicketManagerFactory(ticketMaterials: TicketMaterial[]): TicketManager {
@@ -115,7 +115,7 @@ export class TicketManager {
         return this;
     }
 
-    removeTicket(ticketId: string): TicketManager {
+    removeTicket(ticketId: UUID): TicketManager {
         const ticket = this._ticketMap.get(ticketId);
         if (ticket) {
             this._ticketList = this._ticketList.filter(t => t.id !== ticketId);
@@ -125,15 +125,15 @@ export class TicketManager {
         return this;
     }
 
-    getTicket(ticketId: string): Ticket | undefined {
+    getTicket(ticketId: UUID): Ticket | undefined {
         return this._ticketMap.get(ticketId);
     }
 
-    getTicketList(): readonly Ticket[] {
-        return this._ticketList;
+    getTicketList(): Ticket[] {
+        return [...this._ticketList];
     }
 
-    getTicketPhases(ticketId: string): Map<PhaseEnum, TicketPhase> | undefined {
+    getTicketPhases(ticketId: UUID): Map<PhaseEnum, TicketPhase> | undefined {
         const ticket = this.getTicket(ticketId);
         if (ticket) {
             return ticket.phases;
@@ -141,7 +141,7 @@ export class TicketManager {
         return undefined;
     }
 
-    getTicketPhase(ticketId: string, phase: PhaseEnum): TicketPhase | undefined {
+    getTicketPhase(ticketId: UUID, phase: PhaseEnum): TicketPhase | undefined {
         const ticket = this.getTicket(ticketId);
         if (ticket) {
             return ticket.getPhase(phase);
@@ -160,7 +160,7 @@ export class TicketManager {
     }
 
     changeTicketPhase(
-        ticketId: string,
+        ticketId: UUID,
         phase: PhaseEnum,
         duration: number,
         description: string
@@ -190,7 +190,7 @@ export class TicketManager {
     }
 
     replaceDurationToPhase(
-        ticketId: string,
+        ticketId: UUID,
         phase: PhaseEnum,
         duration: number,
     ): TicketManager {

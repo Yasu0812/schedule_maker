@@ -1,38 +1,48 @@
 
 export class DateUtil {
 
+    /**
+     * YYYY-MM-DDT00:00:00Z形式の文字列から日付のリストを生成します。
+     * @param startDateStr 
+     * @param endDateStr 
+     * @returns 
+     */
     static generateDayList(startDateStr: string, endDateStr: string): Date[] {
-        const startDate = new Date(startDateStr);
-        const endDate = new Date(endDateStr);
+        const startDate = DateUtil.parseDate(startDateStr);
+        const endDate = DateUtil.parseDate(endDateStr);
         const dayList: Date[] = [];
         const currentDate = new Date(startDate);
 
         while (currentDate <= endDate) {
             dayList.push(new Date(currentDate));
-            currentDate.setDate(currentDate.getDate() + 1);
+            currentDate.setUTCDate(currentDate.getDate() + 1);
         }
 
         return dayList;
     }
 
     /**
-     * 日付をYYYY-MM-DD形式の文字列に変換します。
+     * 日付をYYYY-MM-DDT00:00:00Z形式の文字列に変換します。
      * @param date 日付オブジェクト
      * @returns 
      */
     static formatDate(date: Date): string {
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, "0");
-        const day = String(date.getDate()).padStart(2, "0");
-        return `${year}-${month}-${day}`;
+        const year = date.getUTCFullYear();
+        const month = String(date.getUTCMonth() + 1).padStart(2, "0");
+        const day = String(date.getUTCDate()).padStart(2, "0");
+        return `${year}-${month}-${day}T00:00:00Z`;
     }
 
     /**
-     * YYYY-MM-DD形式の文字列を日付オブジェクトに変換します。
+     * YYYY-MM-DDT00:00:00Z形式の文字列を日付オブジェクトに変換します。
      * @param dateStr 
      * @returns 
      */
     static parseDate(dateStr: string): Date {
+        const regex = /^\d{4}-\d{2}-\d{2}T00:00:00Z$/;
+        if (!regex.test(dateStr)) {
+            throw new Error("Invalid date format. Expected format is YYYY-MM-DDT00:00:00Z");
+        }
         return new Date(dateStr);
     }
 
@@ -42,25 +52,20 @@ export class DateUtil {
      * @returns 
      */
     static formatDateShow(date: Date): string {
-        const month = String(date.getMonth() + 1);
-        const day = String(date.getDate());
+        const month = String(date.getUTCMonth() + 1);
+        const day = String(date.getUTCDate());
         return `${month}/${day}`;
-    }
-
-    static formatDateFromString(dateStr: string): string {
-        const date = new Date(dateStr);
-        return this.formatDate(date);
     }
 
     static getFromDayNum(date: Date, dayNum: number): Date {
         const newDate = new Date(date);
-        newDate.setDate(newDate.getDate() + dayNum);
+        newDate.setUTCDate(newDate.getUTCDate() + dayNum);
         return newDate;
     }
 
     static getAddDate(date: Date, addDay: number): Date {
         const newDate = new Date(date);
-        newDate.setDate(newDate.getDate() + addDay);
+        newDate.setUTCDate(newDate.getUTCDate() + addDay);
         return newDate;
     }
 
@@ -68,7 +73,7 @@ export class DateUtil {
         const newDate = new Date(date);
         let addedDays = 0;
         while (addedDays < addDay) {
-            newDate.setDate(newDate.getDate() + 1);
+            newDate.setUTCDate(newDate.getUTCDate() + 1);
             if (!this.isHoliday(newDate)) {
                 addedDays++;
             }
@@ -78,7 +83,7 @@ export class DateUtil {
 
     static getDayOfWeekString(date: Date): string {
         const daysOfWeek = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
-        return daysOfWeek[date.getDay()];
+        return daysOfWeek[date.getUTCDay()];
     }
 
     static getDayOfWeekStringFromString(dateStr: string): string {
@@ -87,7 +92,7 @@ export class DateUtil {
     }
 
     static isHoliday(date: Date): boolean {
-        const day = date.getDay();
+        const day = date.getUTCDay();
         return day === 0 || day === 6;
     }
 
