@@ -45,6 +45,10 @@ export class CalendarLineTask {
     getTaskForDate(date: string): CalendarCellTask | undefined {
         return this.taskMap.get(date);
     }
+
+    public hasTask(): boolean {
+        return this.taskMap.size !== 0;
+    }
 }
 
 /**

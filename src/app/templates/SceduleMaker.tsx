@@ -120,6 +120,7 @@ export default function SceduleMaker() {
                             taskManager={schdule.taskManager}
                             planedTaskManager={schdule.planedTaskManager}
                             setPlanedTaskManager={handlePlanedTaskManagerChange}
+                            setMemberManager={handleMemberManagerChange}
                             moveTargetTaskId={moveTargetTaskId}
                             handleMoveTargetTask={handleMoveTargetTask}
                         >

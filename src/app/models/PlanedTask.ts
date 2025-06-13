@@ -62,6 +62,14 @@ export class PlanedTask {
         return assignedTasks;
     }
 
+    public removeFromMemberId(memberId: UUID): PlanedTask {
+        const assignedTasks = this.getAssignedFromMemberId(memberId);
+        assignedTasks.forEach(assignedTask => {
+            this.removeTask(assignedTask.taskId);
+        });
+        return this;
+    }
+
     public assignTask(task: { id: UUID, ticketId: UUID }, memberId: UUID, startDay: Date, duration: number): PlanedTask {
         const assignId = generateUUID()
         const assignedTask = new AssignedTask(assignId, task.ticketId, task.id, memberId, startDay, duration);

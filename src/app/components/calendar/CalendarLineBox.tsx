@@ -4,6 +4,7 @@ import { UUID } from "@/app/common/IdUtil";
 import { PlanedTask } from "@/app/models/PlanedTask";
 import { TaskManager } from "@/app/models/TaskManager";
 import { MemberManager } from "@/app/models/MemberManager";
+import { useState } from "react";
 
 
 export default function CalendarLineBox(
@@ -14,6 +15,7 @@ export default function CalendarLineBox(
         taskManager: TaskManager,
         planedTaskManager: PlanedTask,
         setPlanedTaskManager: (planedTaskManager: PlanedTask) => void,
+        setMemberManager: (memberManager: MemberManager) => void,
         moveTargetTaskId: UUID | undefined,
         handleMoveTargetTask: (taskId: UUID | undefined) => void,
     }
@@ -24,9 +26,17 @@ export default function CalendarLineBox(
     const moveTargetTaskId = props.moveTargetTaskId;
     const memberIds = memberManager.ids;
 
+    const [editingMemberId, setEditingMemberId] = useState<UUID | undefined>(undefined);
+
+    const handleEditMember = (memberId: UUID | undefined) => {
+        setEditingMemberId(memberId);
+    };
+
+
     const calendarLineItems = memberIds.map((memberId) => {
         const taskMap = props.allTaskMap.get(memberId) || new CalendarLineTask(memberId, new Map<string, CalendarCellTask>());
         const member = memberManager.getMember(memberId);
+        const isEditing = editingMemberId === memberId;
         return (
             <CalendarLine
                 key={memberId}
@@ -37,8 +47,12 @@ export default function CalendarLineBox(
                 taskManager={props.taskManager}
                 planedTaskManager={props.planedTaskManager}
                 setPlanedTaskManager={props.setPlanedTaskManager}
+                memberManager={memberManager}
+                setMemberManager={props.setMemberManager}
                 moveTargetTaskId={moveTargetTaskId}
                 handleMoveTargetTask={handleMoveTargetTask}
+                isEditing={isEditing}
+                handleEditMember={handleEditMember}
             />
         );
     });

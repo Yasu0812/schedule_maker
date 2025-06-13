@@ -43,4 +43,13 @@ export class MemberManager {
         this._memberMap.delete(id);
         return this;
     }
+
+    public updateMember(id: UUID, member: string): MemberManager {
+        if (this._memberMap.has(id)) {
+            this._memberMap.set(id, member);
+        } else {
+            throw new Error(`Member with id ${id} does not exist.`);
+        }
+        return this;
+    }
 }

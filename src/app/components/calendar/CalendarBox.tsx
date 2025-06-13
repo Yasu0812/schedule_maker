@@ -13,6 +13,7 @@ export default function CalendarBox(
         taskManager: TaskManager,
         planedTaskManager: PlanedTask,
         setPlanedTaskManager: (planedTaskManager: PlanedTask) => void,
+        setMemberManager: (memberManager: MemberManager) => void,
         moveTargetTaskId: UUID | undefined,
         handleMoveTargetTask: (taskId: UUID | undefined) => void,
         children?: React.ReactNode,
@@ -25,6 +26,7 @@ export default function CalendarBox(
         taskManager,
         planedTaskManager,
         setPlanedTaskManager,
+        setMemberManager,
         moveTargetTaskId,
         handleMoveTargetTask,
     } = props;
@@ -46,6 +48,7 @@ export default function CalendarBox(
                         taskManager={taskManager}
                         planedTaskManager={planedTaskManager}
                         setPlanedTaskManager={setPlanedTaskManager}
+                        setMemberManager={setMemberManager}
                         moveTargetTaskId={moveTargetTaskId}
                         handleMoveTargetTask={handleMoveTargetTask}
 
