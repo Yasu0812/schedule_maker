@@ -102,7 +102,7 @@ export default function CalendarLine(
                 <input
                     type="text"
                     value={member}
-                    onChange={(e) => {memberNameChangeHandler(e)}}
+                    onChange={(e) => { memberNameChangeHandler(e) }}
                     onBlur={() => props.handleEditMember(undefined)}
                     onKeyDown={(e) => {
                         if (e.key === 'Enter') {
@@ -126,15 +126,17 @@ export default function CalendarLine(
         <tr>
             <th scope="row" className="calendar-line-item">
                 <CalendarCell >
-                    {
-                        !hasAssignTask && !isEditing && <button
-                            className="text-red-500 hover:text-red-700"
-                            onClick={memberDeleteHandler}
-                        >
-                            x
-                        </button>
-                    }
-                    {memberArea}
+                    <div style={{ alignItems: 'left' }}>
+                        {
+                            !hasAssignTask && !isEditing && <button
+                                className="text-red-500 hover:text-red-700"
+                                onClick={memberDeleteHandler}
+                            >
+                                x
+                            </button>
+                        }
+                        {memberArea}
+                    </div>
 
                 </CalendarCell>
             </th>
