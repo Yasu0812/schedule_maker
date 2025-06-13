@@ -10,7 +10,9 @@ export class MemberNameSample {
         "佐", "井", "石", "高", "小", "大", "藤", "谷", "野",
         "橋", "岡", "島", "原", "田", "山", "佐", "鈴", "青",
         "黒", "白", "赤", "黄", "緑", "紫", "桃", "橙", "茶",
-        "梅", "桜", "菊", "蓮", "葵", "萩", "桐",
+        "梅", "桜", "菊", "蓮", "葵", "萩", "桐", "神", "漆",
+        "広", "清", "光", "明", "智", "沢", "和", "幸", "麹",
+        "祝", "花", "里", "瀬", "新", "古", "最", "海", "空",
     ];
 
     public static readonly MEMBER_NAME_LENGTH_RATE = [0.1, 0.8, 0.1];
@@ -25,7 +27,11 @@ export class MemberNameSample {
         let memberName = "";
         for (let i = 0; i < length; i++) {
             const randomIndex = Math.floor(Math.random() * charas.length);
-            memberName += charas[randomIndex];
+            if (i > 0 && charas[randomIndex] === memberName[i - 1]) {
+                memberName += "々";
+            } else {
+                memberName += charas[randomIndex];
+            }
         }
         return memberName;
     }
