@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import Header from "./components/atom/Header";
 import { ScheduleStateManager } from "./models/ScheduleStateManager";
-import SceduleMaker from "./templates/SceduleMaker";
+import ScheduleMaker from "./templates/ScheduleMaker";
 import { ScheduleStateJson } from "./models/serialize/ScheduleStateJson";
 
 export default function Home() {
@@ -39,7 +39,7 @@ export default function Home() {
     return (
         <>
             <Header />
-            {!isLoading && schdule && <SceduleMaker
+            {!isLoading && schdule && <ScheduleMaker
                 schdule={schdule}
                 setSchedule={setSchedule}
             />}

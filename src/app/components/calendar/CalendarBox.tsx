@@ -5,6 +5,8 @@ import { PlanedTask } from "@/app/models/PlanedTask";
 import { UUID } from "@/app/common/IdUtil";
 import { TaskManager } from "@/app/models/TaskManager";
 import { MemberManager } from "@/app/models/MemberManager";
+import { ScheduleConfiguration } from "@/app/models/ScheduleConfiguration";
+import { DateUtil } from "@/app/common/DateUtil";
 
 export default function CalendarBox(
     props: {
@@ -16,6 +18,8 @@ export default function CalendarBox(
         setMemberManager: (memberManager: MemberManager) => void,
         moveTargetTaskId: UUID | undefined,
         handleMoveTargetTask: (taskId: UUID | undefined) => void,
+        scheduleConfiguration: ScheduleConfiguration,
+        handleScheduleConfigurationChange: (scheduleConfiguration: ScheduleConfiguration) => void,
         children?: React.ReactNode,
     }
 ) {
@@ -29,6 +33,8 @@ export default function CalendarBox(
         setMemberManager,
         moveTargetTaskId,
         handleMoveTargetTask,
+        scheduleConfiguration,
+        handleScheduleConfigurationChange,
     } = props;
     const dayList = calendarManager.dayList;
 
@@ -36,6 +42,29 @@ export default function CalendarBox(
 
     return (
         <div>
+            <div className="flex items-center gap-2 border-b pb-2">
+                <h2 className="text-lg font-semibold">Schedule </h2>
+                <input type="date" className="border rounded p-2"
+                    value={DateUtil.formatDateWithHyphenNoTimeZone(scheduleConfiguration.firstDate)}
+                    onChange={(e) => {
+                        const newFirstDate = DateUtil.parseDateWithHyphen(e.target.value);
+                        const newConfig = scheduleConfiguration.updateFirstDate(newFirstDate);
+                        handleScheduleConfigurationChange(newConfig);
+                    }}
+                />
+                -
+
+                <input type="date" className="border rounded p-2"
+                    value={DateUtil.formatDateWithHyphenNoTimeZone(scheduleConfiguration.lastDate)}
+                    onChange={(e) => {
+                        const newLastDate = DateUtil.parseDateWithHyphen(e.target.value);
+                        const newConfig = scheduleConfiguration.updateLastDate(newLastDate);
+                        handleScheduleConfigurationChange(newConfig);
+                    }}
+                />
+            </div>
+            <div className="flex items-center gap-2 mb-4">
+            </div>
             <table className="calendar-box">
                 <thead>
                     <CalendarHeader dayListItems={dayList} />

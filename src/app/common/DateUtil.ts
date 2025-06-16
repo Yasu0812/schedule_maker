@@ -1,4 +1,3 @@
-
 export class DateUtil {
 
     /**
@@ -22,6 +21,61 @@ export class DateUtil {
     }
 
     /**
+     * 現在の日付をYYYY-MM-DDT00:00:00Z形式の文字列で返します。
+     * @returns
+     * 
+     */
+    static getCurrentDateStr(): string {
+        const now = new Date();
+        return DateUtil.formatDate(now);
+    }
+
+    /**
+     * 現在の日付を元に、指定された日数を加算した日付をYYYY-MM-DDT00:00:00Z形式の文字列で返します。
+     * @param addDay 加算する日数
+     */
+    static getCurrentDateStrWithAddDay(addDay: number): string {
+        const now = this.getAddDate(new Date(), addDay);
+        return DateUtil.formatDate(now);
+    }
+
+    /**
+     * 現在の月の初日をYYYY-MM-DDT00:00:00Z形式の文字列で返します。
+     * @return 
+     */
+    static getCurrentMonthFirstDateStr(): string {
+        const now = new Date();
+        const firstDay = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
+        return DateUtil.formatDate(firstDay);
+    }
+
+    /**
+     * 現在の月の初日をdateで返します。
+     */
+    static getCurrentMonthFirstDate(): Date {
+        const now = new Date();
+        return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
+    }
+
+    /**
+     * 現在の月の最終日をYYYY-MM-DDT00:00:00Z形式の文字列で返します。
+     * @return 
+     */
+    static getCurrentMonthLastDateStr(): string {
+        const now = new Date();
+        const lastDay = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 0));
+        return DateUtil.formatDate(lastDay);
+    }
+
+    /**
+     * 現在の月の最終日をdateで返します。
+     */
+    static getCurrentMonthLastDate(): Date {
+        const now = new Date();
+        return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 0));
+    }
+
+    /**
      * 日付をYYYY-MM-DDT00:00:00Z形式の文字列に変換します。
      * @param date 日付オブジェクト
      * @returns 
@@ -31,6 +85,18 @@ export class DateUtil {
         const month = String(date.getUTCMonth() + 1).padStart(2, "0");
         const day = String(date.getUTCDate()).padStart(2, "0");
         return `${year}-${month}-${day}T00:00:00Z`;
+    }
+
+    /**
+     * 日付をYYYY-MM-DD形式の文字列に変換します。
+     * @param date 日付オブジェクト
+     * @returns 
+     */
+    static formatDateWithHyphenNoTimeZone(date: Date): string {
+        const year = date.getUTCFullYear();
+        const month = String(date.getUTCMonth() + 1).padStart(2, "0");
+        const day = String(date.getUTCDate()).padStart(2, "0");
+        return `${year}-${month}-${day}`;
     }
 
     /**
@@ -44,6 +110,19 @@ export class DateUtil {
             throw new Error("Invalid date format. Expected format is YYYY-MM-DDT00:00:00Z");
         }
         return new Date(dateStr);
+    }
+
+    /**
+     * YYYY-MM-DD形式の文字列を日付オブジェクトに変換します。
+     * @param dateStr 
+     * @returns 
+     */
+    static parseDateWithHyphen(dateStr: string): Date {
+        const regex = /^\d{4}-\d{2}-\d{2}$/;
+        if (!regex.test(dateStr)) {
+            throw new Error("Invalid date format. Expected format is YYYY-MM-DDT00:00:00Z");
+        }
+        return new Date(dateStr + "T00:00:00Z");
     }
 
     /**

@@ -14,8 +14,9 @@ import TicketRegistrationBox from "../components/ticket/TicketRegistrationBox";
 import { MemberManager } from "../models/MemberManager";
 import MemberAddForm from "../components/member/MemberAddForm";
 import { ScheduleStateJson } from "../models/serialize/ScheduleStateJson";
+import { ScheduleConfiguration } from "../models/ScheduleConfiguration";
 
-export default function SceduleMaker(
+export default function ScheduleMaker(
     props: {
         schdule: ScheduleStateManager,
         setSchedule: Dispatch<SetStateAction<ScheduleStateManager | undefined>>
@@ -36,6 +37,7 @@ export default function SceduleMaker(
                 ticketManager,
                 prevSchedule.planedTaskManager,
                 prevSchedule.memberManager,
+                prevSchedule.scheduleConfiguration,
             );
         });
     }, [setSchedule]);
@@ -50,6 +52,7 @@ export default function SceduleMaker(
                 prevSchedule.ticketManager,
                 prevSchedule.planedTaskManager,
                 prevSchedule.memberManager,
+                prevSchedule.scheduleConfiguration,
             );
         });
     }, [setSchedule]);
@@ -59,8 +62,8 @@ export default function SceduleMaker(
             if (!prevSchedule) return prevSchedule;
 
             const newCalendarManager = new GetCalendarService().fromPlanedDatas(
-                prevSchedule.calandarManager.firstDate,
-                prevSchedule.calandarManager.lastDate,
+                prevSchedule.scheduleConfiguration.firstDate,
+                prevSchedule.scheduleConfiguration.lastDate,
                 prevSchedule.memberManager,
                 prevSchedule.ticketManager,
                 prevSchedule.taskManager,
@@ -73,6 +76,7 @@ export default function SceduleMaker(
                 prevSchedule.ticketManager,
                 planedTaskManager,
                 prevSchedule.memberManager,
+                prevSchedule.scheduleConfiguration,
             );
         });
     }, [setSchedule])
@@ -82,8 +86,8 @@ export default function SceduleMaker(
             if (!prevSchedule) return prevSchedule;
 
             const newCalendarManager = new GetCalendarService().fromPlanedDatas(
-                prevSchedule.calandarManager.firstDate,
-                prevSchedule.calandarManager.lastDate,
+                prevSchedule.scheduleConfiguration.firstDate,
+                prevSchedule.scheduleConfiguration.lastDate,
                 memberManager,
                 prevSchedule.ticketManager,
                 prevSchedule.taskManager,
@@ -95,9 +99,35 @@ export default function SceduleMaker(
                 prevSchedule.ticketManager,
                 prevSchedule.planedTaskManager,
                 memberManager,
+                prevSchedule.scheduleConfiguration,
             );
         });
     }, [setSchedule])
+
+
+    const handleScheduleConfigurationChange = useCallback((scheduleConfiguration: ScheduleConfiguration) => {
+        setSchedule((prevSchedule) => {
+            if (!prevSchedule) return prevSchedule;
+
+            const newCalendarManager = new GetCalendarService().fromPlanedDatas(
+                scheduleConfiguration.firstDate,
+                scheduleConfiguration.lastDate,
+                prevSchedule.memberManager,
+                prevSchedule.ticketManager,
+                prevSchedule.taskManager,
+                prevSchedule.planedTaskManager,
+            );
+            return new ScheduleStateManager(
+                newCalendarManager,
+                prevSchedule.taskManager,
+                prevSchedule.ticketManager,
+                prevSchedule.planedTaskManager,
+                prevSchedule.memberManager,
+                scheduleConfiguration,
+            );
+        });
+    }, [setSchedule])
+
 
 
 
@@ -119,6 +149,8 @@ export default function SceduleMaker(
                             setMemberManager={handleMemberManagerChange}
                             moveTargetTaskId={moveTargetTaskId}
                             handleMoveTargetTask={handleMoveTargetTask}
+                            scheduleConfiguration={schdule.scheduleConfiguration}
+                            handleScheduleConfigurationChange={handleScheduleConfigurationChange}
                         >
                             <MemberAddForm memberManager={schdule.memberManager} handleMemberManagerChange={handleMemberManagerChange} />
                         </CalendarBox>

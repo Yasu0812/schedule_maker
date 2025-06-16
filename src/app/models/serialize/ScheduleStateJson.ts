@@ -8,13 +8,12 @@ import { Task } from "../Task";
 import { TaskManager } from "../TaskManager";
 import { TicketManager } from "../Ticket";
 import { TicketSerializable, TicketSerializableType } from "./TicketSerializable";
-import { DateUtil } from "@/app/common/DateUtil";
 import { PlanedTaskMapper } from "../PlanedTaskMapper";
 import { AssignedTaskSerializable, AssignedTaskSerializableType } from "./AssignedTaskSerializable";
+import { ScheduleConfigurationSerializable, ScheduleConfigurationSerializableType } from "./ScheduleConfigurationSerializable";
 
 type ScheduleStateJsonType = {
-    startDateStr: string;
-    endDateStr: string;
+    configration: ScheduleConfigurationSerializableType;
     tickets: TicketSerializableType[];
     tasks: Task[];
     assignedTasks: Record<UUID, AssignedTaskSerializableType>;
@@ -26,17 +25,16 @@ export class ScheduleStateJson {
     public static toJson(
         scheduleStateManager: ScheduleStateManager,
     ): string {
-        const startDate = scheduleStateManager.calandarManager.firstDate;
-        const endDate = scheduleStateManager.calandarManager.lastDate;
         const tickets = scheduleStateManager.ticketManager.getTicketList().map(ticket => TicketSerializable.serialize(ticket));
         const tasks = [...scheduleStateManager.taskManager.getTaskAll().values()];
         const assignedTasks = Object.fromEntries([...scheduleStateManager.planedTaskManager.getMap().entries()].map(([id, assignedTask]) => [id, AssignedTaskSerializable.serialize(assignedTask)]));
         const members = Object.fromEntries(scheduleStateManager.memberManager.memberMap);
+        const configration = scheduleStateManager.scheduleConfiguration;
+        const configrationSerialized = ScheduleConfigurationSerializable.serialize(configration);
 
 
         return JSON.stringify({
-            startDate: DateUtil.formatDate(startDate),
-            endDate: DateUtil.formatDate(endDate),
+            configration: configrationSerialized,
             tickets: tickets,
             tasks: tasks,
             assignedTasks: assignedTasks,
@@ -45,11 +43,10 @@ export class ScheduleStateJson {
     }
 
     public static fromJson(json: string): ScheduleStateManager {
-        const { startDateStr, endDateStr, tickets, tasks, assignedTasks, members } = this.jsonParse(json);
+        const { configration, tickets, tasks, assignedTasks, members } = this.jsonParse(json);
         const toManager = this.toManager(
             {
-                startDateStr,
-                endDateStr,
+                configration,
                 tickets,
                 tasks,
                 assignedTasks,
@@ -65,16 +62,14 @@ export class ScheduleStateJson {
     private static jsonParse(json: string): ScheduleStateJsonType {
         const data = JSON.parse(json);
 
-        const startDate = data.startDate;
-        const endDate = data.endDate;
+        const configration = data.configration;
         const tickets = data.tickets as TicketSerializableType[];
         const tasks = data.tasks as Task[];
         const assignedTasks = data.assignedTasks as Record<UUID, AssignedTaskSerializableType>;
         const members = data.members as Record<UUID, string>;
 
         return {
-            startDateStr: startDate,
-            endDateStr: endDate,
+            configration: configration,
             tickets: tickets,
             tasks: tasks,
             assignedTasks: assignedTasks,
@@ -85,10 +80,8 @@ export class ScheduleStateJson {
     private static toManager(
         param: ScheduleStateJsonType
     ) {
-        const { startDateStr, endDateStr, tickets, tasks, assignedTasks, members } = param;
+        const { configration, tickets, tasks, assignedTasks, members } = param;
 
-        const startDate = DateUtil.parseDate(startDateStr);
-        const endDate = DateUtil.parseDate(endDateStr);
 
         const ticketManager = new TicketManager(tickets.map(ticket => TicketSerializable.deserialize(ticket)));
 
@@ -96,6 +89,8 @@ export class ScheduleStateJson {
 
         const membersMap = new Map(Object.entries(members)) as Map<UUID, string>;
         const memberManager = new MemberManager(membersMap);
+
+        const scheduleConfiguration = ScheduleConfigurationSerializable.deserialize(configration);
 
         const assignedTasksMap = new Map(Object.entries(assignedTasks).map(([id, assignedTask]) => [id, AssignedTaskSerializable.deserialize(assignedTask)])) as Map<UUID, AssignedTask>;
         const planedTaskManager = new PlanedTask(assignedTasksMap);
@@ -110,8 +105,8 @@ export class ScheduleStateJson {
         const calendar = new CalendarCellTaskManager(
             memberManager.ids,
             planedTaskMapper,
-            startDate,
-            endDate,
+            scheduleConfiguration.firstDate,
+            scheduleConfiguration.lastDate,
         )
 
         return new ScheduleStateManager(
@@ -119,7 +114,8 @@ export class ScheduleStateJson {
             taskManager,
             ticketManager,
             planedTaskManager,
-            memberManager
+            memberManager,
+            scheduleConfiguration
         );
     }
 }
