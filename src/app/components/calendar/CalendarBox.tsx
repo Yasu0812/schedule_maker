@@ -43,7 +43,7 @@ export default function CalendarBox(
     return (
         <div>
             <div className="flex items-center gap-2 border-b pb-2">
-                <h2 className="text-lg font-semibold">Schedule </h2>
+                <h2 className="text-lg font-semibold">Schedule</h2>
                 <input type="date" className="border rounded p-2"
                     value={DateUtil.formatDateWithHyphenNoTimeZone(scheduleConfiguration.firstDate)}
                     onChange={(e) => {
