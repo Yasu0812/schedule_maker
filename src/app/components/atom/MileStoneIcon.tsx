@@ -7,36 +7,21 @@ export default function MileStoneIcon(props: {
     className?: string,
 }) {
 
-    const size = props.size || 30;
+    const size = props.size || 32;
     const gradColor = ColorUtil.generateShadedGradientHSL(props.color);
 
-    return <svg
-        xmlns="http://www.w3.org/2000/svg"
-        style={{ width: size, height: size }}
-        width={48} height={48} viewBox="0 0 24 24"
-    >
+    return <svg style={{ width: size, height: size }} width="128" height="128" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
         <defs>
-            <radialGradient id="ballGradient" cx="30%" cy="30%" r="70%">
-                <stop offset="0%" stopColor={gradColor.start} />
-                <stop offset="100%" stopColor={gradColor.end} />
-            </radialGradient>
-
-            <radialGradient id="highlight" cx="35%" cy="35%" r="20%">
-                <stop offset="0%" stopColor="white" stopOpacity="0.8" />
-                <stop offset="100%" stopColor="white" stopOpacity="0" />
-            </radialGradient>
-
-            <radialGradient id="shadow" cx="50%" cy="70%" r="50%">
-                <stop offset="0%" stopColor="#888888" stopOpacity="0.25" />
-                <stop offset="100%" stopColor="#888888" stopOpacity="0" />
+            <radialGradient id="marbleGradient" cx="30%" cy="30%" r="70%">
+                <stop offset="0%" stop-color={gradColor.start} />
+                <stop offset="100%" stop-color={gradColor.end} />
             </radialGradient>
         </defs>
-
-        <circle cx="12" cy="12" r="10" fill="url(#ballGradient)" />
-
-        <circle cx="10" cy="9" r="4" fill="url(#highlight)" />
-
-        <circle cx="12" cy="15" r="6" fill="url(#shadow)" />
+        <circle cx="128" cy="128" r="110" fill="url(#marbleGradient)" stroke="black" stroke-width="10" strokeOpacity="0.5" />
+        <ellipse cx="88" cy="76" rx="34" ry="24" fill="white" fill-opacity="0.8" />
+        <circle cx="106" cy="92" r="8" fill="white" fill-opacity="0.4" />
+        <circle cx="160" cy="130" r="6" fill="white" fill-opacity="0.2" />
     </svg>
+
 
 };
