@@ -29,14 +29,8 @@ export class MileStone {
         this.id = id;
         this.name = name;
         this.day = day;
-        this.prePhases = new Set(prePhases || []);
-        this.postPhases = new Set(postPhases || []);
-
-        // prePhaseとpostPhaseに同じフェーズが含まれている場合は、エラーを投げる
-        const intersection = new Set([...this.prePhases].filter(phase => this.postPhases.has(phase)));
-        if (intersection.size > 0) {
-            throw new Error(`PrePhases and PostPhases cannot have the same phases: ${Array.from(intersection).join(", ")}`);
-        }
+        this.prePhases = new Set(prePhases || orderedPhases);
+        this.postPhases = new Set(postPhases || orderedPhases);
 
         this._unrelatedPhases = new Set(orderedPhases.filter(phase => !this.prePhases.has(phase) && !this.postPhases.has(phase)));
     }

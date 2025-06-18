@@ -19,19 +19,21 @@ export default function MileStoneConfig(
         <div>
             <h2 className="text-xl font-bold mb-4">MileStones</h2>
 
-            <MileStoneList
-                mileStoneManager={mileStoneManager}
-                setMileStoneManager={setMileStoneManager}
-                selectedMileStoneId={selectedMileStoneId}
-                onSelect={(id) => setSelectedMileStoneId(id)}
-            />
-            {selectedMileStoneId &&
-                <MileStoneEditor
+            <div className="flex gap-4">
+                <MileStoneList
                     mileStoneManager={mileStoneManager}
-                    selectedMileStoneId={selectedMileStoneId}
                     setMileStoneManager={setMileStoneManager}
+                    selectedMileStoneId={selectedMileStoneId}
+                    onSelect={(id) => setSelectedMileStoneId(id)}
                 />
-            }
+                {selectedMileStoneId &&
+                    <MileStoneEditor
+                        mileStoneManager={mileStoneManager}
+                        selectedMileStoneId={selectedMileStoneId}
+                        setMileStoneManager={setMileStoneManager}
+                    />
+                }
+            </div>
 
         </div>
     );

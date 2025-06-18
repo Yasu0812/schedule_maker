@@ -1,3 +1,4 @@
+import { DateUtil } from "../common/DateUtil";
 import { UUID } from "../common/IdUtil";
 import { TicketAssignStatus } from "../common/TicketAssignStatusEnum";
 import { MileStoneManager } from "./MileStoneManager";
@@ -50,13 +51,14 @@ export default class TaskAssignablePolicy {
         const requiredTasks = true; // ここでは仮にtrueとしています。実際には必要なロジックを実装してください。
 
         // マイルストーンのフェーズに含まれているかどうかを確認
-        const isInMileStone = mileStoneManager.isEnabledPhase(phase, startDay);
+        const isInMileStoneStart = mileStoneManager.isEnabledPhase(phase, startDay);
+        const isInMileStoneEnd = mileStoneManager.isEnabledPhase(phase, DateUtil.getAddDate(startDay, task.duration - 1));
 
         // カレンダー上の空きを確認
         const isFree = planedTask.isFree(memberId, taskId, startDay, task.duration);
 
 
-        return isPrePhaseEnd && isInMileStone && isFree && requiredTasks;
+        return isPrePhaseEnd && isInMileStoneStart && isInMileStoneEnd && isFree && requiredTasks;
     }
 
     /**

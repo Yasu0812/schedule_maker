@@ -5,16 +5,18 @@ export function JellyBean(
         height: number,
         phase: string,
         selected: boolean,
+        disabled?: boolean,
         children: React.ReactNode
     },
 ) {
 
-    const { width, height, phase, children } = props;
+    const { width, height, phase, disabled, children } = props;
 
     const selected = props.selected ? "selected" : "";
+    const disabledClass = disabled ? "jellybean-disabled" : "jellybean-available";
 
 
-    const className = `jellybean calendar-cell-${phase} ${selected}`;
+    const className = `jellybean calendar-cell-${phase} ${selected} ${disabledClass}`;
 
     return (
         <div style={{ position: "relative" }}>

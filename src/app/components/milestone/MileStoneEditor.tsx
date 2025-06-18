@@ -1,7 +1,8 @@
 import { UUID } from "@/app/common/IdUtil";
-import { orderedPhases, parsePhase, PhaseEnum, phaseNameMap } from "@/app/common/PhaseEnum";
+import { PhaseEnum } from "@/app/common/PhaseEnum";
 import { MileStoneManager } from "@/app/models/MileStoneManager";
 import { MileStoneManageService } from "@/app/service/MileStoneManageService";
+import PhaseSelector from "./PhaseSelector";
 
 export default function MileStoneEditor(
     props: {
@@ -37,6 +38,26 @@ export default function MileStoneEditor(
         setMileStoneManager(newManager);
     }
 
+    const prePhaseChange = (targetPhase: PhaseEnum) => {
+        const newPrePhases = new Set(selectedMileStone.prePhases);
+        if (newPrePhases.has(targetPhase)) {
+            newPrePhases.delete(targetPhase);
+        } else {
+            newPrePhases.add(targetPhase);
+        }
+        mileStoneChange({ prePhases: newPrePhases });
+    }
+
+    const postPhaseChange = (targetPhase: PhaseEnum) => {
+        const newPostPhases = new Set(selectedMileStone.postPhases);
+        if (newPostPhases.has(targetPhase)) {
+            newPostPhases.delete(targetPhase);
+        } else {
+            newPostPhases.add(targetPhase);
+        }
+        mileStoneChange({ postPhases: newPostPhases });
+    }
+
     return (
         <div>
             {
@@ -64,37 +85,15 @@ export default function MileStoneEditor(
                         }}
                         className="border p-2 rounded w-full mb-2"
                     />
-                    <div className="mb-2">
-                        <label className="block mb-1">前のフェーズ:</label>
-                        <select
-                            multiple
-                            value={Array.from(selectedMileStone.prePhases)}
-                            onChange={(e) => {
-                                const selectedOptions = Array.from(e.target.selectedOptions).map(option => parsePhase(option.value));
-                                mileStoneChange({ prePhases: new Set(selectedOptions) });
-                            }}
-                            className="border p-2 rounded w-full"
-                        >
-                            {orderedPhases.map((phase) => (
-                                <option key={phase} value={phase}>{phaseNameMap[phase]}</option>
-                            ))}
-                        </select>
-                    </div>
-                    <div className="mb-2">
-                        <label className="block mb-1">次のフェーズ:</label>
-                        <select
-                            multiple
-                            value={Array.from(selectedMileStone.postPhases)}
-                            onChange={(e) => {
-                                const selectedOptions = Array.from(e.target.selectedOptions).map(option => parsePhase(option.value));
-                                mileStoneChange({ postPhases: new Set(selectedOptions) });
-                            }}
-                            className="border p-2 rounded w-full"
-                        >
-                            {orderedPhases.map((phase) => (
-                                <option key={phase} value={phase}>{phaseNameMap[phase]}</option>
-                            ))}
-                        </select>
+                    <div className="flex gap-8">
+                        <div className="mb-2">
+                            <h2 className="text-xl font-bold mb-2">Must Finished</h2>
+                            <PhaseSelector phases={selectedMileStone.prePhases} phaseChange={prePhaseChange} />
+                        </div>
+                        <div className="mb-2">
+                            <h2 className="text-xl font-bold mb-2">Available</h2>
+                            <PhaseSelector phases={selectedMileStone.postPhases} phaseChange={postPhaseChange} />
+                        </div>
                     </div>
                 </div>
             }
