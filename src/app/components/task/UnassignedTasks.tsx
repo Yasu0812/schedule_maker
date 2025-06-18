@@ -7,6 +7,7 @@ import { TaskAssignmentService } from "@/app/service/TaskAssignmentService";
 import { PlanedTask } from "@/app/models/PlanedTask";
 import { CalendarCellTaskManager } from "@/app/models/CalendarCellTask";
 import { UUID } from "@/app/common/IdUtil";
+import { MileStoneManager } from "@/app/models/MileStoneManager";
 
 export default function UnassignedTasks(
     props: {
@@ -16,12 +17,13 @@ export default function UnassignedTasks(
         moveTargetTaskId: UUID | undefined,
         planedTaskManager: PlanedTask,
         calandarManager: CalendarCellTaskManager,
+        mileStoneManager: MileStoneManager,
         setTaskManager: (taskManager: TaskManager) => void,
         handleMoveTargetTask: (taskId: UUID | undefined) => void,
         setPlanedTaskManager: (planedTaskManager: PlanedTask) => void,
     }
 ) {
-    const { 
+    const {
         unassignedTasks,
         memberids,
         taskManager,
@@ -29,6 +31,7 @@ export default function UnassignedTasks(
         setTaskManager,
         handleMoveTargetTask,
         calandarManager,
+        mileStoneManager,
         planedTaskManager,
         setPlanedTaskManager
     } = props;
@@ -81,7 +84,14 @@ export default function UnassignedTasks(
 
     const onContextmenu = (taskId: UUID) => {
 
-        const newPlanedTask = new TaskAssignmentService().autoAssignTask(taskId, planedTaskManager, taskManager, calandarManager, memberids);
+        const newPlanedTask = new TaskAssignmentService().autoAssignTask(
+            taskId,
+            planedTaskManager,
+            taskManager,
+            calandarManager,
+            mileStoneManager,
+            memberids
+        );
 
         setPlanedTaskManager(newPlanedTask);
         handleMoveTargetTask(undefined);

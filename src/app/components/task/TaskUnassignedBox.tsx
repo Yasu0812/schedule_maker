@@ -4,19 +4,21 @@ import { UUID } from "@/app/common/IdUtil";
 import UnassignedTasks from "./UnassignedTasks";
 import { UnassignedTaskService } from "@/app/service/UnassignedTaskService";
 import { CalendarCellTaskManager } from "@/app/models/CalendarCellTask";
+import { MileStoneManager } from "@/app/models/MileStoneManager";
 
 export default function TaskUnassignedBox(props: {
     taskManager: TaskManager,
     memberids: UUID[],
     planedTaskManager: PlanedTask,
     calendarManager: CalendarCellTaskManager,
+    mileStoneManager: MileStoneManager,
     setTaskManager: (taskManager: TaskManager) => void,
     moveTargetTaskId: UUID | undefined,
     handleMoveTargetTask: (taskId: UUID | undefined) => void,
     setPlanedTaskManager: (planedTaskManager: PlanedTask) => void,
 }) {
 
-    const { taskManager, memberids, planedTaskManager, setTaskManager, moveTargetTaskId, handleMoveTargetTask, calendarManager, setPlanedTaskManager } = props;
+    const { taskManager, memberids, planedTaskManager, setTaskManager, moveTargetTaskId, handleMoveTargetTask, calendarManager, setPlanedTaskManager, mileStoneManager } = props;
 
     const unassignedTasks = new UnassignedTaskService().getUnassignedTasks(
         taskManager,
@@ -36,6 +38,7 @@ export default function TaskUnassignedBox(props: {
                     moveTargetTaskId={moveTargetTaskId}
                     planedTaskManager={planedTaskManager}
                     calandarManager={calendarManager}
+                    mileStoneManager={mileStoneManager}
                     setTaskManager={setTaskManager}
                     handleMoveTargetTask={handleMoveTargetTask}
                     setPlanedTaskManager={setPlanedTaskManager}

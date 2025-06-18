@@ -1,15 +1,12 @@
 import { orderedPhases, PhaseEnum } from "../common/PhaseEnum";
 import { PlanedTask } from "./PlanedTask";
 import { TaskManager } from "./TaskManager";
-import { UnassignedTaskSelector } from "./UnassignedTaskSelector";
 import { PhaseStatus, PhaseStatusEnum } from "../common/PhaseStatusEnum";
 import { TicketAssignStatus, TicketAssignStatusEnum } from "../common/TicketAssignStatusEnum";
 import { PhaseCalculator } from "./PhaseCalculator";
 import { UUID } from "../common/IdUtil";
 
 export class PhaseStatusPolicy {
-
-    private _unassignedTaskSelecter = new UnassignedTaskSelector();
 
     private _phaseCalculator = new PhaseCalculator();
 
@@ -80,6 +77,21 @@ export class PhaseStatusPolicy {
         });
 
         return phaseStatusMap;
+    }
+
+    public judgePhaseStatus(
+        ticketId: UUID,
+        phase: PhaseEnum,
+        taskManager: TaskManager,
+        planedTask: PlanedTask,
+    ): TicketAssignStatusEnum {
+
+        const judgePhaseStatuses = this.judgePhaseStatuses(ticketId, taskManager, planedTask);
+        const phaseStatus = judgePhaseStatuses.get(phase);
+        if (phaseStatus === undefined) {
+            return TicketAssignStatus.NONE;
+        }
+        return phaseStatus;
     }
 
     /**

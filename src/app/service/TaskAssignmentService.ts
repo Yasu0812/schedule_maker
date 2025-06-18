@@ -3,6 +3,7 @@ import { UUID } from "../common/IdUtil";
 import { previousPhase } from "../common/PhaseEnum";
 import { CalendarCellTaskManager } from "../models/CalendarCellTask";
 import { CalendarDayCalculator } from "../models/CalendarDayCalculator";
+import { MileStoneManager } from "../models/MileStoneManager";
 import { PlanedTask } from "../models/PlanedTask";
 import TaskAssignablePolicy from "../models/TaskAssignablePolicy";
 import { TaskManager } from "../models/TaskManager";
@@ -62,6 +63,7 @@ export class TaskAssignmentService {
         planedTask: PlanedTask,
         taskManager: TaskManager,
         calandarManager: CalendarCellTaskManager,
+        mileStoneManager: MileStoneManager,
         memberIds: UUID[],
     ): PlanedTask {
         const task = taskManager.getTask(taskId);
@@ -98,12 +100,13 @@ export class TaskAssignmentService {
         let currentDay = fastestAssignableDay;
         while (currentDay < DateUtil.getAddDate(calandarManager.lastDate, -task.duration)) {
             for (const memberId of memberIds) {
-                const isTaskAssignable = this._taskAssignablePolicy.isTaskAssignableForce(
+                const isTaskAssignable = this._taskAssignablePolicy.isTaskAssignable(
                     taskId,
                     memberId,
                     currentDay,
                     planedTask,
-                    taskManager
+                    taskManager,
+                    mileStoneManager
                 );
                 if (isTaskAssignable) {
                     return planedTask.assignTask(task, memberId, currentDay, task.duration);;

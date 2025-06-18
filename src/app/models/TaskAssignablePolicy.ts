@@ -1,8 +1,9 @@
 import { UUID } from "../common/IdUtil";
-import { PhaseEnum, previousPhase } from "../common/PhaseEnum";
-import MileStoneCalculator from "./MileStoneCalculator";
+import { PhaseEnum,  } from "../common/PhaseEnum";
+import { TicketAssignStatus } from "../common/TicketAssignStatusEnum";
 import { MileStoneManager } from "./MileStoneManager";
 import { PhaseCalculator } from "./PhaseCalculator";
+import { PhaseStatusPolicy } from "./PhaseStatusPolicy";
 import { PlanedTask } from "./PlanedTask";
 import { TaskManager } from "./TaskManager";
 
@@ -10,7 +11,7 @@ export default class TaskAssignablePolicy {
 
     private _phaseCalculator = new PhaseCalculator();
 
-    private _mileStoneCalculator = new MileStoneCalculator();
+    private _phaseStatusPolicy = new PhaseStatusPolicy();
     /**
      * タスクが割り当て可能かどうかを判定します。  
      * あらゆるポリシーを考慮して、メンバーにタスクを割り当てることができるかどうかを判断します。  
@@ -38,14 +39,13 @@ export default class TaskAssignablePolicy {
 
         const phase = task.phase;
 
-        // 前工程の終了日がstartDayより前であることを確認
-        const isPrePhaseEnd = this.isPhaseFinishedWithDay(
+        // 本工程が開始可能かどうかを確認
+        const isPrePhaseEnd = this._phaseStatusPolicy.judgePhaseStatus(
             task.ticketId,
-            previousPhase(phase),
-            startDay,
+            phase,
             taskManager,
             planedTask
-        )
+        ) === TicketAssignStatus.STARTABLE;
 
         //TODO 必須タスクがある場合、必須タスクの終了日がstartDayより前であることを確認
         const requiredTasks = true; // ここでは仮にtrueとしています。実際には必要なロジックを実装してください。
