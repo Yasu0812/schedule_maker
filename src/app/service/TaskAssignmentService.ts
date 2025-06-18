@@ -98,7 +98,8 @@ export class TaskAssignmentService {
         const fastestAssignableDay = this._calendarDayCalculator.fastestAssignableDay(ticketPhaseFinishDay);
 
         let currentDay = fastestAssignableDay;
-        while (currentDay < DateUtil.getAddDate(calandarManager.lastDate, -task.duration)) {
+        const lastDate = calandarManager.lastDate;
+        while (DateUtil.getAddDate(currentDay, task.duration - 1) <= lastDate) {
             for (const memberId of memberIds) {
                 const isTaskAssignable = this._taskAssignablePolicy.isTaskAssignable(
                     taskId,
