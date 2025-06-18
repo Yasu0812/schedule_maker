@@ -91,10 +91,6 @@ export class TaskAssignmentService {
             prePhase
         );
 
-        if (!ticketPhaseFinishDay) {
-            throw new Error(`Ticket phase finish day not found for task: ${task.id}`);
-        }
-
         const fastestAssignableDay = this._calendarDayCalculator.fastestAssignableDay(ticketPhaseFinishDay);
 
         let currentDay = fastestAssignableDay;
@@ -116,7 +112,7 @@ export class TaskAssignmentService {
             currentDay = DateUtil.getEndDateNoHoliday(currentDay, 1);
         }
 
-        throw new Error(`No available members to assign task: ${task.id} before last date: ${calandarManager.lastDate}`);
+        return planedTask;
 
     }
 }
