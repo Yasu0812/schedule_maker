@@ -7,6 +7,8 @@ import { TaskManager } from "@/app/models/TaskManager";
 import { MemberManager } from "@/app/models/MemberManager";
 import { ScheduleConfiguration } from "@/app/models/ScheduleConfiguration";
 import { DateUtil } from "@/app/common/DateUtil";
+import { MileStoneLine } from "./MileStoneLine";
+import { MileStoneManager } from "@/app/models/MileStoneManager";
 
 export default function CalendarBox(
     props: {
@@ -14,6 +16,7 @@ export default function CalendarBox(
         memberManager: MemberManager,
         taskManager: TaskManager,
         planedTaskManager: PlanedTask,
+        mileStoneManager: MileStoneManager,
         setPlanedTaskManager: (planedTaskManager: PlanedTask) => void,
         setMemberManager: (memberManager: MemberManager) => void,
         moveTargetTaskId: UUID | undefined,
@@ -29,6 +32,7 @@ export default function CalendarBox(
         memberManager,
         taskManager,
         planedTaskManager,
+        mileStoneManager,
         setPlanedTaskManager,
         setMemberManager,
         moveTargetTaskId,
@@ -63,10 +67,11 @@ export default function CalendarBox(
                     }}
                 />
             </div>
-            <div className="flex items-center gap-2 mb-4">
-            </div>
             <table className="calendar-box">
                 <thead>
+                    <MileStoneLine
+                        mileStoneManager={mileStoneManager}
+                        dayListItems={dayList} />
                     <CalendarHeader dayListItems={dayList} />
                 </thead>
                 <tbody>

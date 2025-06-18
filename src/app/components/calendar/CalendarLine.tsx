@@ -1,5 +1,4 @@
 import { DateUtil } from "@/app/common/DateUtil";
-import CalendarCell from "./CalendarCell";
 import { CalendarLineTask } from "@/app/models/CalendarCellTask";
 import TaskCell from "./TaskCell";
 import { UUID } from "@/app/common/IdUtil";
@@ -76,7 +75,7 @@ export default function CalendarLine(
         return (
             <td key={index} className="calendar-line-item" style={{ position: 'relative', alignItems: "center" }} >
                 <DayColor dayString={dayString}>
-                    <CalendarCell>
+                    <div className={`calendar-cell`}>
                         {!isHoliday && <TaskCell
                             task={task}
                             taskManager={taskManager}
@@ -87,7 +86,7 @@ export default function CalendarLine(
                             memberId={memberId}
                             startDay={day}
                         />}
-                    </CalendarCell>
+                    </div>
                 </DayColor>
             </td>
         );
@@ -124,7 +123,7 @@ export default function CalendarLine(
     return (
         <tr>
             <th scope="row" className="calendar-line-item">
-                <CalendarCell >
+                <div className={`calendar-cell-header`}>
                     {
                         !hasAssignTask && !isEditing && <button
                             className="text-red-500 hover:text-red-700"
@@ -134,7 +133,7 @@ export default function CalendarLine(
                         </button>
                     }
                     {memberArea}
-                </CalendarCell>
+                </div>
             </th>
             {dayListItems}
         </tr>

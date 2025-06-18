@@ -11,6 +11,9 @@ import { TicketSerializable, TicketSerializableType } from "./TicketSerializable
 import { PlanedTaskMapper } from "../PlanedTaskMapper";
 import { AssignedTaskSerializable, AssignedTaskSerializableType } from "./AssignedTaskSerializable";
 import { ScheduleConfigurationSerializable, ScheduleConfigurationSerializableType } from "./ScheduleConfigurationSerializable";
+import { MileStoneSerializable, MileStoneSerializableType } from "./MileStoneSerializable";
+import { MileStone } from "../MileStone";
+import { MileStoneManager } from "../MileStoneManager";
 
 type ScheduleStateJsonType = {
     configration: ScheduleConfigurationSerializableType;
@@ -18,6 +21,7 @@ type ScheduleStateJsonType = {
     tasks: Task[];
     assignedTasks: Record<UUID, AssignedTaskSerializableType>;
     members: Record<UUID, string>;
+    mileStones: Record<UUID, MileStoneSerializableType>;
 };
 
 export class ScheduleStateJson {
@@ -31,6 +35,7 @@ export class ScheduleStateJson {
         const members = Object.fromEntries(scheduleStateManager.memberManager.memberMap);
         const configration = scheduleStateManager.scheduleConfiguration;
         const configrationSerialized = ScheduleConfigurationSerializable.serialize(configration);
+        const mileStones = Object.fromEntries([...scheduleStateManager.mileStoneManager.mileStones.entries()].map(([id, mileStone]) => [id, MileStoneSerializable.serialize(mileStone)]));
 
 
         return JSON.stringify({
@@ -38,19 +43,21 @@ export class ScheduleStateJson {
             tickets: tickets,
             tasks: tasks,
             assignedTasks: assignedTasks,
-            members: members
+            members: members,
+            mileStones: mileStones
         }, null, 2);
     }
 
     public static fromJson(json: string): ScheduleStateManager {
-        const { configration, tickets, tasks, assignedTasks, members } = this.jsonParse(json);
+        const { configration, tickets, tasks, assignedTasks, members, mileStones } = this.jsonParse(json);
         const toManager = this.toManager(
             {
                 configration,
                 tickets,
                 tasks,
                 assignedTasks,
-                members
+                members,
+                mileStones
             }
         );
 
@@ -67,20 +74,22 @@ export class ScheduleStateJson {
         const tasks = data.tasks as Task[];
         const assignedTasks = data.assignedTasks as Record<UUID, AssignedTaskSerializableType>;
         const members = data.members as Record<UUID, string>;
+        const mileStones = data.mileStones as Record<UUID, MileStoneSerializableType>;
 
         return {
             configration: configration,
             tickets: tickets,
             tasks: tasks,
             assignedTasks: assignedTasks,
-            members: members
+            members: members,
+            mileStones: mileStones
         }
     }
 
     private static toManager(
         param: ScheduleStateJsonType
     ) {
-        const { configration, tickets, tasks, assignedTasks, members } = param;
+        const { configration, tickets, tasks, assignedTasks, members, mileStones } = param;
 
 
         const ticketManager = new TicketManager(tickets.map(ticket => TicketSerializable.deserialize(ticket)));
@@ -95,13 +104,15 @@ export class ScheduleStateJson {
         const assignedTasksMap = new Map(Object.entries(assignedTasks).map(([id, assignedTask]) => [id, AssignedTaskSerializable.deserialize(assignedTask)])) as Map<UUID, AssignedTask>;
         const planedTaskManager = new PlanedTask(assignedTasksMap);
 
+        const mileStoneMap = new Map(Object.entries(mileStones).map(([id, mileStone]) => [id, MileStoneSerializable.deserialize(mileStone)])) as Map<UUID, MileStone>;
+        const mileStoneManager = new MileStoneManager(mileStoneMap);
+
         const planedTaskMapper = new PlanedTaskMapper().toCalender(
             memberManager.ids,
             ticketManager,
             taskManager,
             planedTaskManager,
         );
-
         const calendar = new CalendarCellTaskManager(
             memberManager.ids,
             planedTaskMapper,
@@ -115,7 +126,8 @@ export class ScheduleStateJson {
             ticketManager,
             planedTaskManager,
             memberManager,
-            scheduleConfiguration
+            scheduleConfiguration,
+            mileStoneManager
         );
     }
 }

@@ -1,10 +1,25 @@
+import { DateUtil } from '../common/DateUtil';
 import { UUID } from '../common/IdUtil';
-import { PhaseEnum } from '../common/PhaseEnum';
+import { orderedPhases, PhaseEnum } from '../common/PhaseEnum';
 import { MileStone } from './MileStone';
 
 export class MileStoneManager {
 
-    private _mileStones: Map<UUID, MileStone> = new Map();
+    private _mileStones: Map<UUID, MileStone>;
+
+    constructor(mileStones: Map<UUID, MileStone> = new Map<UUID, MileStone>()) {
+        this._mileStones = mileStones;
+    }
+
+    public get mileStones(): Map<UUID, MileStone> {
+        return this._mileStones;
+    }
+
+    public createMileStone(name: string): MileStoneManager {
+        const mileStone = MileStone.create(name);
+        this.addMileStone(mileStone);
+        return this;
+    }
 
     public addMileStone(mileStone: MileStone): void {
         this._mileStones.set(mileStone.id, mileStone);
@@ -22,39 +37,49 @@ export class MileStoneManager {
         this._mileStones.delete(id);
     }
 
-    public getMileStonesByPhase(phase: PhaseEnum): MileStone[] {
-        return Array.from(this._mileStones.values()).filter(mileStone => mileStone.phases.includes(phase));
+    public getMileStoneByDay(day: Date): MileStone[] {
+        return Array.from(this._mileStones.values()).filter(mileStone => {
+            if (!mileStone.day) {
+                return false; // Skip if the mileStone does not have a day set
+            }
+            return DateUtil.formatDateWithHyphenNoTimeZone(mileStone.day) === DateUtil.formatDateWithHyphenNoTimeZone(day);
+        });
     }
 
-    /**
-     * 該当するフェーズのマイルストーンの期間を取得します。
-     * 指定したフェーズにマイルストーンが存在しない場合は、undefinedを返します。
-     * @param phase 
-     * @returns 
-     */
-    public getPhasePeriod(phase: PhaseEnum): { startDay: Date, endDay: Date } | undefined {
-        const phaseMileStones = this.getMileStonesByPhase(phase);
-        if (phaseMileStones.length === 0) {
-            return undefined;
+    public update(
+        id: UUID,
+        newMileStone: MileStone
+    ): void {
+        const existingMileStone = this.getMileStone(id);
+        if (existingMileStone) {
+            this._mileStones.set(id, newMileStone);
+        } else {
+            throw new Error(`MileStone with id ${id} not found`);
         }
-        const startDay = new Date(Math.min(...phaseMileStones.map(m => m.startDay.getTime())));
-        const endDay = new Date(Math.max(...phaseMileStones.map(m => m.endDay.getTime())));
-
-        return { startDay, endDay };
     }
 
-    /**
-     * 指定したフェーズの期間内に指定した日付が含まれるかどうかを判定します。
-     * フェーズに対応するマイルストーンがない場合は、無条件でtrueを返します。
-     * @param phase 
-     * @param baseDate 
-     * @returns 
-     */
-    public isInPhasePeriod(phase: PhaseEnum, baseDate: Date): boolean {
-        const period = this.getPhasePeriod(phase);
-        if (!period) {
-            return true; // フェーズに対応するマイルストーンがない場合は無条件でtrue
+    public isEnabledPhase(phase: PhaseEnum, toDate: Date): boolean {
+
+        for (const mileStone of this._mileStones.values()) {
+            if (mileStone.isDisabledPhase(phase, toDate)) {
+                return false;
+            }
         }
-        return baseDate >= period.startDay && baseDate <= period.endDay;
+        return true;
+    }
+
+    public isDisabledPhase(phase: PhaseEnum, toDate: Date): boolean {
+        return !this.isEnabledPhase(phase, toDate);
+    }
+
+    public getEnabledPhases(toDate: Date): Set<PhaseEnum> {
+        const enabledPhases = orderedPhases.filter(phase => this.isEnabledPhase(phase, toDate));
+        return new Set(enabledPhases);
+
+    }
+
+    public getDisabledPhases(toDate: Date): Set<PhaseEnum> {
+        const disabledPhases = orderedPhases.filter(phase => this.isDisabledPhase(phase, toDate));
+        return new Set(disabledPhases);
     }
 }

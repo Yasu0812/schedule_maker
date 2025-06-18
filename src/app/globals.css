@@ -31,11 +31,21 @@ body {
 }
 
 .calendar-header-item {
-  align-items: center;
   background-color: var(--foreground);
   color: var(--background);
-  align-content: center;
+  min-width: 75px;
+  height: 1rem;
+  user-select: none;
 
+}
+
+.calendar-cell-header {
+  border: #000080 1px solid;
+  min-width: 120px;
+  height: 35px;
+  align-content: center;
+  user-select: none;
+  
 }
 
 .calendar-cell {
@@ -52,28 +62,27 @@ body {
   border-width: 2px;
 }
 
-table .none{
+table .none {
   background-color: #dfe2df;
   color: #6c757d;
   font-weight: bold;
   text-shadow: 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 
-table .full{
+table .full {
   background-color: #4be6a5;
   color: #155724;
   font-weight: bold;
   text-shadow: 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 
-table .startable{
+table .startable {
   background-color: #e7a044;
   font-weight: bold;
   text-shadow: 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 
-table .disable{
-}
+table .disable {}
 
 table .violation {
   background-color: #db6344;

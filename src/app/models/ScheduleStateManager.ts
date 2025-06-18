@@ -2,6 +2,7 @@ import { UUID } from "../common/IdUtil";
 import { AssignedTask } from "./AssignedTask";
 import { CalendarCellTask, CalendarCellTaskManager } from "./CalendarCellTask";
 import { MemberManager } from "./MemberManager";
+import { MileStoneManager } from "./MileStoneManager";
 import { PlanedTask } from "./PlanedTask";
 import { ScheduleConfiguration } from "./ScheduleConfiguration";
 import { Task } from "./Task";
@@ -17,6 +18,7 @@ export class ScheduleStateManager {
     private _planedTaskManager: PlanedTask;
     private _memberManager: MemberManager;
     private _scheduleConfiguration: ScheduleConfiguration;
+    private _mileStoneManager: MileStoneManager;
 
     constructor(
         calandarManager: CalendarCellTaskManager,
@@ -25,6 +27,7 @@ export class ScheduleStateManager {
         planedTaskManager: PlanedTask,
         memberManager: MemberManager,
         scheduleConfiguration: ScheduleConfiguration,
+        mileStoneManager: MileStoneManager,
     ) {
         this._calandarManager = calandarManager;
         this._taskManager = taskManager;
@@ -32,6 +35,7 @@ export class ScheduleStateManager {
         this._planedTaskManager = planedTaskManager;
         this._memberManager = memberManager;
         this._scheduleConfiguration = scheduleConfiguration;
+        this._mileStoneManager = mileStoneManager;
     }
 
     get calandarManager(): CalendarCellTaskManager {
@@ -58,6 +62,10 @@ export class ScheduleStateManager {
         return this._scheduleConfiguration;
     }
 
+    get mileStoneManager(): MileStoneManager {
+        return this._mileStoneManager;
+    }
+
     public static ScheduleStateManagerFactory(firstDate: Date, lastDate: Date): ScheduleStateManager {
         const calandarManager = new CalendarCellTaskManager([], new Map<string, Map<string, CalendarCellTask>>(), firstDate, lastDate);
         const taskManager = new TaskManager(new Map<UUID, Task>());
@@ -65,6 +73,7 @@ export class ScheduleStateManager {
         const planedTaskManager = new PlanedTask(new Map<UUID, AssignedTask>());
         const memberManager = new MemberManager(new Map<UUID, string>());
         const scheduleConfiguration = ScheduleConfiguration.createDefaultConfiguration();
+        const mileStoneManager = new MileStoneManager();
 
         return new ScheduleStateManager(
             calandarManager,
@@ -72,7 +81,8 @@ export class ScheduleStateManager {
             ticketManager,
             planedTaskManager,
             memberManager,
-            scheduleConfiguration
+            scheduleConfiguration,
+            mileStoneManager
         );
     }
 

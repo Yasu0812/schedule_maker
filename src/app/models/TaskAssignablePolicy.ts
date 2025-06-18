@@ -51,7 +51,7 @@ export default class TaskAssignablePolicy {
         const requiredTasks = true; // ここでは仮にtrueとしています。実際には必要なロジックを実装してください。
 
         // マイルストーンのフェーズに含まれているかどうかを確認
-        const isInMileStone = mileStoneManager.isInPhasePeriod(phase, startDay);
+        const isInMileStone = mileStoneManager.isEnabledPhase(phase, startDay);
 
         // カレンダー上の空きを確認
         const isFree = planedTask.isFree(memberId, taskId, startDay, task.duration);

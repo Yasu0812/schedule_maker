@@ -2,7 +2,6 @@ import { TaskManager } from "@/app/models/TaskManager";
 import { PlanedTask } from "@/app/models/PlanedTask";
 import { UUID } from "@/app/common/IdUtil";
 import UnassignedTasks from "./UnassignedTasks";
-import CardDesign from "../decorator/CardDesign";
 import { UnassignedTaskService } from "@/app/service/UnassignedTaskService";
 import { CalendarCellTaskManager } from "@/app/models/CalendarCellTask";
 
@@ -25,7 +24,7 @@ export default function TaskUnassignedBox(props: {
     );
 
     return (
-        <CardDesign>
+        <>
             <div className="flex items-center gap-2 border-b pb-2">
                 <h2 className="text-lg font-semibold">Unassigned Tasks </h2>
             </div>
@@ -42,6 +41,6 @@ export default function TaskUnassignedBox(props: {
                     setPlanedTaskManager={setPlanedTaskManager}
                 />
             </div>
-        </CardDesign>
+        </>
     );
 }

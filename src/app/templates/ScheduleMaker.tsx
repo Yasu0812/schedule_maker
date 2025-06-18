@@ -15,6 +15,8 @@ import { MemberManager } from "../models/MemberManager";
 import MemberAddForm from "../components/member/MemberAddForm";
 import { ScheduleStateJson } from "../models/serialize/ScheduleStateJson";
 import { ScheduleConfiguration } from "../models/ScheduleConfiguration";
+import MileStoneConfig from "../components/milestone/MileStoneConfig";
+import { MileStoneManager } from "../models/MileStoneManager";
 
 export default function ScheduleMaker(
     props: {
@@ -38,6 +40,7 @@ export default function ScheduleMaker(
                 prevSchedule.planedTaskManager,
                 prevSchedule.memberManager,
                 prevSchedule.scheduleConfiguration,
+                prevSchedule.mileStoneManager,
             );
         });
     }, [setSchedule]);
@@ -53,6 +56,7 @@ export default function ScheduleMaker(
                 prevSchedule.planedTaskManager,
                 prevSchedule.memberManager,
                 prevSchedule.scheduleConfiguration,
+                prevSchedule.mileStoneManager,
             );
         });
     }, [setSchedule]);
@@ -77,6 +81,7 @@ export default function ScheduleMaker(
                 planedTaskManager,
                 prevSchedule.memberManager,
                 prevSchedule.scheduleConfiguration,
+                prevSchedule.mileStoneManager,
             );
         });
     }, [setSchedule])
@@ -100,6 +105,7 @@ export default function ScheduleMaker(
                 prevSchedule.planedTaskManager,
                 memberManager,
                 prevSchedule.scheduleConfiguration,
+                prevSchedule.mileStoneManager,
             );
         });
     }, [setSchedule])
@@ -124,11 +130,26 @@ export default function ScheduleMaker(
                 prevSchedule.planedTaskManager,
                 prevSchedule.memberManager,
                 scheduleConfiguration,
+                prevSchedule.mileStoneManager,
             );
         });
     }, [setSchedule])
 
+    const handleMilestoneManagerChange = useCallback((mileStoneManager: MileStoneManager) => {
+        setSchedule((prevSchedule) => {
+            if (!prevSchedule) return prevSchedule;
 
+            return new ScheduleStateManager(
+                prevSchedule.calandarManager,
+                prevSchedule.taskManager,
+                prevSchedule.ticketManager,
+                prevSchedule.planedTaskManager,
+                prevSchedule.memberManager,
+                prevSchedule.scheduleConfiguration,
+                mileStoneManager,
+            );
+        });
+    }, [setSchedule]);
 
 
     const handleMoveTargetTask = useCallback((taskId: UUID | undefined) => {
@@ -145,6 +166,7 @@ export default function ScheduleMaker(
                             memberManager={schdule.memberManager}
                             taskManager={schdule.taskManager}
                             planedTaskManager={schdule.planedTaskManager}
+                            mileStoneManager={schdule.mileStoneManager}
                             setPlanedTaskManager={handlePlanedTaskManagerChange}
                             setMemberManager={handleMemberManagerChange}
                             moveTargetTaskId={moveTargetTaskId}
@@ -184,16 +206,20 @@ export default function ScheduleMaker(
             <GhostJelly taskId={moveTargetTaskId} taskManager={schdule.taskManager} />
 
             <div className="w-full">
-                <TaskUnassignedBox
-                    taskManager={schdule.taskManager}
-                    memberids={schdule.memberManager.ids}
-                    planedTaskManager={schdule.planedTaskManager}
-                    calendarManager={schdule.calandarManager}
-                    setTaskManager={handleTaskManagerChange}
-                    moveTargetTaskId={moveTargetTaskId}
-                    handleMoveTargetTask={handleMoveTargetTask}
-                    setPlanedTaskManager={handlePlanedTaskManagerChange}
-                />
+                <CardDesign>
+
+                    <TaskUnassignedBox
+                        taskManager={schdule.taskManager}
+                        memberids={schdule.memberManager.ids}
+                        planedTaskManager={schdule.planedTaskManager}
+                        calendarManager={schdule.calandarManager}
+                        setTaskManager={handleTaskManagerChange}
+                        moveTargetTaskId={moveTargetTaskId}
+                        handleMoveTargetTask={handleMoveTargetTask}
+                        setPlanedTaskManager={handlePlanedTaskManagerChange}
+                    />
+                </CardDesign>
+
             </div>
             <div className="w-1/3">
                 <CardDesign>
@@ -214,6 +240,15 @@ export default function ScheduleMaker(
                     setTaskManager={handleTaskManagerChange}
                     setPlanedTask={handlePlanedTaskManagerChange}
                 />
+            </div>
+            <div>
+                <CardDesign>
+                    <h2 className="text-xl font-bold mb-4">設定</h2>
+                    <MileStoneConfig
+                        mileStoneManager={schdule.mileStoneManager}
+                        setMileStoneManager={handleMilestoneManagerChange}
+                    />
+                </CardDesign>
             </div>
 
 
