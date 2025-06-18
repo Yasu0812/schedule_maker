@@ -244,7 +244,6 @@ export default function ScheduleMaker(
             </div>
             <div>
                 <CardDesign>
-                    <h2 className="text-xl font-bold mb-4">設定</h2>
                     <MileStoneConfig
                         mileStoneManager={schdule.mileStoneManager}
                         setMileStoneManager={handleMilestoneManagerChange}

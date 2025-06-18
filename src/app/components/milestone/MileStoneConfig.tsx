@@ -17,6 +17,8 @@ export default function MileStoneConfig(
 
     return (
         <div>
+            <h2 className="text-xl font-bold mb-4">MileStones</h2>
+
             <MileStoneList
                 mileStoneManager={mileStoneManager}
                 setMileStoneManager={setMileStoneManager}
