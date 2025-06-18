@@ -1,5 +1,4 @@
 import { UUID } from "../common/IdUtil";
-import { PhaseEnum,  } from "../common/PhaseEnum";
 import { TicketAssignStatus } from "../common/TicketAssignStatusEnum";
 import { MileStoneManager } from "./MileStoneManager";
 import { PhaseCalculator } from "./PhaseCalculator";
@@ -86,28 +85,6 @@ export default class TaskAssignablePolicy {
         const isFree = planedTask.isFree(memberId, taskId, startDay, task.duration);
 
         return isFree;
-    }
-
-    public isPhaseFinishedWithDay(
-        ticketId: UUID,
-        phase: PhaseEnum | undefined,
-        day: Date,
-        taskManager: TaskManager,
-        planedTask: PlanedTask
-    ): boolean {
-        const phaseEndDay = this._phaseCalculator.ticketPhaseEndDay(
-            ticketId,
-            phase,
-            taskManager,
-            planedTask
-        );
-
-        if (!phaseEndDay) {
-            return false; // フェーズの終了日が未定の場合はfalse
-        }
-
-        // 指定された日がフェーズより後であることを確認
-        return day > phaseEndDay;
     }
 
 }
