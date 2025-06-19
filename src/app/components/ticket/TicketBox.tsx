@@ -2,7 +2,6 @@ import { TicketManager } from "@/app/models/Ticket";
 import TicketDetail from "./TicketDetail";
 import { PhaseEnum } from "@/app/common/PhaseEnum";
 import { UUID } from "@/app/common/IdUtil";
-import TrashIcon from "../atom/TrashIcon";
 import CancelIcon from "../atom/CancelIcon";
 import { TicketUpdateService } from "@/app/service/TicketUpdateService";
 import { useState } from "react";
@@ -12,11 +11,10 @@ export default function TicketBox(props: {
     ticketManager: TicketManager,
     setTicketManager: (ticketManager: TicketManager) => void;
     changeHandler: (ticketId: UUID, phase: PhaseEnum, increment: boolean) => void;
-    deleteHandler: () => void;
     cancelHander: () => void;
 }) {
 
-    const { ticketId, ticketManager, changeHandler, deleteHandler, cancelHander } = props;
+    const { ticketId, ticketManager, changeHandler, cancelHander } = props;
     const ticket = ticketManager.getTicket(ticketId);
 
     const [inputName, setInputName] = useState(ticket?.title || "");
@@ -53,7 +51,6 @@ export default function TicketBox(props: {
                 <div className="py-1">Ticket Name : </div><input type="text" value={inputName} onChange={onChange} className="ml-2 border rounded px-2 py-1" />
                 <nav className="ml-auto flex">
                     <CancelIcon onClick={cancelHander} />
-                    <TrashIcon onClick={deleteHandler} className="ml-2" />
                 </nav>
             </div>
             <TicketDetail ticketPhases={ticket.phases} pushPlus={pushPlus} pushMinus={pushMinus} />

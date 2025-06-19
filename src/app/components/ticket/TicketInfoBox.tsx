@@ -33,7 +33,6 @@ export default function TicketInfoBox(props: {
                 ticketManager={ticketManager}
                 setTicketManager={setTicketManager}
                 changeHandler={changeHandler}
-                deleteHandler={() => { deleteHandler(ticketId); hideModal() }}
                 cancelHander={hideModal}
 
             />
@@ -52,6 +51,7 @@ export default function TicketInfoBox(props: {
                         setTicketManager={setTicketManager}
                         setTaskManager={setTaskManager}
                         handleSelectTicket={handleSelectTicket}
+                        deleteHandler={deleteHandler}
                         selectedId={selectedTicketId}
                     />
                 </CardDesign>
