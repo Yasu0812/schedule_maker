@@ -2,19 +2,24 @@ import { TaskManager } from "@/app/models/TaskManager";
 import { JellyBean } from "../decorator/JellyBean";
 import { UUID } from "@/app/common/IdUtil";
 import { useState, useEffect } from "react";
+import { TicketManager } from "@/app/models/Ticket";
+import { NameResolveService } from "@/app/service/NameResolveService";
 
 export function GhostJelly(
     props: {
         taskId: UUID | undefined,
+        ticketManager: TicketManager,
         taskManager: TaskManager,
     },
 ) {
 
-    const { taskId, taskManager } = props;
+    const { taskId, ticketManager, taskManager } = props;
 
     const task = taskManager.getTask(taskId);
 
     const [pos, setPos] = useState({ x: 0, y: 0 });
+
+    const tickeTitle = taskId ? new NameResolveService().resolveTaskName(taskId, ticketManager, taskManager) : "";
 
     useEffect(() => {
         const handleMouseMove = (e: MouseEvent) => {
@@ -36,7 +41,7 @@ export function GhostJelly(
                     userSelect: "none",
                 }}>
                     <JellyBean width={75 * task.duration} height={34} phase={task.phase} selected={false}>
-                        {task.tickeTitle}
+                        {tickeTitle}
                     </JellyBean>
                 </div>
             }

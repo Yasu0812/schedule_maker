@@ -140,4 +140,21 @@ export class TicketUpdateService {
 
         return this.changeDuration(ticketId, phase, newDuration, ticketManager, taskManager, planedTaskManager);
     }
+
+    public changeTitle(
+        ticketId: UUID,
+        newTitle: string,
+        ticketManager: TicketManager
+    ): TicketManager {
+        const ticket = ticketManager.getTicket(ticketId);
+        if (!ticket) {
+            throw new Error(`Ticket with ID ${ticketId} not found`);
+        }
+
+        if (newTitle.trim() === "") {
+            throw new Error("Ticket name cannot be empty");
+        }
+
+        return ticketManager.changeTicketTitle(ticketId, newTitle);
+    }
 }

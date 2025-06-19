@@ -82,7 +82,7 @@ export default function PhaseDurationInput(props: {
                         const newValue = parseInt(e.currentTarget.value, 10);
                         submitValue(newValue);
                     }}
-                    readOnly
+                    // readOnly
                 />
             </div>
             <div className="pe-1"><MinusButton onClick={decrementHandler} isDisabled={isMinusDisabled} /></div>

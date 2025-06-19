@@ -5,8 +5,10 @@ import UnassignedTasks from "./UnassignedTasks";
 import { UnassignedTaskService } from "@/app/service/UnassignedTaskService";
 import { CalendarCellTaskManager } from "@/app/models/CalendarCellTask";
 import { MileStoneManager } from "@/app/models/MileStoneManager";
+import { TicketManager } from "@/app/models/Ticket";
 
 export default function TaskUnassignedBox(props: {
+    ticketManager: TicketManager,
     taskManager: TaskManager,
     memberids: UUID[],
     planedTaskManager: PlanedTask,
@@ -18,7 +20,7 @@ export default function TaskUnassignedBox(props: {
     setPlanedTaskManager: (planedTaskManager: PlanedTask) => void,
 }) {
 
-    const { taskManager, memberids, planedTaskManager, setTaskManager, moveTargetTaskId, handleMoveTargetTask, calendarManager, setPlanedTaskManager, mileStoneManager } = props;
+    const { ticketManager, taskManager, memberids, planedTaskManager, setTaskManager, moveTargetTaskId, handleMoveTargetTask, calendarManager, setPlanedTaskManager, mileStoneManager } = props;
 
     const unassignedTasks = new UnassignedTaskService().getUnassignedTasks(
         taskManager,
@@ -32,6 +34,7 @@ export default function TaskUnassignedBox(props: {
             </div>
             <div className="overflow-x-hidden" style={{ display: "flex", flexWrap: "wrap" }}>
                 <UnassignedTasks
+                    ticketManager={ticketManager}
                     unassignedTasks={unassignedTasks}
                     taskManager={taskManager}
                     memberids={memberids}

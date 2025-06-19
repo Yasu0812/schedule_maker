@@ -13,11 +13,13 @@ export default function TicketInfoBox(props: {
     ticketManager: TicketManager,
     taskManager: TaskManager,
     planedTask: PlanedTask,
+    setTicketManager: (ticketManager: TicketManager) => void;
+    setTaskManager: (taskManager: TaskManager) => void;
     changeHandler: (ticketId: UUID, phase: PhaseEnum, increment: boolean) => void;
     deleteHandler: (ticketId: UUID) => void;
 }) {
 
-    const { ticketManager, taskManager, planedTask, changeHandler, deleteHandler } = props;
+    const { ticketManager, taskManager, planedTask, setTicketManager, setTaskManager, changeHandler, deleteHandler } = props;
 
     const { showModal, hideModal } = useModal();
 
@@ -29,6 +31,7 @@ export default function TicketInfoBox(props: {
             <TicketBox
                 ticketId={ticketId}
                 ticketManager={ticketManager}
+                setTicketManager={setTicketManager}
                 changeHandler={changeHandler}
                 deleteHandler={() => { deleteHandler(ticketId); hideModal() }}
                 cancelHander={hideModal}
@@ -46,6 +49,8 @@ export default function TicketInfoBox(props: {
                         ticketManager={ticketManager}
                         taskManager={taskManager}
                         planedManager={planedTask}
+                        setTicketManager={setTicketManager}
+                        setTaskManager={setTaskManager}
                         handleSelectTicket={handleSelectTicket}
                         selectedId={selectedTicketId}
                     />

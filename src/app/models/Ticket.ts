@@ -105,12 +105,18 @@ export class TicketManager {
 
         return new TicketManager(ticketList);
 
-
     }
 
     addTicket(ticket: Ticket): TicketManager {
-        this._ticketList.push(ticket);
         this._ticketMap.set(ticket.id, ticket);
+        
+        if (!this._ticketList.some(t => t.id === ticket.id)) {
+            this._ticketList.push(ticket);
+        }else {
+            // 既存のチケットを更新
+            this._ticketList = this._ticketList.map(t => t.id === ticket.id ? ticket : t);
+        }
+
 
         return this;
     }
@@ -226,6 +232,27 @@ export class TicketManager {
         }
 
         return this;
+    }
+
+    changeTicketTitle(
+        ticketId: UUID,
+        newTitle: string,
+    ): TicketManager {
+        const ticket = this.getTicket(ticketId);
+        if (!ticket) {
+            throw new Error(`Ticket with ID ${ticketId} not found`);
+        }
+
+        // チケット名を更新
+        const updatedTicket = new Ticket(
+            ticketId,
+            newTitle,
+            ticket.description,
+            ticket.phases
+        );
+
+        return this.addTicket(updatedTicket);
+
     }
 
 }

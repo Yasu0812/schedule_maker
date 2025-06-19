@@ -1,4 +1,4 @@
-import { orderedPhases, PhaseEnum, phaseNameMap } from "@/app/common/PhaseEnum";
+import { orderedPhases, PhaseEnum, phaseNameMap,  } from "@/app/common/PhaseEnum";
 import { JellyBean } from "../decorator/JellyBean";
 import PhaseDurationInput from "./PhaseDurationInput";
 
@@ -18,9 +18,9 @@ export default function TicketDetail(props: {
     const phases = orderedPhases.map((phase) => {
         const phaseInfo = props.ticketPhases.get(phase);
         return (
-            <div key={phase} className="mb-4 flex">
-                <div className="flex mb-2"><JellyBean phase={phase} width={250} height={30} selected={false}>{phaseNameMap[phase]}</JellyBean></div>
-                <div className="flex mb-2 px-2 items-center">
+            <div key={phase} className="mb-2 flex">
+                <div className="flex"><JellyBean phase={phase} width={250} height={30} selected={false}>{phaseNameMap[phase]}</JellyBean></div>
+                <div className="flex px-2 items-center">
                     <PhaseDurationInput
                         phase={phase}
                         duration={phaseInfo ? phaseInfo.duration : 0}

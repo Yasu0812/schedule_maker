@@ -6,11 +6,15 @@ import { PlanedTask } from "@/app/models/PlanedTask";
 import TicketSummaryRow from "./TicketSummaryRow";
 import { PlanningStatusService } from "@/app/service/PlanningStatusService";
 import { TaskManager } from "@/app/models/TaskManager";
+import PlusButton from "../atom/PlusButton";
+import { TicketRegistrationService } from "@/app/service/TicketRegistrationService";
 
 export default function TicketSummaryBox(props: {
     ticketManager: TicketManager,
     taskManager: TaskManager,
     planedManager: PlanedTask,
+    setTicketManager: (ticketManager: TicketManager) => void;
+    setTaskManager: (taskManager: TaskManager) => void;
     handleSelectTicket: (ticketId: UUID) => void;
     selectedId: UUID | undefined;
 }) {
@@ -21,6 +25,17 @@ export default function TicketSummaryBox(props: {
         props.planedManager
     );
 
+    const onPlusClick = () => {
+
+        const newManagers = new TicketRegistrationService().createNewTicket(
+            props.ticketManager,
+            props.taskManager,
+        );
+
+        props.setTicketManager(newManagers.ticketManager);
+        props.setTaskManager(newManagers.taskManager);
+    }
+
     return (
         <div className="ticket-summary-box">
             <h2 className="text-lg font-semibold mb-4">Ticket Summary</h2>
@@ -29,9 +44,13 @@ export default function TicketSummaryBox(props: {
                 <table>
                     <thead>
                         <tr>
-                            <th className="sticky text-left top-0 bg-white z-5">チケット</th>
+                            <th className="sticky text-left top-0 bg-white z-5">
+                                <div className="flex items-center gap-4">
+                                    チケット <PlusButton onClick={onPlusClick} />
+                                </div>
+                            </th>
                             {orderedPhases.map((phase) => (
-                                <th key={phase} className="sticky  top-0 z-5"><JellyBean width={80} height={30} phase={phase} selected={false}>{phaseNameShortMap[phase]}</JellyBean></th>
+                                <th key={phase} className="sticky bg-white top-0 z-5"><JellyBean width={80} height={30} phase={phase} selected={false}>{phaseNameShortMap[phase]}</JellyBean></th>
                             ))}
                         </tr>
                     </thead>

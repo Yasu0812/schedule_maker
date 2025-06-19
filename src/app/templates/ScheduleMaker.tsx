@@ -10,7 +10,6 @@ import { GetCalendarService } from "../service/GetCalendarService";
 import { UUID } from "../common/IdUtil";
 import { GhostJelly } from "../components/ghostTask/GhostJelly";
 import CardDesign from "../components/decorator/CardDesign";
-import TicketRegistrationBox from "../components/ticket/TicketRegistrationBox";
 import { MemberManager } from "../models/MemberManager";
 import MemberAddForm from "../components/member/MemberAddForm";
 import { ScheduleStateJson } from "../models/serialize/ScheduleStateJson";
@@ -33,8 +32,17 @@ export default function ScheduleMaker(
         setSchedule((prevSchedule) => {
             if (!prevSchedule) return prevSchedule;
 
+            const newCalendarManager = new GetCalendarService().fromPlanedDatas(
+                prevSchedule.scheduleConfiguration.firstDate,
+                prevSchedule.scheduleConfiguration.lastDate,
+                prevSchedule.memberManager,
+                ticketManager,
+                prevSchedule.taskManager,
+                prevSchedule.planedTaskManager,
+            );
+
             return new ScheduleStateManager(
-                prevSchedule.calandarManager,
+                newCalendarManager,
                 prevSchedule.taskManager,
                 ticketManager,
                 prevSchedule.planedTaskManager,
@@ -157,7 +165,7 @@ export default function ScheduleMaker(
     }, []);
 
     return (
-        <div className="flex flex-wrap" style={{ padding: '0.5rem', backgroundColor: '#cccccc' }}>
+        <div className="flex flex-wrap" style={{ backgroundColor: '#cccccc' }}>
             <div style={{ width: '100%' }}>
                 <CardDesign>
                     <div style={{ display: 'flex', overflow: 'scroll' }}>
@@ -203,12 +211,12 @@ export default function ScheduleMaker(
                 </div>
             )}
 
-            <GhostJelly taskId={moveTargetTaskId} taskManager={schdule.taskManager} />
+            <GhostJelly taskId={moveTargetTaskId} ticketManager={schdule.ticketManager} taskManager={schdule.taskManager} />
 
             <div className="w-full">
                 <CardDesign>
-
                     <TaskUnassignedBox
+                        ticketManager={schdule.ticketManager}
                         taskManager={schdule.taskManager}
                         memberids={schdule.memberManager.ids}
                         planedTaskManager={schdule.planedTaskManager}
@@ -222,16 +230,6 @@ export default function ScheduleMaker(
                 </CardDesign>
 
             </div>
-            <div className="w-1/3">
-                <CardDesign>
-                    <TicketRegistrationBox
-                        ticketManager={schdule.ticketManager}
-                        taskManager={schdule.taskManager}
-                        setTicketManager={handleTicketManagerChange}
-                        setTaskManager={handleTaskManagerChange}
-                    />
-                </CardDesign>
-            </div>
             <div className="w-2/3">
                 <TicketManagementBox
                     ticketManager={schdule.ticketManager}
@@ -242,7 +240,7 @@ export default function ScheduleMaker(
                     setPlanedTask={handlePlanedTaskManagerChange}
                 />
             </div>
-            <div>
+            <div className="w-1/3">
                 <CardDesign>
                     <MileStoneConfig
                         mileStoneManager={schdule.mileStoneManager}

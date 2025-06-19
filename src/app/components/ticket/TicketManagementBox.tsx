@@ -49,6 +49,8 @@ export default function TicketManagementBox(props: {
                 ticketManager={ticketManager}
                 taskManager={taskManager}
                 planedTask={planedTask}
+                setTicketManager={setTicketManager}
+                setTaskManager={setTaskManager}
                 changeHandler={changeHandler}
                 deleteHandler={deleteHandler} />
         </div>

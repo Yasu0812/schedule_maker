@@ -8,9 +8,12 @@ import { PlanedTask } from "@/app/models/PlanedTask";
 import { CalendarCellTaskManager } from "@/app/models/CalendarCellTask";
 import { UUID } from "@/app/common/IdUtil";
 import { MileStoneManager } from "@/app/models/MileStoneManager";
+import { TicketManager } from "@/app/models/Ticket";
+import { NameResolveService } from "@/app/service/NameResolveService";
 
 export default function UnassignedTasks(
     props: {
+        ticketManager: TicketManager,
         unassignedTasks: Task[],
         memberids: UUID[],
         taskManager: TaskManager,
@@ -104,6 +107,8 @@ export default function UnassignedTasks(
 
     const unassignedTaskBoxes = sortedUnassignedTasks.map((task) => {
 
+        const ticketTitle = new NameResolveService().resolveTaskName(task.id, props.ticketManager, taskManager);
+
         return (
             <div
                 key={task.id}
@@ -114,7 +119,7 @@ export default function UnassignedTasks(
                 <TaskBeanDiv
                     task={{
                         taskId: task.id,
-                        taskName: task.tickeTitle,
+                        taskName: ticketTitle,
                         taskPhase: task.phase,
                     }}
                     duration={task.duration}

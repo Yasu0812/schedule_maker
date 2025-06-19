@@ -4,6 +4,7 @@ import { AssignedTask } from "./AssignedTask";
 import { PlanedTask } from "./PlanedTask";
 import { Task } from "./Task";
 import { TaskManager } from "./TaskManager";
+import { TicketManager } from "./Ticket";
 
 export class TaskResolver {
 
@@ -50,5 +51,23 @@ export class TaskResolver {
     ): PhaseEnum {
         const { task } = this.resolveTaskAndAssigned(taskId, taskManager, planedTask);
         return task.phase;
+    }
+
+    public resolveTaskName(
+        taskId: UUID,
+        ticketManager: TicketManager,
+        taskManager: TaskManager
+    ): string {
+        const task = taskManager.getTask(taskId);
+        if (!task) {
+            throw new Error(`Task with ID ${taskId} not found`);
+        }
+
+        const ticket = ticketManager.getTicket(task.ticketId);
+        if (!ticket) {
+            throw new Error(`Ticket with ID ${task.ticketId} not found`);
+        }
+
+        return ticket.title;
     }
 }
