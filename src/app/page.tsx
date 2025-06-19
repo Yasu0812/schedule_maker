@@ -40,11 +40,17 @@ export default function Home() {
     return (
         <>
             <ModalProvider>
-                <Header />
-                {!isLoading && schdule && <ScheduleMaker
-                    schdule={schdule}
-                    setSchedule={setSchedule}
-                />}
+                {!isLoading && schdule &&
+                    <><Header
+                        schdule={schdule}
+                        setSchedule={setSchedule}
+                    />
+                        <ScheduleMaker
+                            schdule={schdule}
+                            setSchedule={setSchedule}
+                        />
+                    </>
+                }
                 {isLoading &&
                     <div className="flex justify-center items-center h-screen">
                         <div className="text-2xl">Loading... </div>
