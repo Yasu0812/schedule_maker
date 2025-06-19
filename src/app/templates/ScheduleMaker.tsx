@@ -250,9 +250,6 @@ export default function ScheduleMaker(
                     />
                 </CardDesign>
             </div>
-
-
-
         </div>
 
     );

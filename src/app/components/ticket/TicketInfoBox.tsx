@@ -7,6 +7,7 @@ import { UUID } from "@/app/common/IdUtil";
 import { useState } from "react";
 import TicketSummaryBox from "./TicketSummaryBox";
 import CardDesign from "../decorator/CardDesign";
+import { useModal } from "../modal/ModalContext";
 
 export default function TicketInfoBox(props: {
     ticketManager: TicketManager,
@@ -18,32 +19,23 @@ export default function TicketInfoBox(props: {
 
     const { ticketManager, taskManager, planedTask, changeHandler, deleteHandler } = props;
 
+    const { showModal, hideModal } = useModal();
+
     const [selectedTicketId, setSelectedTicketId] = useState<UUID>();
 
     const handleSelectTicket = (ticketId: UUID) => {
         setSelectedTicketId(ticketId);
-    }
+        showModal(() =>
+            <TicketBox
+                ticketId={ticketId}
+                ticketManager={ticketManager}
+                changeHandler={changeHandler}
+                deleteHandler={() => { deleteHandler(ticketId); hideModal() }}
+                cancelHander={hideModal}
 
-    const handleCancelSelect = () => {
-        setSelectedTicketId(undefined);
-    }
+            />
+        )
 
-    const ticketBox = () => {
-        if (!selectedTicketId) {
-            return null;
-        }
-        const ticket = ticketManager.getTicket(selectedTicketId);
-        if (!ticket) {
-            return null;
-        }
-        return <TicketBox
-            key={ticket.id}
-            tikcet={ticket}
-            changeHandler={changeHandler}
-            deleteHandler={() => deleteHandler(ticket.id)}
-            cancelHander={handleCancelSelect}
-
-        />;
     }
 
     return (
@@ -58,15 +50,6 @@ export default function TicketInfoBox(props: {
                         selectedId={selectedTicketId}
                     />
                 </CardDesign>
-            </div>
-            <div className="relative w-0">
-                {selectedTicketId &&
-                    <div className="absolute z-10">
-                        <CardDesign popup={true}>
-                            {ticketBox()}
-                        </CardDesign>
-                    </div>
-                }
             </div>
         </div>
     );

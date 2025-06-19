@@ -1,4 +1,4 @@
-import { Ticket } from "@/app/models/Ticket";
+import { TicketManager } from "@/app/models/Ticket";
 import TicketDetail from "./TicketDetail";
 import { PhaseEnum } from "@/app/common/PhaseEnum";
 import { UUID } from "@/app/common/IdUtil";
@@ -6,32 +6,39 @@ import TrashIcon from "../atom/TrashIcon";
 import CancelIcon from "../atom/CancelIcon";
 
 export default function TicketBox(props: {
-    tikcet: Ticket
+    ticketId: UUID,
+    ticketManager: TicketManager,
     changeHandler: (ticketId: UUID, phase: PhaseEnum, increment: boolean) => void;
     deleteHandler: () => void;
     cancelHander: () => void;
 }) {
 
+    const { ticketId, ticketManager, changeHandler, deleteHandler, cancelHander } = props;
+    const ticket = ticketManager.getTicket(ticketId);
+
+    if (!ticket) {
+        return <div className="text-red-500">チケットが見つかりません</div>;
+    }
 
     const pushPlus = (phase: PhaseEnum) => {
-        props.changeHandler(props.tikcet.id, phase, true);
+        changeHandler(ticket.id, phase, true);
     }
 
     const pushMinus = (phase: PhaseEnum) => {
-        props.changeHandler(props.tikcet.id, phase, false);
+        changeHandler(ticket.id, phase, false);
     }
 
 
     return (
         <div>
             <div className="flex">
-                チケット名: {props.tikcet.title}
+                チケット名: {ticket.title}
                 <nav className="ml-auto flex">
-                    <CancelIcon onClick={props.cancelHander} />
-                    <TrashIcon onClick={props.deleteHandler} className="ml-2" />
+                    <CancelIcon onClick={cancelHander} />
+                    <TrashIcon onClick={deleteHandler} className="ml-2" />
                 </nav>
             </div>
-            <TicketDetail ticketPhases={props.tikcet.phases} pushPlus={pushPlus} pushMinus={pushMinus} />
+            <TicketDetail ticketPhases={ticket.phases} pushPlus={pushPlus} pushMinus={pushMinus} />
         </div>
     );
 }
