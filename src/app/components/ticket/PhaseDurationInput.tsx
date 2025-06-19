@@ -33,6 +33,7 @@ export default function PhaseDurationInput(props: {
         }
     }
 
+    // FIXME: この呼び出してカレンダー上のタスクが消える場合に、エラーが起こる 原因調査から
     const submitValue = (newValue: number) => {
         if (newValue !== undefined && newValue >= 0 && newValue <= 255) {
             let subValue = duration - newValue;
