@@ -85,13 +85,15 @@ export default function MileStoneEditor(
                         }}
                         className="border p-2 rounded w-full mb-2"
                     />
+                    <h2 className="text-xl font-bold mb-2">Enable Phases</h2>
                     <div className="flex gap-8">
+
                         <div className="mb-2">
-                            <h2 className="text-xl font-bold mb-2">Must Finished</h2>
+                            <h3 className="text-xl mb-2">Before</h3>
                             <PhaseSelector phases={selectedMileStone.prePhases} phaseChange={prePhaseChange} />
                         </div>
                         <div className="mb-2">
-                            <h2 className="text-xl font-bold mb-2">Available</h2>
+                            <h3 className="text-xl mb-2">After</h3>
                             <PhaseSelector phases={selectedMileStone.postPhases} phaseChange={postPhaseChange} />
                         </div>
                     </div>
