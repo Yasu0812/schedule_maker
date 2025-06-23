@@ -4,7 +4,11 @@ import { TicketUpdateService } from "@/app/service/TicketUpdateService";
 import { UUID } from "@/app/common/IdUtil";
 import { PhaseEnum } from "@/app/common/PhaseEnum";
 import { PlanedTask } from "@/app/models/PlanedTask";
-import TicketInfoBox from "./TicketInfoBox";
+import TicketSummaryBox from "./TicketSummaryBox";
+import TicketBox from "./TicketBox";
+import { useModal } from "../modal/ModalContext";
+import { useState } from "react";
+import CardDesign from "../decorator/CardDesign";
 
 
 export default function TicketManagementBox(props: {
@@ -18,19 +22,26 @@ export default function TicketManagementBox(props: {
 
     const { ticketManager, taskManager, planedTask, setTicketManager, setTaskManager, setPlanedTask } = props;
 
+    const { showModal, hideModal } = useModal();
+
     const changeHandler = (
         ticketId: UUID,
         phase: PhaseEnum,
-        increment: boolean
+        newDuration: number
     ) => {
         const ticketUpdateService = new TicketUpdateService();
-        const { ticketManager: newTicketManager, taskManager: newTaskManager, planedTaskManager: newPlanedTaskManager } = increment ?
-            ticketUpdateService.incrementDuration(ticketId, phase, ticketManager, taskManager, planedTask) :
-            ticketUpdateService.decrementDuration(ticketId, phase, ticketManager, taskManager, planedTask);
+        const newManagers = ticketUpdateService.changeDuration(
+            ticketId,
+            phase,
+            newDuration,
+            ticketManager,
+            taskManager,
+            planedTask
+        )
 
-        setTicketManager(newTicketManager);
-        setTaskManager(newTaskManager);
-        setPlanedTask(newPlanedTaskManager);
+        setTicketManager(newManagers.ticketManager);
+        setTaskManager(newManagers.taskManager);
+        setPlanedTask(newManagers.planedTaskManager);
     }
 
     const deleteHandler = (ticketId: UUID) => {
@@ -43,16 +54,37 @@ export default function TicketManagementBox(props: {
         setPlanedTask(newPlanedTaskManager);
     }
 
+    const [selectedTicketId, setSelectedTicketId] = useState<UUID>();
+
+    const handleSelectTicket = (ticketId: UUID) => {
+        setSelectedTicketId(ticketId);
+        showModal(() =>
+            <TicketBox
+                ticketId={ticketId}
+                ticketManager={ticketManager}
+                setTicketManager={setTicketManager}
+                changeHandler={changeHandler}
+                cancelHander={hideModal}
+
+            />
+        )
+
+    }
+
     return (
         <div className="w-full">
-            <TicketInfoBox
-                ticketManager={ticketManager}
-                taskManager={taskManager}
-                planedTask={planedTask}
-                setTicketManager={setTicketManager}
-                setTaskManager={setTaskManager}
-                changeHandler={changeHandler}
-                deleteHandler={deleteHandler} />
+            <CardDesign>
+                <TicketSummaryBox
+                    ticketManager={ticketManager}
+                    taskManager={taskManager}
+                    planedManager={planedTask}
+                    setTicketManager={setTicketManager}
+                    setTaskManager={setTaskManager}
+                    handleSelectTicket={handleSelectTicket}
+                    deleteHandler={deleteHandler}
+                    selectedId={selectedTicketId}
+                />
+            </CardDesign>
         </div>
     );
 }

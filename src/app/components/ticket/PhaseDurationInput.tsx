@@ -7,11 +7,10 @@ export default function PhaseDurationInput(props: {
 
     phase: PhaseEnum;
     duration: number;
-    incrementHandler: () => void;
-    decrementHandler: () => void;
+    changeDuration: (phase: PhaseEnum, duration: number) => void;
 }) {
 
-    const { duration } = props;
+    const { phase, duration } = props;
 
     const [value, setValue] = useState<number | undefined>(duration);
 
@@ -22,34 +21,22 @@ export default function PhaseDurationInput(props: {
     const incrementHandler = () => {
         if (!value || value < 255) {
             setValue((prev) => Number(prev) + 1);
-            props.incrementHandler();
+            props.changeDuration(phase, value ? value + 1 : 1);
         }
     }
 
     const decrementHandler = () => {
         if (!value || value > 0) {
             setValue((prev) => Number(prev) - 1);
-            props.decrementHandler();
+            props.changeDuration(phase, value ? value - 1 : 0);
         }
     }
 
     // FIXME: この呼び出してカレンダー上のタスクが消える場合に、エラーが起こる 原因調査から
     const submitValue = (newValue: number) => {
         if (newValue !== undefined && newValue >= 0 && newValue <= 255) {
-            let subValue = duration - newValue;
-            if (subValue !== 0) {
-                if (subValue > 0) {
-                    while (subValue > 0) {
-                        props.decrementHandler();
-                        subValue--;
-                    }
-                } else {
-                    while (subValue < 0) {
-                        props.incrementHandler();
-                        subValue++;
-                    }
-                }
-            }
+            props.changeDuration(phase, newValue);
+            setValue(newValue);
         }
     }
 
@@ -82,7 +69,7 @@ export default function PhaseDurationInput(props: {
                         const newValue = parseInt(e.currentTarget.value, 10);
                         submitValue(newValue);
                     }}
-                    // readOnly
+                // readOnly
                 />
             </div>
             <div className="pe-1"><MinusButton onClick={decrementHandler} isDisabled={isMinusDisabled} /></div>

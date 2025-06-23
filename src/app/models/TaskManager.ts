@@ -161,14 +161,14 @@ export class TaskManager {
             throw new Error(`Task not found for ticketId: ${ticketId}, phase: ${phase}`);
         }
 
-        const taskSumDuration = taskList.reduce((sum, task) => sum + task.duration, 0);
+        const taskSumDuration = this.sumDurationFromTicketIdWithPhase(ticketId, phase);
         if (taskSumDuration < duration) {
             throw new Error(`Duration to subtract exceeds total task duration: ${taskSumDuration}`);
         }
 
         let substractedDuration = 0;
         while (substractedDuration < duration) {
-            const task = taskList.sort((a, b) => a.duration - b.duration).pop();
+            const task = this.getTaskFromTicketPhase(ticketId, phase).sort((a, b) => a.duration - b.duration).pop();
             if (!task) {
                 break;
             }
@@ -209,6 +209,20 @@ export class TaskManager {
             return { taskManager: this.subDurationFromTask(ticketId, phase, -duration), task: undefined };
         }
         return { taskManager: this, task: undefined };
+    }
+
+    /**
+     * 指定されたチケットIDとフェーズのタスクの合計時間を計算します。
+     * @param ticketId チケットID
+     * @param phase フェーズ
+     * @returns 合計時間
+     */
+    public sumDurationFromTicketIdWithPhase(
+        ticketId: UUID,
+        phase: PhaseEnum,
+    ): number {
+        const taskList = this.getTaskFromTicketPhase(ticketId, phase);
+        return taskList.reduce((sum, task) => sum + task.duration, 0);
     }
 
 }

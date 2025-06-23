@@ -87,6 +87,7 @@ export class Ticket {
  * 
  */
 export class TicketManager {
+
     private _ticketMap: Map<UUID, Ticket> = new Map<UUID, Ticket>();
     private _ticketList: Ticket[] = [];
 
@@ -109,10 +110,10 @@ export class TicketManager {
 
     addTicket(ticket: Ticket): TicketManager {
         this._ticketMap.set(ticket.id, ticket);
-        
+
         if (!this._ticketList.some(t => t.id === ticket.id)) {
             this._ticketList.push(ticket);
-        }else {
+        } else {
             // 既存のチケットを更新
             this._ticketList = this._ticketList.map(t => t.id === ticket.id ? ticket : t);
         }
@@ -163,6 +164,17 @@ export class TicketManager {
             }
         }
         return undefined;
+    }
+
+    getTicketByTitle(title: string) {
+        const tickets = this._ticketList.filter(ticket => ticket.title === title);
+        if (tickets.length === 0) {
+            return undefined; // チケットが見つからない場合
+        }
+        if (tickets.length > 1) {
+            throw new Error(`Multiple tickets found with title "${title}"`);
+        }
+        return tickets[0]; // 一つだけ見つかった場合、そのチケットを返す
     }
 
     changeTicketPhase(

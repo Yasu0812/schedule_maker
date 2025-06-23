@@ -6,6 +6,12 @@ import { TaskManager } from "./TaskManager";
 
 export default class TaskUpdateApplier {
 
+    /**
+     * taskが更新された時に、PlanedTaskの整合性を取る。
+     * @param taskManager 
+     * @param planedTask 
+     * @returns 
+     */
     public updateApply(
         taskManager: TaskManager,
         planedTask: PlanedTask,

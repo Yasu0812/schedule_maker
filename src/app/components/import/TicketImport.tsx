@@ -1,5 +1,5 @@
 import { ScheduleStateManager } from "@/app/models/ScheduleStateManager";
-import { ScheduleStateJson } from "@/app/models/serialize/ScheduleStateJson";
+import { CsvToTicketService } from "@/app/service/CsvToTicketService";
 import { useRef, useState } from "react";
 
 
@@ -19,14 +19,18 @@ export function TicketImport(props: {
             return;
         }
 
+
         const file = inputRef.current.files[0];
 
         const reader = new FileReader();
-        props.setSchedule(undefined);
         reader.onload = (event) => {
             try {
+                if (!props.schedule) {
+                    alert("スケジュールが設定されていません。");
+                    return;
+                }
                 const data = event.target?.result as string;
-                const schedule = ScheduleStateJson.fromJson(data);
+                const schedule = new CsvToTicketService().updateFromCsv(data, props.schedule);
                 props.setSchedule(schedule);
                 props.hideModal();
 
@@ -35,6 +39,7 @@ export function TicketImport(props: {
                 alert("csvの読み込みに失敗しました。正しい形式のファイルを選択してください。");
             }
         };
+
         reader.readAsText(file);
     }
 

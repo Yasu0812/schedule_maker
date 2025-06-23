@@ -100,6 +100,10 @@ export const phaseNameMap: Record<PhaseEnum, string> = {
     [Phase.INTEGRATION_TEST_EXTERNAL]: '外部結合テスト',
 };
 
+export const phaseNameReverseMap: Record<string, PhaseEnum> = Object.fromEntries(
+    Object.entries(phaseNameMap).map(([key, value]) => [value, key as PhaseEnum])
+);
+
 export const phaseNameShortMap: Record<PhaseEnum, string> = {
     [Phase.REQUIREMENTS_DEFINITION]: '要件',
     [Phase.DESIGN]: '設計',

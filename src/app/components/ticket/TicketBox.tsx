@@ -10,7 +10,7 @@ export default function TicketBox(props: {
     ticketId: UUID,
     ticketManager: TicketManager,
     setTicketManager: (ticketManager: TicketManager) => void;
-    changeHandler: (ticketId: UUID, phase: PhaseEnum, increment: boolean) => void;
+    changeHandler: (ticketId: UUID, phase: PhaseEnum, duration: number) => void;
     cancelHander: () => void;
 }) {
 
@@ -23,14 +23,6 @@ export default function TicketBox(props: {
         return <div className="text-red-500">チケットが見つかりません</div>;
     }
 
-    const pushPlus = (phase: PhaseEnum) => {
-        changeHandler(ticket.id, phase, true);
-    }
-
-    const pushMinus = (phase: PhaseEnum) => {
-        changeHandler(ticket.id, phase, false);
-    }
-
     const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const newTitle = e.target.value.trim();
         setInputName(newTitle);
@@ -41,8 +33,15 @@ export default function TicketBox(props: {
 
         const newManager = new TicketUpdateService().changeTitle(ticket.id, newTitle, ticketManager);
         props.setTicketManager(newManager);
-
     }
+
+
+    const changeDuration = (phase: PhaseEnum, duration: number) => {
+        if (duration < 0) {
+            throw new Error(`Duration cannot be negative for phase ${phase}`);
+        }
+        changeHandler(ticketId, phase, duration);
+    };
 
 
     return (
@@ -53,7 +52,7 @@ export default function TicketBox(props: {
                     <CancelIcon onClick={cancelHander} />
                 </nav>
             </div>
-            <TicketDetail ticketPhases={ticket.phases} pushPlus={pushPlus} pushMinus={pushMinus} />
+            <TicketDetail ticketPhases={ticket.phases} changeDuration={changeDuration} />
         </div>
     );
 }
