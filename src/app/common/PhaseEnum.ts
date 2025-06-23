@@ -10,16 +10,6 @@ export const Phase = {
     INTEGRATION_TEST_EXTERNAL: 'integration-test-external', // 外部結合テスト
 } as const;
 
-export type PhaseEnum = typeof Phase[keyof typeof Phase];
-
-export const parsePhase = (phase: string): PhaseEnum => {
-    if (Object.values(Phase).includes(phase as PhaseEnum)) {
-        return phase as PhaseEnum;
-    }
-
-    throw new Error(`Invalid phase: ${phase}`);
-}
-
 export const orderedPhases: PhaseEnum[] = [
     Phase.REQUIREMENTS_DEFINITION,
     Phase.DESIGN,
@@ -31,6 +21,16 @@ export const orderedPhases: PhaseEnum[] = [
     Phase.INTEGRATION_TEST_EXTERNAL_DOCUMENT_CREATION,
     Phase.INTEGRATION_TEST_EXTERNAL,
 ];
+
+export type PhaseEnum = typeof Phase[keyof typeof Phase];
+
+export const parsePhase = (phase: string): PhaseEnum => {
+    if (Object.values(Phase).includes(phase as PhaseEnum)) {
+        return phase as PhaseEnum;
+    }
+
+    throw new Error(`Invalid phase: ${phase}`);
+}
 
 export const afterPhase = (currentPhase: PhaseEnum): PhaseEnum | undefined => {
     const currentIndex = orderedPhases.indexOf(currentPhase);
