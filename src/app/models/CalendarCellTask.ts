@@ -28,7 +28,7 @@ export class CalendarLineTask {
      * コンストラクタ。
      * 
      * @param memberId メンバーのIDを表す文字列。
-     * @param taskMap タスクのマップ。キーはYYYY-MM-DD、値は `CalendarCellTask` オブジェクト。
+     * @param taskMap タスクのマップ。キーはYYYY-MM-DDT00:00:00Z、値は `CalendarCellTask` オブジェクト。
      */
     constructor(
         public readonly memberId: string,
@@ -38,7 +38,7 @@ export class CalendarLineTask {
     /**
      * 指定された日付に対応するタスクを取得します。
      *
-     * @param date - タスクを取得したい日付を表す文字列 (例: "YYYY-MM-DD")。
+     * @param date - タスクを取得したい日付を表す文字列 (例: "YYYY-MM-DDT00:00:00Z")。
      * @returns 指定された日付に対応する `CalendarCellTask` オブジェクト。  
      *          該当するタスクが存在しない場合は `undefined` を返します。
      */

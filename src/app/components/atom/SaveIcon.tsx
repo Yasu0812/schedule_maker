@@ -1,7 +1,9 @@
 
-export default function SaveIcon(props: {
-    onClick?: () => void;
-}) {
+export default function SaveIcon(
+    props: {
+        onClick?: () => void;
+    }
+) {
     return (
         <button
             className="text-blue-500 hover:text-blue-700 focus:outline-none"
