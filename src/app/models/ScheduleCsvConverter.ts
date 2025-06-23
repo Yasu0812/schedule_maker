@@ -1,6 +1,6 @@
 import { DateUtil } from "../common/DateUtil";
 import { phaseNameMap } from "../common/PhaseEnum";
-import { ScheduleStateManager } from "../models/ScheduleStateManager";
+import { ScheduleStateManager } from "./ScheduleStateManager";
 
 export class ScheduleCsvConverter {
 

@@ -1,7 +1,7 @@
 import { ScheduleStateManager } from "@/app/models/ScheduleStateManager";
 import { ScheduleStateJson } from "@/app/models/serialize/ScheduleStateJson";
-import { ScheduleCsvConverter } from "@/app/service/ScheduleCsvConverter";
 import { Dispatch, SetStateAction } from "react";
+import { ScheduleToCsvService } from "@/app/service/ScheduleToCsvService";
 
 export function DataExport(props: {
     schedule: ScheduleStateManager | undefined,
@@ -28,7 +28,7 @@ export function DataExport(props: {
     const csvFileDownload = () => {
         const schedule = props.schedule;
         if (!schedule) return;
-        const csvContent = new ScheduleCsvConverter().toCsv(schedule);
+        const csvContent = new ScheduleToCsvService().toCsv(schedule);
         const blob = new Blob([csvContent], { type: 'text/csv' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
