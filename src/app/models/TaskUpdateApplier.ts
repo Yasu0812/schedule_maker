@@ -10,9 +10,9 @@ export default class TaskUpdateApplier {
         taskManager: TaskManager,
         planedTask: PlanedTask,
     ): PlanedTask {
-        const taskList = planedTask.getList(taskManager.getTaskIds());
+        const assignedTasks = planedTask.getList(taskManager.getTaskIds());
         const newPlanedTask = new PlanedTask(new Map<UUID, AssignedTask>());
-        taskList.forEach(assignedTask => {
+        assignedTasks.forEach(assignedTask => {
             const task = taskManager.getTask(assignedTask.taskId);
 
             if (!task) {
