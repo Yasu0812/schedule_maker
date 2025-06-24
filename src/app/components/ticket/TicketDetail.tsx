@@ -11,7 +11,7 @@ interface TicketPhaseInfo {
 
 export default function TicketDetail(props: {
     ticketPhases: Map<PhaseEnum, TicketPhaseInfo>;
-    changeDuration: (phase: PhaseEnum, duration: number) => void;
+    changeDuration: (phase: PhaseEnum, duration: number) => number;
 }) {
 
     const { ticketPhases, changeDuration } = props;

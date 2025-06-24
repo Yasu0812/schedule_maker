@@ -10,7 +10,7 @@ export default function TicketBox(props: {
     ticketId: UUID,
     ticketManager: TicketManager,
     setTicketManager: (ticketManager: TicketManager) => void;
-    changeHandler: (ticketId: UUID, phase: PhaseEnum, duration: number) => void;
+    changeHandler: (ticketId: UUID, phase: PhaseEnum, duration: number) => number;
     cancelHander: () => void;
 }) {
 
@@ -40,7 +40,7 @@ export default function TicketBox(props: {
         if (duration < 0) {
             throw new Error(`Duration cannot be negative for phase ${phase}`);
         }
-        changeHandler(ticketId, phase, duration);
+        return changeHandler(ticketId, phase, duration);
     };
 
 

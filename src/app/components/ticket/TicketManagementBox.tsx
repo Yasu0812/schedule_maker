@@ -42,6 +42,11 @@ export default function TicketManagementBox(props: {
         setTicketManager(newManagers.ticketManager);
         setTaskManager(newManagers.taskManager);
         setPlanedTask(newManagers.planedTaskManager);
+
+        return newManagers.taskManager.sumDurationFromTicketIdWithPhase(
+            ticketId,
+            phase
+        )
     }
 
     const deleteHandler = (ticketId: UUID) => {

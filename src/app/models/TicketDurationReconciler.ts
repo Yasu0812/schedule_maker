@@ -1,6 +1,5 @@
-import { UUID } from "../common/IdUtil";
+import { generateUUID, UUID } from "../common/IdUtil";
 import { orderedPhases, PhaseEnum } from "../common/PhaseEnum";
-import { ManagedTaskMerger } from "./ManagedTaskMerger";
 import { PlanedTask } from "./PlanedTask";
 import { TaskManager } from "./TaskManager";
 import TaskUpdateApplier from "./TaskUpdateApplier";
@@ -14,9 +13,6 @@ export class TicketDurationReconciler {
 
     private _unassignedTaskSelector: UnassignedTaskSelector = new UnassignedTaskSelector();
 
-    private _managedTaskMerger: ManagedTaskMerger = new ManagedTaskMerger();
-
-
     public changeDuration(
         ticketId: UUID,
         phase: PhaseEnum,
@@ -25,6 +21,7 @@ export class TicketDurationReconciler {
         taskManager: TaskManager,
         planedTaskManager: PlanedTask
     ): { ticketManager: TicketManager, taskManager: TaskManager, planedTaskManager: PlanedTask } {
+        // FIXME : 副作用が多すぎるので、エラー時に不整合が起きる 副作用が無いようなコードに書き換えたい
         const ticket = ticketManager.getTicket(ticketId);
         if (!ticket) {
             throw new Error(`Ticket with ID ${ticketId} not found`);
@@ -36,45 +33,66 @@ export class TicketDurationReconciler {
             throw new Error(`Duration cannot be negative for ticket ${ticketId}, phase ${phase}`);
         }
 
+        const beforeUnassignedTask = () => this._unassignedTaskSelector
+            .getMinDurationTask(ticketId, phase, taskManager, planedTaskManager);
+
         const diffDuration = duration - beforeDuration;
-        if (diffDuration === 0) {
+        const newTaskManager = taskManager;
+        let newTicketDuration = beforeDuration;
+        if (diffDuration < 0) {
+            // Decrease duration
+            for (let i = 0; i < -diffDuration; i++) {
+                const unassignedTask = beforeUnassignedTask();
+                if (!unassignedTask) {
+                    break;
+                }
+                newTaskManager.decrementTaskDuration(
+                    unassignedTask.id
+                );
+                newTicketDuration--;
+            }
+        } else if (diffDuration > 0) {
+            // Increase duration
+            for (let i = 0; i < diffDuration; i++) {
+                const unassignedTask = beforeUnassignedTask();
+                if (!unassignedTask) {
+                    newTaskManager.addTask(
+                        {
+                            id: generateUUID(),
+                            ticketId: ticketId,
+                            ticketTitle: ticket.title,
+                            phase: phase,
+                            duration: 1
+                        }
+
+                    );
+                } else {
+                    newTaskManager.incrementTaskDuration(
+                        unassignedTask.id
+                    );
+                }
+                newTicketDuration++;
+            }
+        } else {
             // No change in duration, return the original managers
             return { ticketManager, taskManager, planedTaskManager };
         }
 
-        const beforeUnassignedTask = this._unassignedTaskSelector
-            .getMinDurationTask(ticketId, phase, taskManager, planedTaskManager);
-
         const newTicketManager = ticketManager.replaceDurationToPhase(
             ticketId,
             phase,
-            duration
-        );
-
-        const changeDurations = taskManager.addOrSubDurationToTask(
-            ticketId,
-            ticket.title,
-            phase,
-            diffDuration
-        );
-
-        const newTaskManager = changeDurations.taskManager;
-        const newTask = changeDurations.task;
-
-        const mergedTaskManager = this._managedTaskMerger.getMergedTaskManager(
-            [beforeUnassignedTask?.id, newTask?.id],
-            newTaskManager
+            newTicketDuration
         );
 
         const newPlanedTaskManager = this._taskUpdateApplier.updateApply(
-            taskManager,
+            newTaskManager,
             planedTaskManager
         );
 
 
         return {
             ticketManager: newTicketManager,
-            taskManager: mergedTaskManager,
+            taskManager: newTaskManager,
             planedTaskManager: newPlanedTaskManager
         };
     }

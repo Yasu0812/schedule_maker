@@ -119,96 +119,59 @@ export class TaskManager {
         return Array.from(this._taskMap.keys());
     }
 
-    public addDurationToTask(
-        ticketId: UUID,
-        ticketTitle: string,
-        phase: PhaseEnum,
-        duration: number,
-    ): { taskManager: TaskManager, task: Task } {
-        if (duration <= 0) {
-            throw new Error(`Duration must be greater than 0: ${duration}`);
+    public changeTaskDuration(
+        taskId: UUID,
+        newDuration: number,
+    ): { taskManager: TaskManager, diffDuration: number } {
+        if (newDuration < 0) {
+            throw new Error(`Duration must be greater than 0: ${newDuration}`);
         }
-        const newTask = new Task(
-            generateUUID(),
-            ticketId,
-            ticketTitle,
-            phase,
-            duration,
-        );
-        this.addTask(newTask);
-        return { taskManager: this, task: newTask };
+        const task = this._taskMap.get(taskId);
+        if (!task) {
+            throw new Error(`Task not found for taskId: ${taskId}`);
+        }
+
+        const diffDuration = newDuration - task.duration;
+
+        if (diffDuration === 0) {
+            return { taskManager: this, diffDuration: 0 };
+        }
+
+        this.removeTask(taskId);
+        if (newDuration > 0) {
+            const newTask = new Task(task.id, task.ticketId, task.ticketTitle, task.phase, newDuration);
+            this.addTask(newTask);
+        }
+
+        return { taskManager: this, diffDuration: diffDuration };
     }
 
-    /**
-     * 指定されたチケットの指定されたフェーズのタスクから、指定された時間を減算します。  
-     * 期間が長いタスクから順に減算されます。
-     * @param ticketId チケットID
-     * @param phase フェーズ
-     * @param duration 減算する時間
-     * @returns TaskManager
-     */
-    public subDurationFromTask(
-        ticketId: UUID,
-        phase: PhaseEnum,
-        duration: number,
+    public incrementTaskDuration(
+        taskId: UUID,
     ): TaskManager {
-        if (duration <= 0) {
-            throw new Error(`Duration to subtract must be greater than 0: ${duration}`);
+        const task = this._taskMap.get(taskId);
+        if (!task) {
+            throw new Error(`Task not found for taskId: ${taskId}`);
         }
 
-        const taskList = this.getTaskFromTicketPhase(ticketId, phase);
-        if (taskList.length === 0) {
-            throw new Error(`Task not found for ticketId: ${ticketId}, phase: ${phase}`);
-        }
-
-        const taskSumDuration = this.sumDurationFromTicketIdWithPhase(ticketId, phase);
-        if (taskSumDuration < duration) {
-            throw new Error(`Duration to subtract exceeds total task duration: ${taskSumDuration}`);
-        }
-
-        let substractedDuration = 0;
-        while (substractedDuration < duration) {
-            const task = this.getTaskFromTicketPhase(ticketId, phase).sort((a, b) => a.duration - b.duration).pop();
-            if (!task) {
-                break;
-            }
-            if (task.duration > 0) {
-                const newDuration = task.duration - 1;
-                if (newDuration <= 0) {
-                    this.removeTask(task.id);
-                }
-                else {
-                    this.addTask(new Task(task.id, task.ticketId, task.tickeTitle, task.phase, newDuration));
-                }
-            }
-            substractedDuration += 1;
-
-        }
-        return this;
+        const newDuration = task.duration + 1;
+        return this.changeTaskDuration(taskId, newDuration).taskManager;
     }
 
-    /**
-     * 指定されたチケットの指定されたフェーズのタスクに、指定された時間を追加または減算します。
-     * * durationが正の値の場合は追加、負の値の場合は減算されます。
-     * * ただし、durationが0の場合は何もしません。
-     * @param ticketId 
-     * @param ticketTitle 
-     * @param phase 
-     * @param duration 
-     * @returns 
-     */
-    public addOrSubDurationToTask(
-        ticketId: UUID,
-        ticketTitle: string,
-        phase: PhaseEnum,
-        duration: number,
-    ): { taskManager: TaskManager, readonly task?: Task } {
-        if (duration > 0) {
-            return this.addDurationToTask(ticketId, ticketTitle, phase, duration);
-        } else if (duration < 0) {
-            return { taskManager: this.subDurationFromTask(ticketId, phase, -duration), task: undefined };
+    public decrementTaskDuration(
+        taskId: UUID,
+    ): TaskManager {
+        const task = this._taskMap.get(taskId);
+        if (!task) {
+            throw new Error(`Task not found for taskId: ${taskId}`);
         }
-        return { taskManager: this, task: undefined };
+
+        if (task.duration <= 0) {
+            throw new Error(`Cannot decrement duration below 0 for taskId: ${taskId}`);
+        }
+
+        const newDuration = task.duration - 1;
+        return this.changeTaskDuration(taskId, newDuration).taskManager;
     }
 
     /**

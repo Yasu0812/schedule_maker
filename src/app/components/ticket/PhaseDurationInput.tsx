@@ -7,7 +7,7 @@ export default function PhaseDurationInput(props: {
 
     phase: PhaseEnum;
     duration: number;
-    changeDuration: (phase: PhaseEnum, duration: number) => void;
+    changeDuration: (phase: PhaseEnum, duration: number) => number;
 }) {
 
     const { phase, duration } = props;
@@ -20,22 +20,23 @@ export default function PhaseDurationInput(props: {
 
     const incrementHandler = () => {
         if (!value || value < 255) {
-            setValue((prev) => Number(prev) + 1);
-            props.changeDuration(phase, value ? value + 1 : 1);
+            const newValue = props.changeDuration(phase, value ? value + 1 : 1)
+            setValue(newValue);
         }
     }
 
     const decrementHandler = () => {
         if (!value || value > 0) {
-            setValue((prev) => Number(prev) - 1);
-            props.changeDuration(phase, value ? value - 1 : 0);
+            const newValue = props.changeDuration(phase, value ? value - 1 : 0);
+            setValue(newValue);
+
         }
     }
 
     // FIXME: この呼び出してカレンダー上のタスクが消える場合に、エラーが起こる 原因調査から
-    const submitValue = (newValue: number) => {
-        if (newValue !== undefined && newValue >= 0 && newValue <= 255) {
-            props.changeDuration(phase, newValue);
+    const submitValue = (inValue: number) => {
+        if (inValue !== undefined && inValue >= 0 && inValue <= 255) {
+            const newValue = props.changeDuration(phase, inValue);
             setValue(newValue);
         }
     }
