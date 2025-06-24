@@ -15,7 +15,7 @@ export class TaskMergeSplitter {
         const taskIds = [task.id, ...duration.map(() => generateUUID())];
         duration.forEach((v, i) => {
             if (v > 0) {
-                const newTask = new Task(taskIds[i], task.ticketId, task.tickeTitle, task.phase, v);
+                const newTask = new Task(taskIds[i], task.ticketId, task.ticketTitle, task.phase, v);
                 tasks.push(newTask);
             }
         });
@@ -62,7 +62,7 @@ export class TaskMergeSplitter {
         const mergedTask = new Task(
             tasks[0].id,
             tasks[0].ticketId,
-            tasks[0].tickeTitle,
+            tasks[0].ticketTitle,
             tasks[0].phase,
             totalDuration
         );

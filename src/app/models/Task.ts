@@ -14,7 +14,7 @@ export class Task {
     constructor(
         public readonly id: UUID,
         public readonly ticketId: UUID,
-        public readonly tickeTitle: string,
+        public readonly ticketTitle: string,
         public readonly phase: PhaseEnum,
         public readonly duration: number,
     ) { }
