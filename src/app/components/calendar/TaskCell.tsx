@@ -4,8 +4,6 @@ import { PlanedTask } from "@/app/models/PlanedTask";
 import { TaskAssignmentService } from "@/app/service/TaskAssignmentService";
 import { TaskManager } from "@/app/models/TaskManager";
 import TaskBeanDiv from "../atom/TaskBeanDiv";
-import { parsePhase } from "@/app/common/PhaseEnum";
-import { PlanningStatusService } from "@/app/service/PlanningStatusService";
 import { memo } from "react";
 
 interface TaskAssignmentProps {
@@ -34,8 +32,6 @@ const TaskCell = memo(
             startDay,
         } = props;
         const className = `calendar-task-cell`;
-        const assignedTask = planedTaskManager.get(task?.taskId);
-
 
         const onMouseUp = () => {
             const planedTask = planedTaskManager.get(moveTargetTaskId);
@@ -58,15 +54,6 @@ const TaskCell = memo(
             }
             handleMoveTargetTask(undefined);
         }
-
-        const isFinishedBeforePhase = (assignedTask && task && new PlanningStatusService().isFinishedBeforePhaseWithDay(
-            assignedTask.ticketId,
-            parsePhase(task.taskPhase),
-            taskManager,
-            planedTaskManager,
-            startDay
-
-        )) ? true : false;
 
         const disAssignTask = (taskId: UUID) => {
             const assignedTaskId = planedTaskManager.get(taskId);
@@ -95,7 +82,7 @@ const TaskCell = memo(
                     }} duration={1} moveTargetTaskId={moveTargetTaskId}
                         handleMouseDown={() => handleMoveTargetTask(task.taskId)}
                         handleContextMenu={() => disAssignTask(task.taskId)}
-                        isFinishedBeforePhase={!isFinishedBeforePhase}
+                        isFinishedBeforePhase={!task.isFinishedBeforePhase}
 
                     />
                 }
