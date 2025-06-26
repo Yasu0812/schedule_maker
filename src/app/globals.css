@@ -244,14 +244,6 @@ table .violation {
   z-index: 3;
 }
 
-.jellybean-text {
-  position: relative;
-  z-index: 1;
-  font-size: 0.9rem;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
 .jellybean.selected {
   outline: 4px solid rgba(0, 123, 255, 0.7);
   opacity: 0.6;
