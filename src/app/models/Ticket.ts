@@ -30,6 +30,7 @@ export class TicketPhase {
  * @param id チケットのID
  * @param title チケットのタイトル
  * @param description チケットの説明
+ * @param enabled チケットが有効かどうか
  * @param details チケットの詳細。PhaseEnumをキーに、TicketDetailを値に持つMap
  */
 export class Ticket {
@@ -38,6 +39,7 @@ export class Ticket {
         public readonly id: UUID,
         public readonly title: string,
         public readonly description: string,
+        public readonly enabled: boolean,
         public readonly phases: Map<PhaseEnum, TicketPhase>,
     ) {
     }
@@ -60,6 +62,7 @@ export class Ticket {
             generateUUID(),
             ticketMaterial.title,
             ticketMaterial.description,
+            ticketMaterial.enabled,
             phases
         );
     }
@@ -260,6 +263,7 @@ export class TicketManager {
             ticketId,
             newTitle,
             ticket.description,
+            ticket.enabled,
             ticket.phases
         );
 

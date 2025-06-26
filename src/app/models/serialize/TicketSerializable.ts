@@ -6,10 +6,11 @@ export type TicketSerializableType = {
     id: UUID;
     title: string;
     description: string;
+    enabled: boolean;
     phases: Array<{
         phaseId: UUID;
         duration: number;
-        phase: string; 
+        phase: string;
         description: string;
     }>;
 };
@@ -26,6 +27,7 @@ export class TicketSerializable {
         return {
             id: ticket.id,
             title: ticket.title,
+            enabled: ticket.enabled,
             description: ticket.description,
             phases: phasesArray
         };
@@ -45,6 +47,7 @@ export class TicketSerializable {
             serialized.id,
             serialized.title,
             serialized.description,
+            serialized.enabled,
             phasesMap
         );
     }

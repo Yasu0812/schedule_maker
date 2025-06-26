@@ -62,6 +62,7 @@ export class TicketCsvConverter {
         return {
             title: title,
             description: '',
+            enabled: true,
             phases: phases.map(phase => ({
                 phase: phase.phase,
                 duration: phase.duration,

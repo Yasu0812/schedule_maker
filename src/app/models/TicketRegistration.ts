@@ -47,6 +47,7 @@ export class TicketRegistration {
         return {
             title: "New Ticket",
             description: "",
+            enabled: true,
             phases: [],
         };
     }
