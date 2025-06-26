@@ -35,7 +35,7 @@ const TaskCell = memo(
             memberId,
             startDay,
         } = props;
-        const className = `calendar-task-cell`;
+        const className = `calendar-task-cell h-full`;
 
         const onMouseUp = (e: React.MouseEvent) => {
             if (e.button !== 0) return; // 左クリック以外は無視
@@ -106,6 +106,7 @@ const TaskCell = memo(
     , (prevProps, nextProps) => {
         return (
             prevProps.task?.taskId === nextProps.task?.taskId &&
+            prevProps.task?.taskName === nextProps.task?.taskName &&
             prevProps.moveTargetTaskId === nextProps.moveTargetTaskId &&
             prevProps.memberId === nextProps.memberId &&
             prevProps.startDay.getTime() === nextProps.startDay.getTime() &&

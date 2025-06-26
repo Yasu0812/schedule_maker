@@ -35,7 +35,7 @@ export default function TaskBeanDiv(props: {
             style={{ width: 75 * duration, height: "100%", zIndex: 1, userSelect: "none", pointerEvents: pointerEvents }}
         >
             <JellyBean width={75 * duration} height={36} phase={task?.taskPhase} selected={isSelected} >
-                &nbsp;{task?.taskName} {isFinishedBeforePhase ? "❗️" : ""}
+                {task?.taskName} {isFinishedBeforePhase ? "❗️" : ""}
             </JellyBean>
         </ div>
     );
