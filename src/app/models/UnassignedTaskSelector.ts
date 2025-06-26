@@ -26,16 +26,22 @@ export class UnassignedTaskSelector {
      *
      * @param taskManager タスクの管理を行うTaskManagerインスタンス
      * @param planedTask 割り当て済みタスク情報を持つPlanedTaskインスタンス
+     * @param exclusionTicketIds 除外するチケットIDの配列（オプション）
      * @returns 未割り当てのタスクオブジェクトの配列
      */
     public getUnassignedTasks(
         taskManager: TaskManager,
-        planedTask: PlanedTask
+        planedTask: PlanedTask,
+        exclusionTicketIds?: UUID[]
     ) {
         const { unassignedTaskIds } = this.getUnassignedAndAssignedTaskIds(taskManager, planedTask);
         const unassignedTasks = taskManager.getTaskList(unassignedTaskIds);
 
-        return unassignedTasks;
+        if (exclusionTicketIds && exclusionTicketIds.length > 0) {
+            return unassignedTasks.filter(task => !exclusionTicketIds.includes(task.ticketId));
+        } else {
+            return unassignedTasks;
+        }
     }
 
     public splitUnAndAssignedTask(

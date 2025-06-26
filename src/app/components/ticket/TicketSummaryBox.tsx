@@ -16,6 +16,7 @@ export default function TicketSummaryBox(props: {
     setTicketManager: (ticketManager: TicketManager) => void;
     setTaskManager: (taskManager: TaskManager) => void;
     handleSelectTicket: (ticketId: UUID) => void;
+    checkHandler: (ticketId: UUID) => void;
     deleteHandler: (ticketId: UUID) => void;
     selectedId: UUID | undefined;
 }) {
@@ -50,6 +51,7 @@ export default function TicketSummaryBox(props: {
                                     チケット <PlusButton onClick={onPlusClick} />
                                 </div>
                             </th>
+                            <th className="sticky bg-white top-0 z-5">&nbsp;</th>
                             {orderedPhases.map((phase) => (
                                 <th key={phase} className="sticky bg-white top-0 z-5"><JellyBean width={70} height={30} phase={phase} selected={false}>{phaseNameShortMap[phase]}</JellyBean></th>
                             ))}
@@ -64,6 +66,7 @@ export default function TicketSummaryBox(props: {
                                 isSelected={props.selectedId === ticket.id}
                                 onClick={props.handleSelectTicket}
                                 deleteHandler={() => props.deleteHandler(ticket.id)}
+                                checkHandler={() => props.checkHandler(ticket.id)}
                                 phaseStatuses={getPhaseStatus(ticket.id)}
                             />
                         ))}

@@ -180,6 +180,14 @@ export class TicketManager {
         return tickets[0]; // 一つだけ見つかった場合、そのチケットを返す
     }
 
+    getExclusiveTicketList(): Ticket[] {
+        return this._ticketList.filter(ticket => !ticket.enabled);
+    }
+
+    getExclusiveTicketIds(): UUID[] {
+        return this.getExclusiveTicketList().map(ticket => ticket.id);
+    }
+
     changeTicketPhase(
         ticketId: UUID,
         phase: PhaseEnum,
@@ -269,6 +277,37 @@ export class TicketManager {
 
         return this.addTicket(updatedTicket);
 
+    }
+
+    changeTicketEnabled(
+        ticketId: UUID,
+        enabled: boolean,
+    ): TicketManager {
+        const ticket = this.getTicket(ticketId);
+        if (!ticket) {
+            throw new Error(`Ticket with ID ${ticketId} not found`);
+        }
+
+        // チケットの有効/無効を更新
+        const updatedTicket = new Ticket(
+            ticketId,
+            ticket.title,
+            ticket.description,
+            enabled,
+            ticket.phases
+        );
+
+        return this.addTicket(updatedTicket);
+    }
+
+    toggleTicketEnabled(ticketId: UUID): TicketManager {
+        const ticket = this.getTicket(ticketId);
+        if (!ticket) {
+            throw new Error(`Ticket with ID ${ticketId} not found`);
+        }
+
+        // チケットの有効/無効をトグル
+        return this.changeTicketEnabled(ticketId, !ticket.enabled);
     }
 
 }

@@ -1,3 +1,4 @@
+import { UUID } from "../common/IdUtil";
 import { PlanedTask } from "../models/PlanedTask";
 import { Task } from "../models/Task";
 import { TaskManager } from "../models/TaskManager";
@@ -9,11 +10,18 @@ export class UnassignedTaskService {
     private _unassignedTaskSelector = new UnassignedTaskSelector();
 
 
+    /**
+     * UnassignedTaskService は、未割り当てタスクの取得を担当するサービスクラスです。
+     * 
+     * このサービスは UnassignedTaskSelector を利用して、TaskManager 内のタスクから
+     * 指定された条件に合致する未割り当てタスクを取得します。
+     */
     public getUnassignedTasks(
         taskManager: TaskManager,
-        planedTask: PlanedTask
+        planedTask: PlanedTask,
+        exclusionTicketIds?: UUID[]
     ): Task[] {
-        return this._unassignedTaskSelector.getUnassignedTasks(taskManager, planedTask);
+        return this._unassignedTaskSelector.getUnassignedTasks(taskManager, planedTask, exclusionTicketIds);
     }
 
 }

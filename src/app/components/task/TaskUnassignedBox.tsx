@@ -24,7 +24,8 @@ export default function TaskUnassignedBox(props: {
 
     const unassignedTasks = new UnassignedTaskService().getUnassignedTasks(
         taskManager,
-        planedTaskManager
+        planedTaskManager,
+        ticketManager.getExclusiveTicketIds()
     );
 
     return (
@@ -32,7 +33,7 @@ export default function TaskUnassignedBox(props: {
             <div className="flex items-center gap-2 border-b pb-2">
                 <h2 className="text-lg font-semibold">Unassigned Tasks </h2>
             </div>
-            <div className="overflow-x-hidden" style={{ display: "flex", flexWrap: "wrap" }}>
+            <div className="overflow-x-hidden h-48 overflow-y-auto p-4 scrollbar-thin" style={{ display: "flex", flexWrap: "wrap" }}>
                 <UnassignedTasks
                     ticketManager={ticketManager}
                     unassignedTasks={unassignedTasks}

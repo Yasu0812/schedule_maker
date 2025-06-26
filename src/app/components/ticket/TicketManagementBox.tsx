@@ -59,6 +59,15 @@ export default function TicketManagementBox(props: {
         setPlanedTask(newPlanedTaskManager);
     }
 
+    const checkHandler = (ticketId: UUID) => {
+        const newTicketManager = ticketManager.toggleTicketEnabled(ticketId);
+        const newPlanedTaskManager = planedTask.removeTaskFromTicketId(ticketId);
+
+        setTicketManager(newTicketManager);
+        setPlanedTask(newPlanedTaskManager);
+
+    }
+
     const [selectedTicketId, setSelectedTicketId] = useState<UUID>();
 
     const handleSelectTicket = (ticketId: UUID) => {
@@ -86,6 +95,7 @@ export default function TicketManagementBox(props: {
                     setTicketManager={setTicketManager}
                     setTaskManager={setTaskManager}
                     handleSelectTicket={handleSelectTicket}
+                    checkHandler={checkHandler}
                     deleteHandler={deleteHandler}
                     selectedId={selectedTicketId}
                 />
