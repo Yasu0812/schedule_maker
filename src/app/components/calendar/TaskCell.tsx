@@ -103,14 +103,13 @@ const TaskCell = memo(
             </div>
         );
     }
-    , () => {
+    , (prevProps, nextProps) => {
         return (
-            // prevProps.task?.taskId === nextProps.task?.taskId &&
-            // prevProps.moveTargetTaskId === nextProps.moveTargetTaskId &&
-            // prevProps.memberId === nextProps.memberId &&
-            // prevProps.startDay.getTime() === nextProps.startDay.getTime() &&
-            // prevProps.planedTaskManager.get(prevProps.task?.taskId)?.id === nextProps.planedTaskManager.get(nextProps.task?.taskId)?.id
-            false // TODO: ここを修正して、必要な条件で再レンダリングを制御する
+            prevProps.task?.taskId === nextProps.task?.taskId &&
+            prevProps.moveTargetTaskId === nextProps.moveTargetTaskId &&
+            prevProps.memberId === nextProps.memberId &&
+            prevProps.startDay.getTime() === nextProps.startDay.getTime() &&
+            prevProps.planedTaskManager.get(prevProps.task?.taskId)?.id === nextProps.planedTaskManager.get(nextProps.task?.taskId)?.id
         );
     })
 
