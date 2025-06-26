@@ -40,7 +40,6 @@ body {
 }
 
 .calendar-cell-header {
-  border: #000080 1px solid;
   min-width: 120px;
   height: 35px;
   align-content: center;
@@ -49,7 +48,6 @@ body {
 }
 
 .calendar-cell {
-  border: #000080 1px solid;
   width: 75px;
   height: 35px;
   align-content: center;
@@ -89,6 +87,10 @@ table .violation {
   color: #000;
   font-weight: bold;
   text-shadow: 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.calendar-line-item {
+  border: #000080 2px solid;
 }
 
 .calendar-line-item>.saturday {
