@@ -111,6 +111,10 @@ export class TicketManager {
 
     }
 
+    public get ticketMap(): Map<UUID, Ticket> {
+        return new Map(this._ticketMap);
+    }
+
     addTicket(ticket: Ticket): TicketManager {
         this._ticketMap.set(ticket.id, ticket);
 
