@@ -44,7 +44,7 @@ export default function TicketSummaryRow(props: {
             ))}
             <td className="border px-4 py-2 ticket-summary-cell ">
                 <div>
-                    {ticket.totalDuration ? <>&nbsp;</> : <TrashIcon onClick={props.deleteHandler} />}
+                    {ticket.totalDuration && ticket.enabled ? <>&nbsp;</> : <TrashIcon onClick={props.deleteHandler} />}
                 </div>
             </td>
         </tr>

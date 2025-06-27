@@ -16,6 +16,7 @@ import { ScheduleStateJson } from "../models/serialize/ScheduleStateJson";
 import { ScheduleConfiguration } from "../models/ScheduleConfiguration";
 import MileStoneConfig from "../components/milestone/MileStoneConfig";
 import { MileStoneManager } from "../models/MileStoneManager";
+import DebugState from "../components/debug/DebugState";
 
 export default function ScheduleMaker(
     props: {
@@ -189,26 +190,12 @@ export default function ScheduleMaker(
                 </CardDesign>
             </div>
             {process.env.NODE_ENV === "development" && (
-                <div style={{
-                    position: 'fixed',
-                    bottom: '1rem',
-                    right: '1rem',
-                    background: 'rgba(0,0,0,0.8)',
-                    color: '#0f0',
-                    padding: '1rem',
-                    borderRadius: '10px',
-                    fontFamily: 'monospace',
-                    fontSize: '0.85rem',
-                    maxWidth: '500px',
-                    maxHeight: '300px',
-                    overflow: 'auto',
-                    zIndex: 9999,
-                    boxShadow: '0 0 10px #0f0'
-                }}>
-                    <strong>🛠 Debug State</strong>
-                    <pre>{JSON.stringify(moveTargetTaskId, null, 2)}</pre>
-                    <pre>{schdule && ScheduleStateJson.toJson(schdule)}</pre>
-                </div>
+                <DebugState>
+                    <>
+                        <pre>{JSON.stringify(moveTargetTaskId, null, 2)}</pre>
+                        <pre>{schdule && ScheduleStateJson.toJson(schdule)}</pre>
+                    </>
+                </DebugState>
             )}
 
             <GhostJelly taskId={moveTargetTaskId} ticketManager={schdule.ticketManager} taskManager={schdule.taskManager} />
