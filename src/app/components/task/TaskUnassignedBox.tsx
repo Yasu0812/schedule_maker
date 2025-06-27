@@ -47,7 +47,7 @@ export default function TaskUnassignedBox(props: {
     return (
         <>
             <div className="flex items-center gap-2 border-b pb-2">
-                <h2 className="text-lg font-semibold">Unassigned Tasks </h2>
+                <h2 className="text-lg font-semibold">Unassigned Tasks</h2>
                 <TaskFilter filterOptions={filterOptions} setFilterOptions={setFilterOptions} />
             </div>
             <div className="overflow-x-hidden h-48 overflow-y-auto py-4" style={{ display: "flex", flexWrap: "wrap" }}>
