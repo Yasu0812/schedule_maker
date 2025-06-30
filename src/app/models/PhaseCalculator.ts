@@ -1,15 +1,12 @@
 import { DateUtil } from "../common/DateUtil";
 import { UUID } from "../common/IdUtil";
 import { orderedPhases, PhaseEnum } from "../common/PhaseEnum";
-import { AssignedTaskSelector } from "./AssignedTaskSelector";
 import { PlanedTask } from "./PlanedTask";
 import { TaskManager } from "./TaskManager";
 import { UnassignedTaskSelector } from "./UnassignedTaskSelector";
 
 
 export class PhaseCalculator {
-
-    private _assignedTaskSelector = new AssignedTaskSelector();
 
     private _unassignedTaskSelector = new UnassignedTaskSelector();
 
@@ -18,6 +15,7 @@ export class PhaseCalculator {
      * 割り当て済みのタスクも未割り当てのタスクも存在しない場合は、返り値から除外されます。  
      * 未割り当てのタスクが存在するフェーズは、開始日を最も早いタスクの開始日、終了日は未定とします。  
      * 割り当て済みのタスクが存在するフェーズは、開始日を最も早いタスクの開始日、終了日は最も遅いタスクの終了日とします。   
+     * フェーズごとに独立した計算を行います。前後関係や前提フェーズの考慮をする責務は負っていません。  
      * 返り値のリストの順序は、フェーズの定義に従います。
      * @param ticketId 
      * @param taskManager 
@@ -77,6 +75,27 @@ export class PhaseCalculator {
         }
 
         return phaseStartEndDays;
+
+    }
+
+    public phaseStartDayAndEndDay(
+        ticketId: UUID,
+        taskManager: TaskManager,
+        planedTask: PlanedTask,
+        phase: PhaseEnum
+    ) {
+
+        const phaseMap = this.ticketPhaseStartDayAndEndDay(ticketId, taskManager, planedTask, [phase]);
+
+        const phaseStartEndDays = phaseMap.get(phase);
+        if (!phaseStartEndDays) {
+            return undefined;
+        }
+        return {
+            startDay: phaseStartEndDays.startDay,
+            endDay: phaseStartEndDays.endDay
+        };
+
 
     }
 

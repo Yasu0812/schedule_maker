@@ -1,15 +1,15 @@
 import { DateUtil } from "../common/DateUtil";
 import { UUID } from "../common/IdUtil";
 import { parsePhase } from "../common/PhaseEnum";
-import { PlanningStatusService } from "../service/PlanningStatusService";
 import { CalendarCellTask } from "./CalendarCellTask";
 import { PlanedTask } from "./PlanedTask";
 import { TaskManager } from "./TaskManager";
 import { TicketManager } from "./Ticket";
+import { TicketFinishedPolicy } from "./TicketFinisedPolicy";
 
 export class PlanedTaskMapper {
 
-    private _planningStatusService: PlanningStatusService = new PlanningStatusService();
+    private _ticketFinishedPolicy: TicketFinishedPolicy = new TicketFinishedPolicy();
 
     public toCalender(
         memberIdList: UUID[],
@@ -41,7 +41,7 @@ export class PlanedTaskMapper {
 
                 for (let date = new Date(startDate); date <= new Date(endDate); date.setDate(date.getDate() + 1)) {
                     const dateString = DateUtil.formatDate(date);
-                    const isFinishedBeforePhase = this._planningStatusService.isFinishedBeforePhaseWithDay(
+                    const isFinishedBeforePhase = this._ticketFinishedPolicy.isFinishedBeforePhaseWithDay(
                         assignedTask.ticketId,
                         parsePhase(task.phase),
                         taskManager,

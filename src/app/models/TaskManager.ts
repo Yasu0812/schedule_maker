@@ -1,6 +1,6 @@
 import { Task } from "./Task";
 import { Ticket } from "./Ticket";
-import { PhaseEnum } from "../common/PhaseEnum";
+import { PhaseEnum, previousPhase } from "../common/PhaseEnum";
 import { generateUUID, UUID } from "../common/IdUtil";
 
 /**
@@ -101,6 +101,7 @@ export class TaskManager {
         });
         return taskList;
     }
+
     public getTaskFromTicketPhase(ticketId: string, phase: PhaseEnum): Task[] {
         const taskList: Task[] = [];
         this._taskMap.forEach(task => {
@@ -117,6 +118,26 @@ export class TaskManager {
 
     public getTaskIds(): UUID[] {
         return Array.from(this._taskMap.keys());
+    }
+
+    public getTaskFromTicketPrePhase(
+        ticketId: UUID,
+        phase: PhaseEnum,
+    ): {
+        taskList: Task[],
+        prePhase: PhaseEnum | undefined,
+    } {
+        const prePhase = previousPhase(phase);
+        if (!prePhase) {
+            return { taskList: [], prePhase: undefined };
+        }
+
+        const preTaskList = this.getTaskFromTicketPhase(ticketId, prePhase);
+        if (preTaskList.length === 0) {
+            return this.getTaskFromTicketPrePhase(ticketId, prePhase);
+        }
+
+        return { taskList: preTaskList, prePhase: prePhase };
     }
 
     public changeTaskDuration(
