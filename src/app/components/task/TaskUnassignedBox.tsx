@@ -71,21 +71,24 @@ export default function TaskUnassignedBox(props: {
             <div className="flex items-center gap-4 border-b pb-2">
                 <h2 className="text-lg font-semibold">Unassigned Tasks</h2>
                 <TaskFilter filterOptions={filterOptions} setFilterOptions={setFilterOptions} />
-                <JellyBean width={100} height={100} phase={""} selected={false} disabled={unassignedTasks.length === 0} className="bg-blue-500 hover:bg-blue-700 text-white font-bold">
-                    <button
-                        disabled={unassignedTasks.length === 0}
-                        onClick={fullAutoAssign}
-                    >
-                        Assign<br />All Tasks
-                    </button>
-                </JellyBean>
-                <JellyBean width={100} height={100} phase={""} selected={false} disabled={false} className="bg-red-500 hover:bg-red-700 text-white font-bold">
-                    <button
-                        onClick={allCancelTasks}
-                    >
-                        Cancel<br />All Tasks
-                    </button>
-                </JellyBean>
+                <div onClick={fullAutoAssign}>
+                    <JellyBean width={100} height={100} phase={""} selected={false} disabled={unassignedTasks.length === 0} className="bg-blue-500 hover:bg-blue-700 text-white font-bold">
+                        <button
+                            disabled={unassignedTasks.length === 0}
+                        >
+                            Assign<br />All Tasks
+                        </button>
+                    </JellyBean>
+                </div>
+                <div onClick={allCancelTasks}>
+                    <JellyBean width={100} height={100} phase={""} selected={false} disabled={false} className="bg-red-500 hover:bg-red-700 text-white font-bold">
+                        <button
+                        >
+                            Cancel<br />All Tasks
+                        </button>
+                    </JellyBean>
+                </div>
+
             </div >
             <div className="overflow-x-hidden h-48 overflow-y-auto py-4" style={{ display: "flex", flexWrap: "wrap" }}>
                 <UnassignedTasks
