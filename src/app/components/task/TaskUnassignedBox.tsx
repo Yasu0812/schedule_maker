@@ -58,6 +58,13 @@ export default function TaskUnassignedBox(props: {
         setPlanedTaskManager(newPlanedManager);
     }
 
+    const allCancelTasks = () => {
+        if (confirm("Are you sure you want to cancel all tasks? This action cannot be undone.")) {
+            const newPlanedManager = new TaskAssignmentService().allCancelTasks();
+            setPlanedTaskManager(newPlanedManager);
+        }
+    }
+
 
     return (
         <>
@@ -70,6 +77,13 @@ export default function TaskUnassignedBox(props: {
                         onClick={fullAutoAssign}
                     >
                         Assign<br />All Tasks
+                    </button>
+                </JellyBean>
+                <JellyBean width={100} height={100} phase={""} selected={false} disabled={false} className="bg-red-500 hover:bg-red-700 text-white font-bold">
+                    <button
+                        onClick={allCancelTasks}
+                    >
+                        Cancel<br />All Tasks
                     </button>
                 </JellyBean>
             </div >
