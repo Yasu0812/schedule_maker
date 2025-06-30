@@ -85,6 +85,20 @@ export class UnassignedTaskSelector {
         };
     }
 
+    public getSpllitTaskFromTicketIdToMap(
+        ticketId: UUID,
+        taskManager: TaskManager,
+        planedTask: PlanedTask,
+    ) {
+        const { assignedTasks, unassignedTasks } = this.getSplitTaskFromTicketId(ticketId, taskManager, planedTask);
+        const assignedTaskMap = Map.groupBy(assignedTasks, assignedTask => assignedTask.phase);
+        const unassignedTaskMap = Map.groupBy(unassignedTasks, unassignedTask => unassignedTask.phase);
+        return {
+            assignedTaskMap,
+            unassignedTaskMap,
+        };
+    }
+
     public getSplitTaskFromTicketIdAndPhase(
         ticketId: UUID,
         phase: PhaseEnum,
