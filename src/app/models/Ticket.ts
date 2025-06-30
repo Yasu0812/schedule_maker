@@ -1,5 +1,5 @@
 import { generateUUID, UUID } from "../common/IdUtil";
-import { parsePhase, PhaseEnum } from "../common/PhaseEnum";
+import { parsePhase, PhaseEnum, previousPhase } from "../common/PhaseEnum";
 import { TicketMaterial } from "../types/TicketType";
 
 /**
@@ -80,9 +80,22 @@ export class Ticket {
         return Array.from(this.phases.values());
     }
 
+    public previousPhase(phase: PhaseEnum): TicketPhase | undefined {
+        const previousPhaseEnum = previousPhase(phase);
+        if (!previousPhaseEnum) {
+            return undefined; // 要件定義より前のフェーズは存在しない
+        }
 
+        const preTicketPhase = this.phases.get(previousPhaseEnum);
+
+        if (!preTicketPhase) {
+            return this.previousPhase(previousPhaseEnum);
+        }
+
+        return preTicketPhase;
+
+    }
 }
-
 /**
  * チケットの管理を行うクラス。
  * @param ticketList チケットのリスト
@@ -190,6 +203,14 @@ export class TicketManager {
 
     getExclusiveTicketIds(): UUID[] {
         return this.getExclusiveTicketList().map(ticket => ticket.id);
+    }
+
+    getPreviousPhase(ticketId: UUID, phase: PhaseEnum): TicketPhase | undefined {
+        const ticket = this.getTicket(ticketId);
+        if (!ticket) {
+            throw new Error(`Ticket with ID ${ticketId} not found`);
+        }
+        return ticket.previousPhase(phase);
     }
 
     changeTicketPhase(
