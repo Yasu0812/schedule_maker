@@ -107,6 +107,7 @@ const TaskCell = memo(
         return (
             prevProps.task?.taskId === nextProps.task?.taskId &&
             prevProps.task?.taskName === nextProps.task?.taskName &&
+            prevProps.task?.isFinishedBeforePhase === nextProps.task?.isFinishedBeforePhase &&
             prevProps.moveTargetTaskId === nextProps.moveTargetTaskId &&
             prevProps.memberId === nextProps.memberId &&
             prevProps.startDay.getTime() === nextProps.startDay.getTime() &&
