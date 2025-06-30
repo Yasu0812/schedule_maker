@@ -27,16 +27,14 @@ export class PhaseCalculator {
     public ticketPhaseStartDayAndEndDay(
         ticketId: UUID,
         taskManager: TaskManager,
-        planedTask: PlanedTask
+        planedTask: PlanedTask,
+        phases: PhaseEnum[] = orderedPhases
     ): Map<PhaseEnum, { startDay: Date | undefined, endDay: Date | undefined }> {
 
-        const { assignedTasks, unassignedTasks } = this._unassignedTaskSelector.getSplitTaskFromTicketId(ticketId, taskManager, planedTask);
-        const assignedTaskMap = Map.groupBy(assignedTasks, assignedTask => assignedTask.phase);
-        const unassignedTaskMap = Map.groupBy(unassignedTasks, unassignedTask => unassignedTask.phase);
-
+        const { assignedTaskMap, unassignedTaskMap } = this._unassignedTaskSelector.getSpllitTaskFromTicketIdToMap(ticketId, taskManager, planedTask);
 
         const phaseStartEndDays: Map<PhaseEnum, { startDay: Date | undefined, endDay: Date | undefined }> = new Map();
-        for (const phase of orderedPhases) {
+        for (const phase of phases) {
             const assignedTasksForPhase = assignedTaskMap.get(phase) || [];
             const planedTasksForPhase = planedTask.getList(assignedTasksForPhase.map(at => at.id));
             const unassignedTasksForPhase = unassignedTaskMap.get(phase) || [];
