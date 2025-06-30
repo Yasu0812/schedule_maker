@@ -40,7 +40,7 @@ export class MemberService {
         memberManager: MemberManager,
     ): MemberManager {
 
-        return memberManager.updateMember(memberId, memberName);
+        return memberManager.updateMemberName(memberId, memberName);
 
     }
 }

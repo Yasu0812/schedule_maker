@@ -2,6 +2,7 @@ import { DateUtil } from "../common/DateUtil";
 import { UUID } from "../common/IdUtil";
 import { AssignedTask } from "./AssignedTask";
 import { CalendarCellTask, CalendarCellTaskManager } from "./CalendarCellTask";
+import Member from "./Member";
 import { MemberManager } from "./MemberManager";
 import { MileStoneManager } from "./MileStoneManager";
 import { PlanedTask } from "./PlanedTask";
@@ -75,12 +76,12 @@ export class ScheduleStateManager {
         if (firstDate > lastDate) {
             throw new Error("First date cannot be after last date.");
         }
-        
+
         const calandarManager = new CalendarCellTaskManager([], new Map<string, Map<string, CalendarCellTask>>(), firstDate, lastDate);
         const taskManager = new TaskManager(new Map<UUID, Task>());
         const ticketManager = new TicketManager([]);
         const planedTaskManager = new PlanedTask(new Map<UUID, AssignedTask>());
-        const memberManager = new MemberManager(new Map<UUID, string>());
+        const memberManager = new MemberManager(new Map<UUID, Member>());
         const scheduleConfiguration = ScheduleConfiguration.createDefaultConfiguration();
         const mileStoneManager = new MileStoneManager();
 

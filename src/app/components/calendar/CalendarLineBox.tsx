@@ -35,7 +35,7 @@ export default function CalendarLineBox(
 
     const calendarLineItems = memberIds.map((memberId) => {
         const taskMap = props.allTaskMap.get(memberId) || new CalendarLineTask(memberId, new Map<string, CalendarCellTask>());
-        const member = memberManager.getMember(memberId);
+        const member = memberManager.getMember(memberId)?.name;
         const isEditing = editingMemberId === memberId;
         return (
             <CalendarLine
