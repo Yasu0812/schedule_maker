@@ -1,6 +1,7 @@
 import { DateUtil } from "../common/DateUtil";
 import { UUID } from "../common/IdUtil";
 import { previousPhases } from "../common/PhaseEnum";
+import { AssignedTask } from "../models/AssignedTask";
 import { CalendarCellTaskManager } from "../models/CalendarCellTask";
 import { CalendarDayCalculator } from "../models/CalendarDayCalculator";
 import { MileStoneManager } from "../models/MileStoneManager";
@@ -158,6 +159,13 @@ export class TaskAssignmentService {
         }
 
         return planedTask;
+
+    }
+
+    public allCancelTasks(
+    ): PlanedTask {
+
+        return new PlanedTask(new Map<UUID, AssignedTask>());
 
     }
 }

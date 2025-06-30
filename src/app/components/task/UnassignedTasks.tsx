@@ -117,11 +117,13 @@ export default function UnassignedTasks(
                 onMouseUp={(e) => onMouseUp(e, task.id)}
             >
                 <TaskBeanDiv
-                    task={{
-                        taskId: task.id,
-                        taskName: ticketTitle,
-                        taskPhase: task.phase,
-                    }}
+                    task={
+                        {
+                            taskId: task.id,
+                            taskName: ticketTitle,
+                            taskPhase: task.phase,
+                        }
+                    }
                     duration={task.duration}
                     moveTargetTaskId={moveTargetTaskId}
                     handleMouseDown={() => onMouseDown(task.id)}
