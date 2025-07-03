@@ -6,13 +6,15 @@ export class DateUtil {
      * @param endDateStr 
      * @returns 
      */
-    static generateDayList(startDateStr: string, endDateStr: string): Date[] {
-        const startDate = DateUtil.parseDate(startDateStr);
-        const endDate = DateUtil.parseDate(endDateStr);
+    static generateDayList(startDateStr: string | Date, endDateStr: string | Date): Date[] {
+        const startDate = typeof startDateStr === "string" ? DateUtil.parseDate(startDateStr) : new Date(startDateStr);
+        const endDate = typeof endDateStr === "string" ? DateUtil.parseDate(endDateStr) : new Date(endDateStr);
         const dayList: Date[] = [];
-        const currentDate = new Date(startDate);
+        const [startDateSorted, endDateSorted] = startDate < endDate ? [startDate, endDate] : [endDate, startDate];
 
-        while (currentDate <= endDate) {
+        const currentDate = new Date(startDateSorted);
+
+        while (currentDate <= endDateSorted) {
             dayList.push(new Date(currentDate));
             currentDate.setUTCDate(currentDate.getDate() + 1);
         }
@@ -211,5 +213,22 @@ export class DateUtil {
             return new Date(8640000000000000); // 最大値を返す
         }
         return date;
+    }
+
+    static isSameDay(date1: Date | string, date2: Date | string): boolean {
+        const regex = /^\d{4}-\d{2}-\d{2}T00:00:00Z$/;
+
+        if (typeof date1 === "string" && !regex.test(date1)) {
+            throw new Error("Invalid date format for date1. Expected format is YYYY-MM-DDT00:00:00Z");
+        }
+        if (typeof date2 === "string" && !regex.test(date2)) {
+            throw new Error("Invalid date format for date2. Expected format is YYYY-MM-DDT00:00:00Z");
+        }
+
+        const d1 = typeof date1 === "string" ? DateUtil.parseDate(date1) : new Date(date1);
+        const d2 = typeof date2 === "string" ? DateUtil.parseDate(date2) : new Date(date2);
+        return d1.getUTCFullYear() === d2.getUTCFullYear() &&
+               d1.getUTCMonth() === d2.getUTCMonth() &&
+               d1.getUTCDate() === d2.getUTCDate();
     }
 }
