@@ -43,4 +43,17 @@ export class MemberService {
         return memberManager.updateMemberName(memberId, memberName);
 
     }
+
+    public updateMemberDisableDates(
+        memberId: UUID,
+        disableDates: Date[],
+        isEnabled: boolean,
+        memberManager: MemberManager,
+    ): MemberManager {
+        return memberManager.updateMemberDisableDates(
+            memberId,
+            disableDates,
+            isEnabled
+        );
+    }
 }

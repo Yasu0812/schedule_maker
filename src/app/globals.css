@@ -180,6 +180,14 @@ table .violation {
   text-shadow: 0 1px 1px rgba(0, 0, 0, 0.5);
 }
 
+.calendar-cell>.disabled {
+  background: repeating-linear-gradient(120deg,
+      #c5c5c5,
+      #c5c5c5 8px,
+      #f8f8f8 8px,
+      #f8f8f8 16px);
+}
+
 .calendar-task-cell {
   position: relative;
   display: flex;

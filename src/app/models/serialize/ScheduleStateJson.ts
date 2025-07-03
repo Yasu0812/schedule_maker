@@ -15,13 +15,14 @@ import { MileStoneSerializable, MileStoneSerializableType } from "./MileStoneSer
 import { MileStone } from "../MileStone";
 import { MileStoneManager } from "../MileStoneManager";
 import Member from "../Member";
+import { MemberSerializable, MemberSerializableType } from "./MemberSerializable";
 
 type ScheduleStateJsonType = {
     configration: ScheduleConfigurationSerializableType;
     tickets: TicketSerializableType[];
     tasks: Task[];
     assignedTasks: Record<UUID, AssignedTaskSerializableType>;
-    members: Record<UUID, Member>;
+    members: Record<UUID, MemberSerializableType>;
     mileStones: Record<UUID, MileStoneSerializableType>;
 };
 
@@ -33,7 +34,7 @@ export class ScheduleStateJson {
         const tickets = scheduleStateManager.ticketManager.getTicketList().map(ticket => TicketSerializable.serialize(ticket));
         const tasks = [...scheduleStateManager.taskManager.getTaskAll().values()];
         const assignedTasks = Object.fromEntries([...scheduleStateManager.planedTaskManager.getMap().entries()].map(([id, assignedTask]) => [id, AssignedTaskSerializable.serialize(assignedTask)]));
-        const members = Object.fromEntries(scheduleStateManager.memberManager.memberMap);
+        const members = Object.fromEntries([...scheduleStateManager.memberManager.memberMap.entries()].map(([id, member]) => [id, MemberSerializable.serialize(member)]));
         const configration = scheduleStateManager.scheduleConfiguration;
         const configrationSerialized = ScheduleConfigurationSerializable.serialize(configration);
         const mileStones = Object.fromEntries([...scheduleStateManager.mileStoneManager.mileStones.entries()].map(([id, mileStone]) => [id, MileStoneSerializable.serialize(mileStone)]));
@@ -74,7 +75,7 @@ export class ScheduleStateJson {
         const tickets = data.tickets as TicketSerializableType[];
         const tasks = data.tasks as Task[];
         const assignedTasks = data.assignedTasks as Record<UUID, AssignedTaskSerializableType>;
-        const members = data.members as Record<UUID, Member>;
+        const members = data.members as Record<UUID, MemberSerializableType>;
         const mileStones = data.mileStones as Record<UUID, MileStoneSerializableType>;
 
         return {
@@ -97,7 +98,7 @@ export class ScheduleStateJson {
 
         const taskManager = new TaskManager(new Map(tasks.map(task => [task.id, task])));
 
-        const membersMap = new Map(Object.entries(members)) as Map<UUID, Member>;
+        const membersMap = new Map(Object.entries(members).map(([id, member]) => [id, MemberSerializable.deserialize(member)])) as Map<UUID, Member>;
         const memberManager = new MemberManager(membersMap);
 
         const scheduleConfiguration = ScheduleConfigurationSerializable.deserialize(configration);

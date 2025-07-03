@@ -19,6 +19,7 @@ interface TaskAssignmentProps {
     handleMoveTargetTask: (taskId: UUID | undefined) => void;
     memberId: UUID;
     startDay: Date;
+    isEnabled: boolean;
 }
 
 const TaskCell = memo(
@@ -34,8 +35,9 @@ const TaskCell = memo(
             handleMoveTargetTask,
             memberId,
             startDay,
+            isEnabled
         } = props;
-        const className = `calendar-task-cell h-full`;
+        const className = `calendar-task-cell h-full ${isEnabled ? '' : 'disabled'}`;
 
         const onMouseUp = (e: React.MouseEvent) => {
             if (e.button !== 0) return; // 左クリック以外は無視
@@ -111,7 +113,8 @@ const TaskCell = memo(
             prevProps.moveTargetTaskId === nextProps.moveTargetTaskId &&
             prevProps.memberId === nextProps.memberId &&
             prevProps.startDay.getTime() === nextProps.startDay.getTime() &&
-            prevProps.planedTaskManager.get(prevProps.task?.taskId)?.id === nextProps.planedTaskManager.get(nextProps.task?.taskId)?.id
+            prevProps.planedTaskManager.get(prevProps.task?.taskId)?.id === nextProps.planedTaskManager.get(nextProps.task?.taskId)?.id &&
+            prevProps.isEnabled === nextProps.isEnabled
         );
     })
 
