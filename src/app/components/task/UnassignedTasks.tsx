@@ -10,12 +10,13 @@ import { UUID } from "@/app/common/IdUtil";
 import { MileStoneManager } from "@/app/models/MileStoneManager";
 import { TicketManager } from "@/app/models/Ticket";
 import { NameResolveService } from "@/app/service/NameResolveService";
+import { MemberManager } from "@/app/models/MemberManager";
 
 export default function UnassignedTasks(
     props: {
         ticketManager: TicketManager,
         unassignedTasks: Task[],
-        memberids: UUID[],
+        memberManager: MemberManager,
         taskManager: TaskManager,
         moveTargetTaskId: UUID | undefined,
         planedTaskManager: PlanedTask,
@@ -28,7 +29,7 @@ export default function UnassignedTasks(
 ) {
     const {
         unassignedTasks,
-        memberids,
+        memberManager,
         taskManager,
         moveTargetTaskId,
         setTaskManager,
@@ -93,7 +94,7 @@ export default function UnassignedTasks(
             taskManager,
             calandarManager,
             mileStoneManager,
-            memberids
+            memberManager
         );
 
         setPlanedTaskManager(newPlanedTask);

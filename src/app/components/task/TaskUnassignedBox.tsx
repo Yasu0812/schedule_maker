@@ -11,6 +11,7 @@ import { orderedPhases, PhaseEnum } from "@/app/common/PhaseEnum";
 import { useState } from "react";
 import { TaskAssignmentService } from "@/app/service/TaskAssignmentService";
 import { JellyBean } from "../decorator/JellyBean";
+import { MemberManager } from "@/app/models/MemberManager";
 
 export type FilterOptions = {
     phase: PhaseEnum[];
@@ -20,7 +21,7 @@ export type FilterOptions = {
 export default function TaskUnassignedBox(props: {
     ticketManager: TicketManager,
     taskManager: TaskManager,
-    memberids: UUID[],
+    memberManager: MemberManager,
     planedTaskManager: PlanedTask,
     calendarManager: CalendarCellTaskManager,
     mileStoneManager: MileStoneManager,
@@ -31,7 +32,7 @@ export default function TaskUnassignedBox(props: {
 }) {
 
 
-    const { ticketManager, taskManager, memberids, planedTaskManager, setTaskManager, moveTargetTaskId, handleMoveTargetTask, calendarManager, setPlanedTaskManager, mileStoneManager } = props;
+    const { ticketManager, taskManager, memberManager, planedTaskManager, setTaskManager, moveTargetTaskId, handleMoveTargetTask, calendarManager, setPlanedTaskManager, mileStoneManager } = props;
 
     const [filterOptions, setFilterOptions] = useState<FilterOptions>({
         phase: orderedPhases,
@@ -52,7 +53,7 @@ export default function TaskUnassignedBox(props: {
             taskManager,
             calendarManager,
             mileStoneManager,
-            memberids,
+            memberManager,
             ticketManager.getExclusiveTicketIds(),
         );
         setPlanedTaskManager(newPlanedManager);
@@ -95,7 +96,7 @@ export default function TaskUnassignedBox(props: {
                     ticketManager={ticketManager}
                     unassignedTasks={unassignedTasks}
                     taskManager={taskManager}
-                    memberids={memberids}
+                    memberManager={memberManager}
                     moveTargetTaskId={moveTargetTaskId}
                     planedTaskManager={planedTaskManager}
                     calandarManager={calendarManager}

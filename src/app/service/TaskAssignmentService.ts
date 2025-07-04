@@ -4,6 +4,7 @@ import { previousPhases } from "../common/PhaseEnum";
 import { AssignedTask } from "../models/AssignedTask";
 import { CalendarCellTaskManager } from "../models/CalendarCellTask";
 import { CalendarDayCalculator } from "../models/CalendarDayCalculator";
+import { MemberManager } from "../models/MemberManager";
 import { MileStoneManager } from "../models/MileStoneManager";
 import { PhaseCalculator } from "../models/PhaseCalculator";
 import { PlanedTask } from "../models/PlanedTask";
@@ -72,7 +73,7 @@ export class TaskAssignmentService {
         taskManager: TaskManager,
         calandarManager: CalendarCellTaskManager,
         mileStoneManager: MileStoneManager,
-        memberIds: UUID[],
+        memberManager: MemberManager,
     ): PlanedTask {
         const task = taskManager.getTask(taskId);
         if (!task) {
@@ -105,17 +106,17 @@ export class TaskAssignmentService {
         let currentDay = new Date(fastestAssignableDay);
         const lastDate = calandarManager.lastDate;
         while (DateUtil.getAddDate(currentDay, task.duration - 1) <= lastDate) {
-            for (const memberId of memberIds) {
+            for (const member of memberManager.members) {
                 const isTaskAssignable = this._taskAssignablePolicy.isTaskAssignable(
                     taskId,
-                    memberId,
                     currentDay,
                     planedTask,
                     taskManager,
-                    mileStoneManager
+                    mileStoneManager,
+                    member
                 );
                 if (isTaskAssignable) {
-                    return planedTask.assignTask(task, memberId, currentDay, task.duration);;
+                    return planedTask.assignTask(task, member.id, currentDay, task.duration);;
                 }
             }
             currentDay = DateUtil.getEndDateNoHoliday(currentDay, 1);
@@ -130,7 +131,7 @@ export class TaskAssignmentService {
         taskManager: TaskManager,
         calandarManager: CalendarCellTaskManager,
         mileStoneManager: MileStoneManager,
-        memberIds: UUID[],
+        memberManager: MemberManager,
         exclusionTicketIds: UUID[]
     ): PlanedTask {
 
@@ -149,7 +150,7 @@ export class TaskAssignmentService {
                 taskManager,
                 calandarManager,
                 mileStoneManager,
-                memberIds
+                memberManager
             );
 
             if (assignedPlanedTask.get(task.id)) {

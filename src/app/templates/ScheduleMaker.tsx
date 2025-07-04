@@ -205,7 +205,7 @@ export default function ScheduleMaker(
                     <TaskUnassignedBox
                         ticketManager={schdule.ticketManager}
                         taskManager={schdule.taskManager}
-                        memberids={schdule.memberManager.ids}
+                        memberManager={schdule.memberManager}
                         planedTaskManager={schdule.planedTaskManager}
                         calendarManager={schdule.calandarManager}
                         mileStoneManager={schdule.mileStoneManager}

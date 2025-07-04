@@ -1,6 +1,7 @@
 import { DateUtil } from "../common/DateUtil";
 import { UUID } from "../common/IdUtil";
 import { TicketAssignStatus } from "../common/TicketAssignStatusEnum";
+import Member from "./Member";
 import { MileStoneManager } from "./MileStoneManager";
 import { PhaseCalculator } from "./PhaseCalculator";
 import { PhaseStatusPolicy } from "./PhaseStatusPolicy";
@@ -26,11 +27,11 @@ export default class TaskAssignablePolicy {
      */
     public isTaskAssignable(
         taskId: UUID,
-        memberId: UUID,
         startDay: Date,
         planedTask: PlanedTask,
         taskManager: TaskManager,
-        mileStoneManager: MileStoneManager
+        mileStoneManager: MileStoneManager,
+        member: Member
     ): boolean {
         const task = taskManager.getTask(taskId);
         if (!task) {
@@ -58,10 +59,12 @@ export default class TaskAssignablePolicy {
         const isInMileStoneEnd = mileStoneManager.isEnabledPhase(phase, taskEndDay);
 
         // カレンダー上の空きを確認
-        const isFree = planedTask.isFree(memberId, taskId, startDay, task.duration);
+        const isFree = planedTask.isFree(member.id, taskId, startDay, task.duration);
+
+        const isMemberEnabled = member.disableDates.every(date => !DateUtil.isbetweenDates(taskStartDay, date, taskEndDay));
 
 
-        return isPrePhaseEnd && isInMileStoneStart && isInMileStoneEnd && isFree && requiredTasks;
+        return isPrePhaseEnd && isInMileStoneStart && isInMileStoneEnd && isFree && requiredTasks && isMemberEnabled;
     }
 
     /**
