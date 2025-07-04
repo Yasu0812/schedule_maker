@@ -228,7 +228,11 @@ export class DateUtil {
         const d1 = typeof date1 === "string" ? DateUtil.parseDate(date1) : new Date(date1);
         const d2 = typeof date2 === "string" ? DateUtil.parseDate(date2) : new Date(date2);
         return d1.getUTCFullYear() === d2.getUTCFullYear() &&
-               d1.getUTCMonth() === d2.getUTCMonth() &&
-               d1.getUTCDate() === d2.getUTCDate();
+            d1.getUTCMonth() === d2.getUTCMonth() &&
+            d1.getUTCDate() === d2.getUTCDate();
+    }
+
+    static isbetweenDates(startDate: Date, date: Date, endDate: Date): boolean {
+        return date >= startDate && date <= endDate;
     }
 }
