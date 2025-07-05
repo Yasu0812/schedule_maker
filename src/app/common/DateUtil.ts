@@ -150,12 +150,12 @@ export class DateUtil {
         return newDate;
     }
 
-    static getEndDateNoHoliday(date: Date, addDay: number): Date {
+    static getEndDateNoHoliday(date: Date, addDay: number, additionalHolidays: Date[] = []): Date {
         const newDate = new Date(date);
         let addedDays = 0;
         while (addedDays < addDay) {
             newDate.setUTCDate(newDate.getUTCDate() + 1);
-            if (!this.isHoliday(newDate)) {
+            if (!this.isHoliday(newDate, additionalHolidays)) {
                 addedDays++;
             }
         }
@@ -172,7 +172,15 @@ export class DateUtil {
         return this.getDayOfWeekString(date);
     }
 
-    static isHoliday(date: Date): boolean {
+    static isHoliday(date: Date, additionalHolidays: Date[] = []): boolean {
+        if (additionalHolidays.length > 0) {
+            for (const holiday of additionalHolidays) {
+                if (this.isSameDay(date, holiday)) {
+                    return true;
+                }
+            }
+        }
+
         const day = date.getUTCDay();
         return day === 0 || day === 6;
     }

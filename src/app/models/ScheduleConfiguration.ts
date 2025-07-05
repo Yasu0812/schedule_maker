@@ -4,16 +4,17 @@ export class ScheduleConfiguration {
 
     private readonly _firstDate: Date;
     private readonly _lastDate: Date;
+    private readonly _additionalHolidays: Date[];
 
-    constructor(firstDate: Date | string, lastDate: Date | string) {
+    constructor(
+        firstDate: Date | string,
+        lastDate: Date | string,
+        additionalHolidays: Date[]
+    ) {
 
         this._firstDate = typeof firstDate === 'string' ? DateUtil.parseDate(firstDate) : new Date(firstDate);
         this._lastDate = typeof lastDate === 'string' ? DateUtil.parseDate(lastDate) : new Date(lastDate);
-
-        // // Ensure the first date is before the last date
-        // if (this._firstDate > this._lastDate) {
-        //     throw new Error("First date must be before last date.");
-        // }
+        this._additionalHolidays = additionalHolidays;
 
         const duration = Math.abs(this._lastDate.getTime() - this._firstDate.getTime());
         // if over 1 year, throw error
@@ -47,22 +48,30 @@ export class ScheduleConfiguration {
         return DateUtil.formatDateShow(this._lastDate);
     }
 
+    get additionalHolidays(): Date[] {
+        return this._additionalHolidays;
+    }
+
     public updateDates(firstDate: Date | string, lastDate: Date | string) {
-        return new ScheduleConfiguration(firstDate, lastDate);
+        return new ScheduleConfiguration(firstDate, lastDate, this._additionalHolidays);
     }
 
     public updateFirstDate(firstDate: Date | string): ScheduleConfiguration {
-        return new ScheduleConfiguration(firstDate, this._lastDate);
+        return new ScheduleConfiguration(firstDate, this._lastDate, this._additionalHolidays);
     }
 
     public updateLastDate(lastDate: Date | string): ScheduleConfiguration {
-        return new ScheduleConfiguration(this._firstDate, lastDate);
+        return new ScheduleConfiguration(this._firstDate, lastDate, this._additionalHolidays);
+    }
+
+    public updateAdditionalHolidays(holidays: Date[]): ScheduleConfiguration {
+        return new ScheduleConfiguration(this._firstDate, this._lastDate, holidays);
     }
 
     static createDefaultConfiguration(): ScheduleConfiguration {
         const firstDate = DateUtil.getCurrentMonthFirstDate();
         const lastDate = DateUtil.getCurrentMonthLastDate();
-        return new ScheduleConfiguration(firstDate, lastDate);
+        return new ScheduleConfiguration(firstDate, lastDate, []);
     }
 
 }

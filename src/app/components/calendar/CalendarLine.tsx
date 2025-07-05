@@ -8,6 +8,7 @@ import DayColor from "../decorator/DayColor";
 import { MemberManager } from "@/app/models/MemberManager";
 import { MemberService } from "@/app/service/MemberService";
 import { useState } from "react";
+import { ScheduleConfiguration } from "@/app/models/ScheduleConfiguration";
 
 type memberDisableAreaDragStateType = {
     memberId?: UUID,
@@ -31,6 +32,7 @@ export default function CalendarLine(
         handleMoveTargetTask: (taskId: UUID | undefined) => void,
         isEditing: boolean,
         handleEditMember: (memberId: UUID | undefined) => void,
+        scheduleConfiguration: ScheduleConfiguration,
     }
 ) {
     const dayList = props.dayListItems;
@@ -44,6 +46,7 @@ export default function CalendarLine(
     const moveTargetTaskId = props.moveTargetTaskId;
     const setPlanedTaskManager = props.setPlanedTaskManager;
     const setMemberManager = props.setMemberManager;
+    const scheduleConfiguration = props.scheduleConfiguration;
 
     const hasAssignTask = lineTask.hasTask();
 
@@ -133,7 +136,8 @@ export default function CalendarLine(
 
     const dayListItems = dayList.map((day, index) => {
         const dayString = DateUtil.formatDate(day);
-        const isHoliday = DateUtil.isHoliday(day);
+        const additionalHolidaysStr = scheduleConfiguration.additionalHolidays.map(d => DateUtil.formatDate(d));
+        const isHoliday = DateUtil.isHoliday(day, scheduleConfiguration.additionalHolidays);
         const task = lineTask.getTaskForDate(dayString);
         const isEnabled = !memberManager.isDisabledOn(memberId, day);
 
@@ -142,7 +146,6 @@ export default function CalendarLine(
                 onMouseDown={(e) => {
                     if (e.button !== 0 || task) {
                         // Only handle left mouse button
-                        // If the task is already selected, do not start dragging
                         return;
                     }
                     memberDisableAreaDragStartHandler(
@@ -160,7 +163,7 @@ export default function CalendarLine(
                     memberDisableAreaDragEndHandler();
                 }}
             >
-                <DayColor dayString={dayString}>
+                <DayColor dayString={dayString} additionalHolidays={additionalHolidaysStr}>
                     <div className={`calendar-cell`}>
                         {!isHoliday && <TaskCell
                             task={task}

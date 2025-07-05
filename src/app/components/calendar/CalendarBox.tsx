@@ -6,9 +6,9 @@ import { UUID } from "@/app/common/IdUtil";
 import { TaskManager } from "@/app/models/TaskManager";
 import { MemberManager } from "@/app/models/MemberManager";
 import { ScheduleConfiguration } from "@/app/models/ScheduleConfiguration";
-import { DateUtil } from "@/app/common/DateUtil";
 import { MileStoneLine } from "./MileStoneLine";
 import { MileStoneManager } from "@/app/models/MileStoneManager";
+import CalendarPreference from "./CalendarPreference";
 
 export default function CalendarBox(
     props: {
@@ -48,23 +48,9 @@ export default function CalendarBox(
         <div>
             <div className="flex items-center gap-2 border-b pb-2">
                 <h2 className="text-lg font-semibold">Schedule</h2>
-                <input type="date" className="border rounded p-2"
-                    value={DateUtil.formatDateWithHyphenNoTimeZone(scheduleConfiguration.firstDate)}
-                    onChange={(e) => {
-                        const newFirstDate = DateUtil.parseDateWithHyphen(e.target.value);
-                        const newConfig = scheduleConfiguration.updateFirstDate(newFirstDate);
-                        handleScheduleConfigurationChange(newConfig);
-                    }}
-                />
-                -
-
-                <input type="date" className="border rounded p-2"
-                    value={DateUtil.formatDateWithHyphenNoTimeZone(scheduleConfiguration.lastDate)}
-                    onChange={(e) => {
-                        const newLastDate = DateUtil.parseDateWithHyphen(e.target.value);
-                        const newConfig = scheduleConfiguration.updateLastDate(newLastDate);
-                        handleScheduleConfigurationChange(newConfig);
-                    }}
+                <CalendarPreference
+                    scheduleConfiguration={scheduleConfiguration}
+                    handleScheduleConfigurationChange={handleScheduleConfigurationChange}
                 />
             </div>
             <table className="calendar-box">
@@ -85,6 +71,7 @@ export default function CalendarBox(
                         setMemberManager={setMemberManager}
                         moveTargetTaskId={moveTargetTaskId}
                         handleMoveTargetTask={handleMoveTargetTask}
+                        scheduleConfiguration={scheduleConfiguration}
 
                     />
                 </tbody>
