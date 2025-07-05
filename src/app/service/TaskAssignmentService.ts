@@ -116,7 +116,7 @@ export class TaskAssignmentService {
                     member
                 );
                 if (isTaskAssignable) {
-                    return planedTask.assignTask(task, member.id, currentDay, task.duration);;
+                    return planedTask.assignTask(task, member.id, currentDay, task.duration);
                 }
             }
             currentDay = DateUtil.getEndDateNoHoliday(currentDay, 1);
