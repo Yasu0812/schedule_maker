@@ -144,7 +144,7 @@ export default function CalendarLine(
         return (
             <td key={index} className="calendar-line-item" style={{ position: 'relative', alignItems: "center" }}
                 onMouseDown={(e) => {
-                    if (e.button !== 0 || task) {
+                    if (e.button !== 0 || task || moveTargetTaskId) {
                         // Only handle left mouse button
                         return;
                     }
@@ -161,6 +161,7 @@ export default function CalendarLine(
                 }}
                 onMouseUp={() => {
                     memberDisableAreaDragEndHandler();
+
                 }}
             >
                 <DayColor dayString={dayString} isAdditionalHoliday={isHoliday}>
