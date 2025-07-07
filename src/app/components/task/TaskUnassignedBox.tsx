@@ -12,6 +12,7 @@ import { useState } from "react";
 import { TaskAssignmentService } from "@/app/service/TaskAssignmentService";
 import { JellyBean } from "../decorator/JellyBean";
 import { MemberManager } from "@/app/models/MemberManager";
+import { ScheduleConfiguration } from "@/app/models/ScheduleConfiguration";
 
 export type FilterOptions = {
     phase: PhaseEnum[];
@@ -25,6 +26,7 @@ export default function TaskUnassignedBox(props: {
     planedTaskManager: PlanedTask,
     calendarManager: CalendarCellTaskManager,
     mileStoneManager: MileStoneManager,
+    scheduleConfiguration: ScheduleConfiguration,
     setTaskManager: (taskManager: TaskManager) => void,
     moveTargetTaskId: UUID | undefined,
     handleMoveTargetTask: (taskId: UUID | undefined) => void,
@@ -32,7 +34,19 @@ export default function TaskUnassignedBox(props: {
 }) {
 
 
-    const { ticketManager, taskManager, memberManager, planedTaskManager, setTaskManager, moveTargetTaskId, handleMoveTargetTask, calendarManager, setPlanedTaskManager, mileStoneManager } = props;
+    const {
+        ticketManager,
+        taskManager,
+        memberManager,
+        planedTaskManager,
+        setTaskManager,
+        moveTargetTaskId,
+        handleMoveTargetTask,
+        calendarManager,
+        setPlanedTaskManager,
+        mileStoneManager,
+        scheduleConfiguration
+    } = props;
 
     const [filterOptions, setFilterOptions] = useState<FilterOptions>({
         phase: orderedPhases,
@@ -54,6 +68,7 @@ export default function TaskUnassignedBox(props: {
             calendarManager,
             mileStoneManager,
             memberManager,
+            scheduleConfiguration,
             ticketManager.getExclusiveTicketIds(),
         );
         setPlanedTaskManager(newPlanedManager);
@@ -101,6 +116,7 @@ export default function TaskUnassignedBox(props: {
                     planedTaskManager={planedTaskManager}
                     calandarManager={calendarManager}
                     mileStoneManager={mileStoneManager}
+                    scheduleConfiguration={scheduleConfiguration}
                     setTaskManager={setTaskManager}
                     handleMoveTargetTask={handleMoveTargetTask}
                     setPlanedTaskManager={setPlanedTaskManager}

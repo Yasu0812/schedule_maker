@@ -9,6 +9,7 @@ import { MemberManager } from "@/app/models/MemberManager";
 import { MemberService } from "@/app/service/MemberService";
 import { useState } from "react";
 import { ScheduleConfiguration } from "@/app/models/ScheduleConfiguration";
+import DurationDayCalc from "@/app/models/DurationDayCalc";
 
 type memberDisableAreaDragStateType = {
     memberId?: UUID,
@@ -136,8 +137,7 @@ export default function CalendarLine(
 
     const dayListItems = dayList.map((day, index) => {
         const dayString = DateUtil.formatDate(day);
-        const additionalHolidaysStr = scheduleConfiguration.additionalHolidays.map(d => DateUtil.formatDate(d));
-        const isHoliday = DateUtil.isHoliday(day, scheduleConfiguration.additionalHolidays);
+        const isHoliday = new DurationDayCalc().isScheduleHoliday(day, scheduleConfiguration.additionalHolidays);
         const task = lineTask.getTaskForDate(dayString);
         const isEnabled = !memberManager.isDisabledOn(memberId, day);
 
@@ -163,12 +163,13 @@ export default function CalendarLine(
                     memberDisableAreaDragEndHandler();
                 }}
             >
-                <DayColor dayString={dayString} additionalHolidays={additionalHolidaysStr}>
+                <DayColor dayString={dayString} isAdditionalHoliday={isHoliday}>
                     <div className={`calendar-cell`}>
                         {!isHoliday && <TaskCell
                             task={task}
                             taskManager={taskManager}
                             planedTaskManager={planedTaskManager}
+                            scheduleConfiguration={scheduleConfiguration}
                             setPlanedTaskManager={setPlanedTaskManager}
                             moveTargetTaskId={moveTargetTaskId}
                             handleMoveTargetTask={handleMoveTargetTask}

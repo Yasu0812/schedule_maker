@@ -1,6 +1,7 @@
 import { generateUUID, UUID } from "../common/IdUtil";
 import { orderedPhases, PhaseEnum } from "../common/PhaseEnum";
 import { PlanedTask } from "./PlanedTask";
+import { ScheduleConfiguration } from "./ScheduleConfiguration";
 import { TaskManager } from "./TaskManager";
 import TaskUpdateApplier from "./TaskUpdateApplier";
 import { TicketManager } from "./Ticket";
@@ -19,7 +20,8 @@ export class TicketDurationReconciler {
         duration: number,
         ticketManager: TicketManager,
         taskManager: TaskManager,
-        planedTaskManager: PlanedTask
+        planedTaskManager: PlanedTask,
+        scheduleConfiguration: ScheduleConfiguration
     ): { ticketManager: TicketManager, taskManager: TaskManager, planedTaskManager: PlanedTask } {
         // FIXME : 副作用が多すぎるので、エラー時に不整合が起きる 副作用が無いようなコードに書き換えたい
         const ticket = ticketManager.getTicket(ticketId);
@@ -86,7 +88,8 @@ export class TicketDurationReconciler {
 
         const newPlanedTaskManager = this._taskUpdateApplier.updateApply(
             newTaskManager,
-            planedTaskManager
+            planedTaskManager,
+            scheduleConfiguration
         );
 
 
@@ -102,7 +105,8 @@ export class TicketDurationReconciler {
         phaseDurationMap: Map<PhaseEnum, number>,
         ticketManager: TicketManager,
         taskManager: TaskManager,
-        planedTaskManager: PlanedTask
+        planedTaskManager: PlanedTask,
+        scheduleConfiguration: ScheduleConfiguration
     ): { ticketManager: TicketManager, taskManager: TaskManager, planedTaskManager: PlanedTask } {
         let newTicketManager = ticketManager;
         let newTaskManager = taskManager;
@@ -115,7 +119,8 @@ export class TicketDurationReconciler {
                 phaseDurationMap.get(phase) || 0,
                 newTicketManager,
                 newTaskManager,
-                newPlanedTaskManager
+                newPlanedTaskManager,
+                scheduleConfiguration
             );
             newTicketManager = result.ticketManager;
             newTaskManager = result.taskManager;

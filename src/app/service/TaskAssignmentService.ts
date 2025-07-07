@@ -4,10 +4,12 @@ import { previousPhases } from "../common/PhaseEnum";
 import { AssignedTask } from "../models/AssignedTask";
 import { CalendarCellTaskManager } from "../models/CalendarCellTask";
 import { CalendarDayCalculator } from "../models/CalendarDayCalculator";
+import DurationDayCalc from "../models/DurationDayCalc";
 import { MemberManager } from "../models/MemberManager";
 import { MileStoneManager } from "../models/MileStoneManager";
 import { PhaseCalculator } from "../models/PhaseCalculator";
 import { PlanedTask } from "../models/PlanedTask";
+import { ScheduleConfiguration } from "../models/ScheduleConfiguration";
 import { Task } from "../models/Task";
 import TaskAssignablePolicy from "../models/TaskAssignablePolicy";
 import { TaskManager } from "../models/TaskManager";
@@ -25,6 +27,8 @@ export class TaskAssignmentService {
     private _unassignedTaskSelctor = new UnassignedTaskSelector();
 
     private _phaseCalculator = new PhaseCalculator();
+
+    private _durationDayCalc = new DurationDayCalc();
 
     public disassignTask(
         assignedId: UUID,
@@ -45,22 +49,29 @@ export class TaskAssignmentService {
         startDay: Date,
         planedTask: PlanedTask,
         taskManager: TaskManager,
+        scheduleConfiguration: ScheduleConfiguration
     ): PlanedTask {
         const task = taskManager.getTask(taskId);
         if (!task) {
             throw new Error(`Task not found: ${taskId}`);
         }
 
+        const endDay = this._durationDayCalc.getEndDate(
+            startDay,
+            task.duration,
+            scheduleConfiguration.additionalHolidays,
+        );
+
         const isTaskAssignable = this._taskAssignablePolicy.isTaskAssignableForce(
             taskId,
             memberId,
             startDay,
+            endDay,
             planedTask,
-            taskManager
         );
 
         if (isTaskAssignable) {
-            planedTask.assignTask(task, memberId, startDay, task.duration);
+            planedTask.assignTask(task, memberId, startDay, endDay);
         }
 
         return planedTask;
@@ -74,6 +85,7 @@ export class TaskAssignmentService {
         calandarManager: CalendarCellTaskManager,
         mileStoneManager: MileStoneManager,
         memberManager: MemberManager,
+        scheduleConfiguration: ScheduleConfiguration
     ): PlanedTask {
         const task = taskManager.getTask(taskId);
         if (!task) {
@@ -101,25 +113,35 @@ export class TaskAssignmentService {
 
         const ticketPhaseFinishDay = DateUtil.getLatestDay([...ticketPhaseFinishDays, DateUtil.getAddDate(calandarManager.firstDate, -1)]);
 
-        const fastestAssignableDay = this._calendarDayCalculator.fastestAssignableDay(ticketPhaseFinishDay);
-
-        let currentDay = new Date(fastestAssignableDay);
+        let currentDay = this._durationDayCalc.getNextWorkingDay(
+            ticketPhaseFinishDay,
+            scheduleConfiguration.additionalHolidays,
+        );
         const lastDate = calandarManager.lastDate;
         while (DateUtil.getAddDate(currentDay, task.duration - 1) <= lastDate) {
+            const currentEndDay = this._durationDayCalc.getEndDate(
+                currentDay,
+                task.duration,
+                scheduleConfiguration.additionalHolidays,
+            );
             for (const member of memberManager.members) {
                 const isTaskAssignable = this._taskAssignablePolicy.isTaskAssignable(
                     taskId,
                     currentDay,
+                    currentEndDay,
                     planedTask,
                     taskManager,
                     mileStoneManager,
                     member
                 );
                 if (isTaskAssignable) {
-                    return planedTask.assignTask(task, member.id, currentDay, task.duration);
+                    return planedTask.assignTask(task, member.id, currentDay, currentEndDay);
                 }
             }
-            currentDay = DateUtil.getEndDateNoHoliday(currentDay, 1);
+            currentDay = this._durationDayCalc.getNextWorkingDay(
+                currentDay,
+                scheduleConfiguration.additionalHolidays,
+            );
         }
 
         return planedTask;
@@ -132,6 +154,7 @@ export class TaskAssignmentService {
         calandarManager: CalendarCellTaskManager,
         mileStoneManager: MileStoneManager,
         memberManager: MemberManager,
+        scheduleConfiguration: ScheduleConfiguration,
         exclusionTicketIds: UUID[]
     ): PlanedTask {
 
@@ -150,7 +173,8 @@ export class TaskAssignmentService {
                 taskManager,
                 calandarManager,
                 mileStoneManager,
-                memberManager
+                memberManager,
+                scheduleConfiguration
             );
 
             if (assignedPlanedTask.get(task.id)) {

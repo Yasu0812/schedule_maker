@@ -1,6 +1,7 @@
 import { UUID } from "../common/IdUtil";
 import { PhaseEnum } from "../common/PhaseEnum";
 import { PlanedTask } from "../models/PlanedTask";
+import { ScheduleConfiguration } from "../models/ScheduleConfiguration";
 import { TaskManager } from "../models/TaskManager";
 import { TicketManager } from "../models/Ticket";
 import { TicketDurationReconciler } from "../models/TicketDurationReconciler";
@@ -14,7 +15,8 @@ export class TicketUpdateService {
         duration: number,
         ticketManager: TicketManager,
         taskManager: TaskManager,
-        planedTaskManager: PlanedTask
+        planedTaskManager: PlanedTask,
+        scheduleConfiguration: ScheduleConfiguration
     ): { ticketManager: TicketManager, taskManager: TaskManager, planedTaskManager: PlanedTask } {
         const newManagers = new TicketDurationReconciler().changeDuration(
             ticketId,
@@ -22,7 +24,8 @@ export class TicketUpdateService {
             duration,
             ticketManager,
             taskManager,
-            planedTaskManager
+            planedTaskManager,
+            scheduleConfiguration
         );
 
         return {

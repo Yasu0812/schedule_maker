@@ -11,6 +11,7 @@ import { MileStoneManager } from "@/app/models/MileStoneManager";
 import { TicketManager } from "@/app/models/Ticket";
 import { NameResolveService } from "@/app/service/NameResolveService";
 import { MemberManager } from "@/app/models/MemberManager";
+import { ScheduleConfiguration } from "@/app/models/ScheduleConfiguration";
 
 export default function UnassignedTasks(
     props: {
@@ -22,6 +23,7 @@ export default function UnassignedTasks(
         planedTaskManager: PlanedTask,
         calandarManager: CalendarCellTaskManager,
         mileStoneManager: MileStoneManager,
+        scheduleConfiguration: ScheduleConfiguration,
         setTaskManager: (taskManager: TaskManager) => void,
         handleMoveTargetTask: (taskId: UUID | undefined) => void,
         setPlanedTaskManager: (planedTaskManager: PlanedTask) => void,
@@ -37,6 +39,8 @@ export default function UnassignedTasks(
         calandarManager,
         mileStoneManager,
         planedTaskManager,
+        ticketManager,
+        scheduleConfiguration,
         setPlanedTaskManager
     } = props;
 
@@ -94,7 +98,8 @@ export default function UnassignedTasks(
             taskManager,
             calandarManager,
             mileStoneManager,
-            memberManager
+            memberManager,
+            scheduleConfiguration,
         );
 
         setPlanedTaskManager(newPlanedTask);
@@ -108,7 +113,7 @@ export default function UnassignedTasks(
 
     const unassignedTaskBoxes = sortedUnassignedTasks.map((task) => {
 
-        const ticketTitle = new NameResolveService().resolveTaskName(task.id, props.ticketManager, taskManager);
+        const ticketTitle = new NameResolveService().resolveTaskName(task.id, ticketManager, taskManager);
 
         return (
             <div

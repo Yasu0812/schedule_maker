@@ -5,6 +5,7 @@ import { TaskAssignmentService } from "@/app/service/TaskAssignmentService";
 import { TaskManager } from "@/app/models/TaskManager";
 import TaskBeanDiv from "../atom/TaskBeanDiv";
 import { memo } from "react";
+import { ScheduleConfiguration } from "@/app/models/ScheduleConfiguration";
 
 let clickStartTime = 0;
 
@@ -14,6 +15,7 @@ interface TaskAssignmentProps {
     task: CalendarCellTask | undefined;
     taskManager: TaskManager;
     planedTaskManager: PlanedTask;
+    scheduleConfiguration: ScheduleConfiguration;
     setPlanedTaskManager: (planedTaskManager: PlanedTask) => void;
     moveTargetTaskId: UUID | undefined;
     handleMoveTargetTask: (taskId: UUID | undefined) => void;
@@ -30,6 +32,7 @@ const TaskCell = memo(
             task,
             taskManager,
             planedTaskManager,
+            scheduleConfiguration,
             setPlanedTaskManager,
             moveTargetTaskId,
             handleMoveTargetTask,
@@ -56,6 +59,7 @@ const TaskCell = memo(
                     startDay,
                     planedTaskManager,
                     taskManager,
+                    scheduleConfiguration,
                 );
 
                 setPlanedTaskManager(newPlanedTask);

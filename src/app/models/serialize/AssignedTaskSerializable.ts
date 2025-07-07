@@ -8,7 +8,7 @@ export type AssignedTaskSerializableType = {
     taskId: UUID,
     memberId: UUID,
     startDayStr: string,
-    duration: number,
+    endDayStr: string,
 }
 
 /**
@@ -32,7 +32,7 @@ export class AssignedTaskSerializable {
             taskId: UUID,
             memberId: UUID,
             startDay: Date,
-            duration: number,
+            endDay: Date,
         }
 
     ): AssignedTaskSerializableType {
@@ -43,7 +43,7 @@ export class AssignedTaskSerializable {
             taskId: assignedTask.taskId,
             memberId: assignedTask.memberId,
             startDayStr: DateUtil.formatDate(assignedTask.startDay),
-            duration: assignedTask.duration,
+            endDayStr: DateUtil.formatDate(assignedTask.endDay),
         };
     }
 
@@ -56,7 +56,7 @@ export class AssignedTaskSerializable {
             data.taskId,
             data.memberId,
             DateUtil.parseDate(data.startDayStr),
-            data.duration
+            DateUtil.parseDate(data.endDayStr),
         );
     };
 

@@ -2,22 +2,11 @@ import { DateUtil } from "../common/DateUtil";
 import { UUID } from "../common/IdUtil";
 import { isAfterPhase, PhaseEnum } from "../common/PhaseEnum";
 import { CalendarCellTaskManager } from "./CalendarCellTask";
-import { PhaseCalculator } from "./PhaseCalculator";
 import { PlanedTask } from "./PlanedTask";
 import { TaskManager } from "./TaskManager";
 
 
 export class CalendarDayCalculator {
-
-    private _phaseCalculator = new PhaseCalculator();
-
-    public fastestAssignableDay(
-        beforePhaseFinishDay: Date,
-    ): Date {
-        const fastestAssignableDay = DateUtil.getEndDateNoHoliday(beforePhaseFinishDay, 1);
-
-        return fastestAssignableDay;
-    }
 
     /**
      * 指定したチケットのフェーズの終了日を取得します。

@@ -209,6 +209,7 @@ export default function ScheduleMaker(
                         planedTaskManager={schdule.planedTaskManager}
                         calendarManager={schdule.calandarManager}
                         mileStoneManager={schdule.mileStoneManager}
+                        scheduleConfiguration={schdule.scheduleConfiguration}
                         setTaskManager={handleTaskManagerChange}
                         moveTargetTaskId={moveTargetTaskId}
                         handleMoveTargetTask={handleMoveTargetTask}
@@ -222,6 +223,7 @@ export default function ScheduleMaker(
                     ticketManager={schdule.ticketManager}
                     taskManager={schdule.taskManager}
                     planedTask={schdule.planedTaskManager}
+                    scheduleConfiguration={schdule.scheduleConfiguration}
                     setTicketManager={handleTicketManagerChange}
                     setTaskManager={handleTaskManagerChange}
                     setPlanedTask={handlePlanedTaskManagerChange}

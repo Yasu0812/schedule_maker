@@ -19,7 +19,7 @@ export class CsvToTicketService {
         csv: string,
         scheduleStateManager: ScheduleStateManager,
     ): ScheduleStateManager {
-        const { ticketManager, taskManager, planedTaskManager } = scheduleStateManager;
+        const { ticketManager, taskManager, planedTaskManager, scheduleConfiguration } = scheduleStateManager;
         const newTickets = this._ticketCsvConverter.ticketMaterialFromCsv(csv);
 
         let newTicketManager = ticketManager;
@@ -47,7 +47,8 @@ export class CsvToTicketService {
                     ticketPhaseDurationMap,
                     ticketManager,
                     taskManager,
-                    planedTaskManager
+                    planedTaskManager,
+                    scheduleConfiguration
                 );
                 
                 newTicketManager = res.ticketManager;

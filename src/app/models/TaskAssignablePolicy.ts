@@ -28,6 +28,7 @@ export default class TaskAssignablePolicy {
     public isTaskAssignable(
         taskId: UUID,
         startDay: Date,
+        endDay: Date,
         planedTask: PlanedTask,
         taskManager: TaskManager,
         mileStoneManager: MileStoneManager,
@@ -53,13 +54,13 @@ export default class TaskAssignablePolicy {
 
         // マイルストーンのフェーズに含まれているかどうかを確認
         const taskStartDay = startDay;
-        const taskEndDay = DateUtil.getEndDateNoHoliday(taskStartDay, task.duration - 1);
+        const taskEndDay = endDay;
 
         const isInMileStoneStart = mileStoneManager.isEnabledPhase(phase, taskStartDay);
         const isInMileStoneEnd = mileStoneManager.isEnabledPhase(phase, taskEndDay);
 
         // カレンダー上の空きを確認
-        const isFree = planedTask.isFree(member.id, taskId, startDay, task.duration);
+        const isFree = planedTask.isFree(member.id, taskId, taskStartDay, taskEndDay);
 
         const isMemberEnabled = member.disableDates.every(date => !DateUtil.isbetweenDates(taskStartDay, date, taskEndDay));
 
@@ -81,16 +82,11 @@ export default class TaskAssignablePolicy {
         taskId: UUID,
         memberId: UUID,
         startDay: Date,
+        endDay: Date,
         planedTask: PlanedTask,
-        taskManager: TaskManager
     ): boolean {
-        const task = taskManager.getTask(taskId);
-        if (!task) {
-            throw new Error(`Task with ID ${taskId} not found`);
-        }
-
         // カレンダー上の空きを確認
-        const isFree = planedTask.isFree(memberId, taskId, startDay, task.duration);
+        const isFree = planedTask.isFree(memberId, taskId, startDay, endDay);
 
         return isFree;
     }

@@ -9,18 +9,20 @@ import TicketBox from "./TicketBox";
 import { useModal } from "../modal/ModalContext";
 import { useState } from "react";
 import CardDesign from "../decorator/CardDesign";
+import { ScheduleConfiguration } from "@/app/models/ScheduleConfiguration";
 
 
 export default function TicketManagementBox(props: {
     ticketManager: TicketManager,
     taskManager: TaskManager,
     planedTask: PlanedTask,
+    scheduleConfiguration:ScheduleConfiguration,
     setTicketManager: (ticketManager: TicketManager) => void;
     setTaskManager: (taskManager: TaskManager) => void;
     setPlanedTask: (planedTask: PlanedTask) => void;
 }) {
 
-    const { ticketManager, taskManager, planedTask, setTicketManager, setTaskManager, setPlanedTask } = props;
+    const { ticketManager, taskManager, planedTask, scheduleConfiguration, setTicketManager, setTaskManager, setPlanedTask } = props;
 
     const { showModal, hideModal } = useModal();
 
@@ -36,7 +38,8 @@ export default function TicketManagementBox(props: {
             newDuration,
             ticketManager,
             taskManager,
-            planedTask
+            planedTask,
+            scheduleConfiguration
         )
 
         setTicketManager(newManagers.ticketManager);

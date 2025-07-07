@@ -1,4 +1,3 @@
-import { DateUtil } from "../common/DateUtil";
 import { UUID } from "../common/IdUtil";
 
 /**
@@ -14,7 +13,6 @@ import { UUID } from "../common/IdUtil";
  */
 export class AssignedTask {
 
-    public readonly endDay: Date;
 
     constructor(
         public readonly id: UUID,
@@ -22,9 +20,8 @@ export class AssignedTask {
         public readonly taskId: UUID,
         public readonly memberId: UUID,
         public readonly startDay: Date,
-        public readonly duration: number,
+        public readonly endDay: Date,
     ) {
-        this.endDay = DateUtil.getEndDateNoHoliday(this.startDay, this.duration - 1);
     }
 
 }

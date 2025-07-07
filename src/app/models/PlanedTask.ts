@@ -1,4 +1,3 @@
-import { DateUtil } from "../common/DateUtil";
 import { generateUUID, UUID } from "../common/IdUtil";
 import { AssignedTask, } from "./AssignedTask";
 
@@ -70,9 +69,9 @@ export class PlanedTask {
         return this;
     }
 
-    public assignTask(task: { id: UUID, ticketId: UUID }, memberId: UUID, startDay: Date, duration: number): PlanedTask {
+    public assignTask(task: { id: UUID, ticketId: UUID }, memberId: UUID, startDay: Date, endDay: Date): PlanedTask {
         const assignId = generateUUID()
-        const assignedTask = new AssignedTask(assignId, task.ticketId, task.id, memberId, startDay, duration);
+        const assignedTask = new AssignedTask(assignId, task.ticketId, task.id, memberId, startDay, endDay);
         this._assignedTasks.set(task.id, assignedTask);
 
         return this;
@@ -91,26 +90,6 @@ export class PlanedTask {
         return this;
     }
 
-    public updateTaskDuration(taskId: UUID, duration: number): PlanedTask {
-        if (duration <= 0) {
-            this.removeTask(taskId);
-        } else {
-            const assignedTask = this.get(taskId);
-            if (assignedTask) {
-                this._assignedTasks.set(taskId, new AssignedTask(
-                    assignedTask.id,
-                    assignedTask.ticketId,
-                    assignedTask.taskId,
-                    assignedTask.memberId,
-                    assignedTask.startDay,
-                    duration
-                ));
-            }
-        }
-
-        return this;
-    }
-
     /**
      * 指定されたメンバーに対して、指定された期間がフリーかどうかを判定します。  
      * このメソッドはあくまで物理的に割り当て可能かどうかを判定するものであり、  
@@ -121,9 +100,7 @@ export class PlanedTask {
      * @param duration 
      * @returns 
      */
-    public isFree(memberId: UUID, planTaskId: UUID, startDay: Date, duration: number): boolean {
-        const endDay = DateUtil.getEndDateNoHoliday(startDay, duration - 1);
-
+    public isFree(memberId: UUID, planTaskId: UUID, startDay: Date, endDay: Date): boolean {
         return this._list.every(task => {
             const isSameTask = task.taskId === planTaskId;
             const isSameMember = task.memberId === memberId;
