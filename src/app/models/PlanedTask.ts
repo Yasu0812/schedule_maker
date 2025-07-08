@@ -106,7 +106,6 @@ export class PlanedTask {
         taskStartDay: Date,
         taskEndDay: Date,
     ): boolean {
-        console.log(`Checking if task ${planTaskId} is free for member ${memberId} from ${taskStartDay.toISOString()} to ${taskEndDay.toISOString()}`);
         return this._list.every(task => {
             const isSameTask = task.taskId === planTaskId;
             const isSameMember = task.memberId === memberId;

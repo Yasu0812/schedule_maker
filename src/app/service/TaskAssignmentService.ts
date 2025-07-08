@@ -137,7 +137,6 @@ export class TaskAssignmentService {
                 task.duration,
                 scheduleConfiguration.additionalHolidays,
             );
-            console.log(`Checking task assignment for task ${taskId} from ${currentDay.toISOString()} to ${currentEndDay.toISOString()}`);
             for (const member of memberManager.members) {
                 const isTaskAssignable = this._taskAssignablePolicy.isTaskAssignable(
                     taskId,
