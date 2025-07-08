@@ -11,15 +11,15 @@ export default function CalendarPreference(props: {
 }) {
     const { scheduleConfiguration, handleScheduleConfigurationChange } = props;
 
-    const { showModal, hideModal } = useModal();
+    const { showModal, } = useModal();
 
     const handlePreferenceClick = () => {
-        showModal(() => (
+        showModal(() =>
             <CalendarPreferenceModal
                 scheduleConfiguration={scheduleConfiguration}
                 handleScheduleConfigurationChange={handleScheduleConfigurationChange}
             />
-        ));
+        );
     }
 
     return (

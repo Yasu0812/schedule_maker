@@ -11,10 +11,9 @@ export class ScheduleConfiguration {
         lastDate: Date | string,
         additionalHolidays: Date[]
     ) {
-
         this._firstDate = typeof firstDate === 'string' ? DateUtil.parseDate(firstDate) : new Date(firstDate);
         this._lastDate = typeof lastDate === 'string' ? DateUtil.parseDate(lastDate) : new Date(lastDate);
-        this._additionalHolidays = additionalHolidays;
+        this._additionalHolidays = [...additionalHolidays].sort((a, b) => a.getTime() - b.getTime())
 
         const duration = Math.abs(this._lastDate.getTime() - this._firstDate.getTime());
         // if over 1 year, throw error
@@ -66,6 +65,10 @@ export class ScheduleConfiguration {
 
     public updateAdditionalHolidays(holidays: Date[]): ScheduleConfiguration {
         return new ScheduleConfiguration(this._firstDate, this._lastDate, holidays);
+    }
+
+    public isExistingHoliday(date: Date): boolean {
+        return this._additionalHolidays.some(holiday => holiday.getTime() === date.getTime());
     }
 
     static createDefaultConfiguration(): ScheduleConfiguration {
