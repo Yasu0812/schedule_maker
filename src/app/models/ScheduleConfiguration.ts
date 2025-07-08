@@ -1,4 +1,5 @@
 import { DateUtil } from "../common/DateUtil";
+import { holidaysDate } from "../common/Holidays";
 
 export class ScheduleConfiguration {
 
@@ -14,6 +15,8 @@ export class ScheduleConfiguration {
         this._firstDate = typeof firstDate === 'string' ? DateUtil.parseDate(firstDate) : new Date(firstDate);
         this._lastDate = typeof lastDate === 'string' ? DateUtil.parseDate(lastDate) : new Date(lastDate);
         this._additionalHolidays = [...additionalHolidays].sort((a, b) => a.getTime() - b.getTime())
+        //TODO 追加休日が設定できるようになった場合、これを消去すること
+        this._additionalHolidays = holidaysDate;
 
         const duration = Math.abs(this._lastDate.getTime() - this._firstDate.getTime());
         // if over 1 year, throw error

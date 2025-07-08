@@ -41,12 +41,12 @@ export default function CalendarPreference(props: {
                     handleScheduleConfigurationChange(newConfig);
                 }}
             />
-            <SettingIcon
+            {/* <SettingIcon
                 onClick={() => {
                     handlePreferenceClick();
                 }}
                 className={`cursor-pointer`}
-            />
+            /> */}
         </>
     );
 }

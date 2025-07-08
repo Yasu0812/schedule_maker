@@ -1,6 +1,5 @@
 import { DateUtil } from "@/app/common/DateUtil";
 import { ScheduleConfiguration } from "@/app/models/ScheduleConfiguration";
-import { ScheduleConfigurationService } from "@/app/service/ScheduleConfigurationService";
 import { useState } from "react";
 import HolidayInputForm from "./HolidayInputForm";
 
@@ -11,33 +10,39 @@ export default function HolidayPreference(props: {
 }) {
     const { scheduleConfiguration, handleScheduleConfigurationChange } = props;
     const [inputDate, setInputDate] = useState("");
+    const [holidayList, setHolidayList] = useState(scheduleConfiguration.additionalHolidays);
 
     const addHoliday = () => {
         const newHoliday = DateUtil.parseDateWithHyphen(inputDate);
-        const newConfig = new ScheduleConfigurationService().addAdditionalHoliday(scheduleConfiguration, newHoliday);
+        const newHolidays = [...holidayList, newHoliday];
+        const newConfig = scheduleConfiguration.updateAdditionalHolidays(newHolidays);
+        setHolidayList(newHolidays);
         handleScheduleConfigurationChange(newConfig);
         setInputDate("");
+    }
+
+    const updateHolidayList = (newHolidays: Date[]) => {
+        const newConfig = scheduleConfiguration.updateAdditionalHolidays(newHolidays);
+        setHolidayList(newConfig.additionalHolidays);
+        handleScheduleConfigurationChange(newConfig);
     }
 
     return (
         <>
             <h4>Holidays</h4>
             {
-                scheduleConfiguration.additionalHolidays.map((holiday, index) => (
+                holidayList.map((holiday, index) => (
                     <HolidayInputForm
-                        key={holiday.getTime()}
-                        scheduleConfiguration={scheduleConfiguration}
+                        key={holiday.toISOString()}
                         date={holiday}
                         update={(date) => {
-                            const newHolidays = [...scheduleConfiguration.additionalHolidays];
+                            const newHolidays = holidayList;
                             newHolidays[index] = date;
-                            const newConfig = scheduleConfiguration.updateAdditionalHolidays(newHolidays);
-                            handleScheduleConfigurationChange(newConfig);
+                            updateHolidayList(newHolidays);
                         }}
                         del={() => {
-                            const newHolidays = scheduleConfiguration.additionalHolidays.filter((_, i) => i !== index);
-                            const newConfig = scheduleConfiguration.updateAdditionalHolidays(newHolidays);
-                            handleScheduleConfigurationChange(newConfig);
+                            const newHolidays = holidayList.filter((_, i) => i !== index);
+                            updateHolidayList(newHolidays);
                         }}
                     />
                 ))
@@ -52,6 +57,9 @@ export default function HolidayPreference(props: {
                     Add
                 </button>
             </div>
+            {
+                holidayList.toString()
+            }
         </>
     );
 }

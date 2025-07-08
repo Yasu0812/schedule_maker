@@ -1,10 +1,8 @@
 import { DateUtil } from "@/app/common/DateUtil";
-import { ScheduleConfiguration } from "@/app/models/ScheduleConfiguration";
 import { useState } from "react";
 
 
 export default function HolidayInputForm(props: {
-    scheduleConfiguration: ScheduleConfiguration,
     date: Date,
     update: (date: Date) => void,
     del: () => void,
@@ -25,6 +23,6 @@ export default function HolidayInputForm(props: {
                 }}
             />
             <button className="text-red-500" onClick={del}>Remove</button>
-        </div>
+        </div >
     );
 }
