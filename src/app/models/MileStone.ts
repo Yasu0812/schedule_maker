@@ -69,10 +69,10 @@ export class MileStone {
 
         if (toDate > this.day) {
             // マイルストーンの日付が過ぎている場合は、postPhasesを返却
-            return new Set([...this.postPhases, ...this._unrelatedPhases]);
+            return new Set([...this.postPhases]);
         } else {
             // マイルストーンの日付以前の場合は、prePhasesを返却
-            return new Set([...this.prePhases, ...this._unrelatedPhases]);
+            return new Set([...this.prePhases]);
         }
 
     }
