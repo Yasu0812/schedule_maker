@@ -3,14 +3,11 @@ import { UUID } from "../common/IdUtil";
 import { TicketAssignStatus } from "../common/TicketAssignStatusEnum";
 import Member from "./Member";
 import { MileStoneManager } from "./MileStoneManager";
-import { PhaseCalculator } from "./PhaseCalculator";
 import { PhaseStatusPolicy } from "./PhaseStatusPolicy";
 import { PlanedTask } from "./PlanedTask";
 import { TaskManager } from "./TaskManager";
 
 export default class TaskAssignablePolicy {
-
-    private _phaseCalculator = new PhaseCalculator();
 
     private _phaseStatusPolicy = new PhaseStatusPolicy();
     /**
@@ -32,7 +29,9 @@ export default class TaskAssignablePolicy {
         planedTask: PlanedTask,
         taskManager: TaskManager,
         mileStoneManager: MileStoneManager,
-        member: Member
+        member: Member,
+        scheduleStartDay: Date,
+        scheduleEndDay: Date
     ): boolean {
         const task = taskManager.getTask(taskId);
         if (!task) {
@@ -59,18 +58,24 @@ export default class TaskAssignablePolicy {
         const isInMileStoneStart = mileStoneManager.isEnabledPhase(phase, taskStartDay);
         const isInMileStoneEnd = mileStoneManager.isEnabledPhase(phase, taskEndDay);
 
-        // カレンダー上の空きを確認
-        const isFree = planedTask.isFree(member.id, taskId, taskStartDay, taskEndDay);
-
         const isMemberEnabled = member.disableDates.every(date => !DateUtil.isbetweenDates(taskStartDay, date, taskEndDay));
 
+        const isAssignmentPermitted = this.isAssignmentPermitted(
+            taskId,
+            member.id,
+            taskStartDay,
+            taskEndDay,
+            planedTask,
+            scheduleStartDay,
+            scheduleEndDay
+        );
 
-        return isPrePhaseEnd && isInMileStoneStart && isInMileStoneEnd && isFree && requiredTasks && isMemberEnabled;
+
+        return isPrePhaseEnd && isInMileStoneStart && isInMileStoneEnd && isAssignmentPermitted && requiredTasks && isMemberEnabled;
     }
 
     /**
-     * タスクが強制的に割り当て可能かどうかを判定します。
-     * 最も緩い制約の元で、タスクを割り当てることができるかどうかを判断します。
+     * タスク割当時にこれだけは守らなければならない最も強い制約について判定を行います。
      * @param taskId 
      * @param memberId 
      * @param startDay 
@@ -78,17 +83,33 @@ export default class TaskAssignablePolicy {
      * @param taskManager 
      * @returns 
      */
-    public isTaskAssignableForce(
+    public isAssignmentPermitted(
         taskId: UUID,
         memberId: UUID,
         startDay: Date,
         endDay: Date,
         planedTask: PlanedTask,
+        scheduleStartDay: Date,
+        scheduleEndDay: Date
     ): boolean {
         // カレンダー上の空きを確認
         const isFree = planedTask.isFree(memberId, taskId, startDay, endDay);
+        const isWithinSchedule = this.isWithinSchedule(startDay, endDay, scheduleStartDay, scheduleEndDay);
 
-        return isFree;
+        return isFree && isWithinSchedule;
+    }
+
+    public isWithinSchedule(
+        startDay: Date,
+        endDay: Date,
+        scheduleStartDay: Date,
+        scheduleEndDay: Date
+    ): boolean {
+        // タスクの開始日と終了日がスケジュールの範囲内にあるかを確認
+        return (
+            startDay >= scheduleStartDay &&
+            endDay <= scheduleEndDay
+        );
     }
 
 }

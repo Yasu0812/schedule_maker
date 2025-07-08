@@ -100,11 +100,17 @@ export class PlanedTask {
      * @param duration 
      * @returns 
      */
-    public isFree(memberId: UUID, planTaskId: UUID, startDay: Date, endDay: Date): boolean {
+    public isFree(
+        memberId: UUID,
+        planTaskId: UUID,
+        taskStartDay: Date,
+        taskEndDay: Date,
+    ): boolean {
+        console.log(`Checking if task ${planTaskId} is free for member ${memberId} from ${taskStartDay.toISOString()} to ${taskEndDay.toISOString()}`);
         return this._list.every(task => {
             const isSameTask = task.taskId === planTaskId;
             const isSameMember = task.memberId === memberId;
-            const isOverlapping = (task.startDay <= endDay && task.endDay >= startDay);
+            const isOverlapping = (task.startDay <= taskEndDay && task.endDay >= taskStartDay);
             return isSameTask || !(isSameMember && isOverlapping);
         });
     }

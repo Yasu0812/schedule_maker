@@ -43,6 +43,17 @@ export class TaskAssignmentService {
         return planedTask;
     }
 
+    /**
+     * ユーザーが直接割当を行った場合。
+     * スケジュール上の空きがあれば割り当てることができる。
+     * @param taskId 
+     * @param memberId 
+     * @param startDay 
+     * @param planedTask 
+     * @param taskManager 
+     * @param scheduleConfiguration 
+     * @returns 
+     */
     public assignTaskFromTaskId(
         taskId: UUID,
         memberId: UUID,
@@ -62,15 +73,17 @@ export class TaskAssignmentService {
             scheduleConfiguration.additionalHolidays,
         );
 
-        const isTaskAssignable = this._taskAssignablePolicy.isTaskAssignableForce(
+        const isAssignmentPermitted = this._taskAssignablePolicy.isAssignmentPermitted(
             taskId,
             memberId,
             startDay,
             endDay,
             planedTask,
+            scheduleConfiguration.firstDate,
+            scheduleConfiguration.lastDate,
         );
 
-        if (isTaskAssignable) {
+        if (isAssignmentPermitted) {
             planedTask.assignTask(task, memberId, startDay, endDay);
         }
 
@@ -124,6 +137,7 @@ export class TaskAssignmentService {
                 task.duration,
                 scheduleConfiguration.additionalHolidays,
             );
+            console.log(`Checking task assignment for task ${taskId} from ${currentDay.toISOString()} to ${currentEndDay.toISOString()}`);
             for (const member of memberManager.members) {
                 const isTaskAssignable = this._taskAssignablePolicy.isTaskAssignable(
                     taskId,
@@ -132,7 +146,9 @@ export class TaskAssignmentService {
                     planedTask,
                     taskManager,
                     mileStoneManager,
-                    member
+                    member,
+                    scheduleConfiguration.firstDate,
+                    scheduleConfiguration.lastDate,
                 );
                 if (isTaskAssignable) {
                     return planedTask.assignTask(task, member.id, currentDay, currentEndDay);
