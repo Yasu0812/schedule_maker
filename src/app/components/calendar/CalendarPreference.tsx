@@ -1,8 +1,5 @@
 import { DateUtil } from "@/app/common/DateUtil";
 import { ScheduleConfiguration } from "@/app/models/ScheduleConfiguration";
-import SettingIcon from "../atom/SettingIcon";
-import { useModal } from "../modal/ModalContext";
-import CalendarPreferenceModal from "./CalendarPreferenceModal";
 
 
 export default function CalendarPreference(props: {
@@ -10,17 +7,6 @@ export default function CalendarPreference(props: {
     handleScheduleConfigurationChange: (scheduleConfiguration: ScheduleConfiguration) => void,
 }) {
     const { scheduleConfiguration, handleScheduleConfigurationChange } = props;
-
-    const { showModal, } = useModal();
-
-    const handlePreferenceClick = () => {
-        showModal(() =>
-            <CalendarPreferenceModal
-                scheduleConfiguration={scheduleConfiguration}
-                handleScheduleConfigurationChange={handleScheduleConfigurationChange}
-            />
-        );
-    }
 
     return (
         <>
@@ -41,12 +27,6 @@ export default function CalendarPreference(props: {
                     handleScheduleConfigurationChange(newConfig);
                 }}
             />
-            {/* <SettingIcon
-                onClick={() => {
-                    handlePreferenceClick();
-                }}
-                className={`cursor-pointer`}
-            /> */}
         </>
     );
 }
