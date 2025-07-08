@@ -41,11 +41,6 @@ export class MileStone {
 
     public isEnabledPhase(phase: PhaseEnum, toDate: Date): boolean {
 
-        if (this._unrelatedPhases.has(phase)) {
-            // マイルストーンに関連するフェーズでない場合は、true
-            return true;
-        }
-
         if (!this.day) {
             // マイルストーンの日付が設定されていない場合は、常にtrue
             return true;
