@@ -27,6 +27,13 @@ export default function CalendarPreference(props: {
                     handleScheduleConfigurationChange(newConfig);
                 }}
             />
+            <button className="ml-2 border rounded p-2"
+                onClick={() => {
+                    const newConfig = scheduleConfiguration.toggleShowHoliday();
+                    handleScheduleConfigurationChange(newConfig);
+                }}>
+                {scheduleConfiguration.isShowHoliday ? "Hide Holidays" : "Show Holidays"}
+            </button>
         </>
     );
 }

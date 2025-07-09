@@ -1,5 +1,5 @@
 import { UUID } from "../common/IdUtil";
-import { PhaseEnum } from "../common/PhaseEnum";
+import { phaseCompare, PhaseEnum } from "../common/PhaseEnum";
 import { difference } from "../common/SetOperationUtil";
 import { PlanedTask } from "./PlanedTask";
 import { Task } from "./Task";
@@ -35,7 +35,11 @@ export class UnassignedTaskSelector {
         exclusionTicketIds?: UUID[]
     ) {
         const { unassignedTaskIds } = this.getUnassignedAndAssignedTaskIds(taskManager, planedTask);
-        const unassignedTasks = taskManager.getTaskList(unassignedTaskIds);
+        const unassignedTasks = taskManager.getTaskList(unassignedTaskIds)
+            .sort((a, b) => a.ticketId > b.ticketId ? 1 : -1)
+            .sort((a, b) => b.duration - a.duration)
+            .sort((a, b) => phaseCompare(a.phase, b.phase))
+            ;
 
         if (exclusionTicketIds && exclusionTicketIds.length > 0) {
             return unassignedTasks.filter(task => !exclusionTicketIds.includes(task.ticketId));

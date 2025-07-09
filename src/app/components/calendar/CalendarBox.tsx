@@ -40,7 +40,7 @@ export default function CalendarBox(
         scheduleConfiguration,
         handleScheduleConfigurationChange,
     } = props;
-    const dayList = calendarManager.dayList;
+    const dayList = scheduleConfiguration.dayList;
 
     const allTaskMap = calendarManager.getAllCalendarLineMap();
 

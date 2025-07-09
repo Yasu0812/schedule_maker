@@ -6,17 +6,32 @@ export class ScheduleConfiguration {
     private readonly _firstDate: Date;
     private readonly _lastDate: Date;
     private readonly _additionalHolidays: Date[];
+    private readonly _dayList: Date[];
+    private readonly _isShowHoliday: boolean;
+    private readonly _duration: number;
 
     constructor(
         firstDate: Date | string,
         lastDate: Date | string,
-        additionalHolidays: Date[]
+        additionalHolidays: Date[],
+        isShowHoliday: boolean,
     ) {
         this._firstDate = typeof firstDate === 'string' ? DateUtil.parseDate(firstDate) : new Date(firstDate);
         this._lastDate = typeof lastDate === 'string' ? DateUtil.parseDate(lastDate) : new Date(lastDate);
         this._additionalHolidays = [...additionalHolidays].sort((a, b) => a.getTime() - b.getTime())
         //TODO 追加休日が設定できるようになった場合、これを消去すること
         this._additionalHolidays = holidaysDate;
+        this._isShowHoliday = isShowHoliday;
+        const allDaylist = DateUtil.generateDayList(this._firstDate, this._lastDate);
+        const normalDaylist = allDaylist.filter(
+            (date) => {
+                // 追加休日と休日を除外する
+                if (date.getDay() === 0 || date.getDay() === 6) return false;
+                return !this._additionalHolidays.some(holiday => holiday.getTime() === date.getTime());
+            }
+        );
+        this._dayList = this._isShowHoliday ? allDaylist : normalDaylist;
+        this._duration = this._dayList.length;
 
         const duration = Math.abs(this._lastDate.getTime() - this._firstDate.getTime());
         // if over 1 year, throw error
@@ -54,30 +69,52 @@ export class ScheduleConfiguration {
         return this._additionalHolidays;
     }
 
+    get dayList(): Date[] {
+        return this._dayList;
+    }
+
+    get isShowHoliday(): boolean {
+        return this._isShowHoliday;
+    }
+
+    get duration(): number {
+        return this._duration;
+    }
+
     public updateDates(firstDate: Date | string, lastDate: Date | string) {
-        return new ScheduleConfiguration(firstDate, lastDate, this._additionalHolidays);
+        return new ScheduleConfiguration(firstDate, lastDate, this._additionalHolidays, this._isShowHoliday);
     }
 
     public updateFirstDate(firstDate: Date | string): ScheduleConfiguration {
-        return new ScheduleConfiguration(firstDate, this._lastDate, this._additionalHolidays);
+        return new ScheduleConfiguration(firstDate, this._lastDate, this._additionalHolidays, this._isShowHoliday);
     }
 
     public updateLastDate(lastDate: Date | string): ScheduleConfiguration {
-        return new ScheduleConfiguration(this._firstDate, lastDate, this._additionalHolidays);
+        return new ScheduleConfiguration(this._firstDate, lastDate, this._additionalHolidays, this._isShowHoliday);
     }
 
     public updateAdditionalHolidays(holidays: Date[]): ScheduleConfiguration {
-        return new ScheduleConfiguration(this._firstDate, this._lastDate, holidays);
+        return new ScheduleConfiguration(this._firstDate, this._lastDate, holidays, this._isShowHoliday);
     }
 
     public isExistingHoliday(date: Date): boolean {
         return this._additionalHolidays.some(holiday => holiday.getTime() === date.getTime());
     }
 
+    public toggleShowHoliday(): ScheduleConfiguration {
+        return new ScheduleConfiguration(
+            this._firstDate,
+            this._lastDate,
+            this._additionalHolidays,
+            !this._isShowHoliday
+        );
+    }
+
+
     static createDefaultConfiguration(): ScheduleConfiguration {
         const firstDate = DateUtil.getCurrentMonthFirstDate();
         const lastDate = DateUtil.getCurrentMonthLastDate();
-        return new ScheduleConfiguration(firstDate, lastDate, []);
+        return new ScheduleConfiguration(firstDate, lastDate, [], true);
     }
 
 }
