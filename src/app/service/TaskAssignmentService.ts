@@ -1,6 +1,6 @@
 import { DateUtil } from "../common/DateUtil";
 import { UUID } from "../common/IdUtil";
-import { previousPhases } from "../common/PhaseEnum";
+import { PhaseEnum, previousPhases } from "../common/PhaseEnum";
 import { AssignedTask } from "../models/AssignedTask";
 import { CalendarCellTaskManager } from "../models/CalendarCellTask";
 import { CalendarDayCalculator } from "../models/CalendarDayCalculator";
@@ -12,6 +12,7 @@ import { PlanedTask } from "../models/PlanedTask";
 import { ScheduleConfiguration } from "../models/ScheduleConfiguration";
 import { Task } from "../models/Task";
 import TaskAssignablePolicy from "../models/TaskAssignablePolicy";
+import TaskFilter from "../models/TaskFilter";
 import { TaskManager } from "../models/TaskManager";
 import { TicketFinishedPolicy } from "../models/TicketFinisedPolicy";
 import { UnassignedTaskSelector } from "../models/UnassignedTaskSelector";
@@ -29,6 +30,8 @@ export class TaskAssignmentService {
     private _phaseCalculator = new PhaseCalculator();
 
     private _durationDayCalc = new DurationDayCalc();
+
+    private _taskFilter = new TaskFilter();
 
     public disassignTask(
         assignedId: UUID,
@@ -170,10 +173,13 @@ export class TaskAssignmentService {
         mileStoneManager: MileStoneManager,
         memberManager: MemberManager,
         scheduleConfiguration: ScheduleConfiguration,
-        exclusionTicketIds: UUID[]
+        exclusionTicketIds: UUID[],
+        filterOptions: { phase: PhaseEnum[], title: string }
     ): PlanedTask {
 
         let candidateTasks: Task[] = this._unassignedTaskSelctor.getUnassignedTasks(taskManager, planedTask, exclusionTicketIds);
+        // フィルタリングを適用
+        candidateTasks = this._taskFilter.filterTasks(candidateTasks, filterOptions);
         let assignedPlanedTask = planedTask;
 
         while (candidateTasks.length > 0) {
@@ -195,6 +201,8 @@ export class TaskAssignmentService {
             if (assignedPlanedTask.get(task.id)) {
                 // 割り当てが成功した場合、再度候補タスクを取得
                 candidateTasks = this._unassignedTaskSelctor.getUnassignedTasks(taskManager, assignedPlanedTask, exclusionTicketIds);
+                candidateTasks = this._taskFilter.filterTasks(candidateTasks, filterOptions);
+
             }
         }
 

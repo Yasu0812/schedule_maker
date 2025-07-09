@@ -56,7 +56,6 @@ export default function TaskUnassignedBox(props: {
     const unassignedTasks = new UnassignedTaskService().getUnassignedTasks(
         taskManager,
         planedTaskManager,
-        ticketManager.ticketMap,
         filterOptions,
         ticketManager.getExclusiveTicketIds(),
     );
@@ -70,6 +69,7 @@ export default function TaskUnassignedBox(props: {
             memberManager,
             scheduleConfiguration,
             ticketManager.getExclusiveTicketIds(),
+            filterOptions
         );
         setPlanedTaskManager(newPlanedManager);
     }

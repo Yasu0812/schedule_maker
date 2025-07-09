@@ -1,7 +1,6 @@
 import { Task } from "@/app/models/Task";
 import { TaskMergeSplitService } from "@/app/service/TaskMergeSplitService";
 import { TaskManager } from "@/app/models/TaskManager";
-import { phaseCompare } from "@/app/common/PhaseEnum";
 import TaskBeanDiv from "../atom/TaskBeanDiv";
 import { TaskAssignmentService } from "@/app/service/TaskAssignmentService";
 import { PlanedTask } from "@/app/models/PlanedTask";
@@ -43,12 +42,6 @@ export default function UnassignedTasks(
         scheduleConfiguration,
         setPlanedTaskManager
     } = props;
-
-    const sortedUnassignedTasks = unassignedTasks
-        .sort((a, b) => a.duration - b.duration)
-        .sort((a, b) => phaseCompare(b.phase, a.phase))
-        .sort((a, b) => a.ticketId > b.ticketId ? 1 : -1)
-        ;
 
     const onDoubleClick = (taskId: UUID, clientX: number, currentTarget: HTMLElement) => {
         const rect = currentTarget.getBoundingClientRect();
@@ -111,7 +104,7 @@ export default function UnassignedTasks(
         return taskId === moveTargetTaskId;
     }
 
-    const unassignedTaskBoxes = sortedUnassignedTasks.map((task) => {
+    const unassignedTaskBoxes = unassignedTasks.map((task) => {
 
         const ticketTitle = new NameResolveService().resolveTaskName(task.id, ticketManager, taskManager);
 
