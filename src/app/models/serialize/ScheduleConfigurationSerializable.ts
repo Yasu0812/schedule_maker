@@ -5,6 +5,8 @@ export type ScheduleConfigurationSerializableType = {
     firstDateStr: string;
     lastDateStr: string;
     additionalHolidays: string[];
+    isShowHoliday: boolean;
+
 }
 
 export class ScheduleConfigurationSerializable {
@@ -14,10 +16,11 @@ export class ScheduleConfigurationSerializable {
             firstDateStr: configuration.firstDateStr,
             lastDateStr: configuration.lastDateStr,
             additionalHolidays: configuration.additionalHolidays.map(date => DateUtil.formatDate(date)),
+            isShowHoliday: configuration.isShowHoliday
         };
     }
 
     public static deserialize(data: ScheduleConfigurationSerializableType): ScheduleConfiguration {
-        return new ScheduleConfiguration(data.firstDateStr, data.lastDateStr, data.additionalHolidays.map(dateStr => DateUtil.parseDate(dateStr)));
+        return new ScheduleConfiguration(data.firstDateStr, data.lastDateStr, data.additionalHolidays.map(dateStr => DateUtil.parseDate(dateStr)), data.isShowHoliday);
     }
 }
