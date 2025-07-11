@@ -133,6 +133,7 @@ export class TaskAssignmentService {
             ticketPhaseFinishDay,
             scheduleConfiguration.additionalHolidays,
         );
+        currentDay = DateUtil.getAddDate(calandarManager.firstDate, -1);
         const lastDate = calandarManager.lastDate;
         while (DateUtil.getAddDate(currentDay, task.duration - 1) <= lastDate) {
             const currentEndDay = this._durationDayCalc.getEndDate(
@@ -177,7 +178,7 @@ export class TaskAssignmentService {
         filterOptions: { phase: PhaseEnum[], title: string }
     ): PlanedTask {
 
-        let candidateTasks: Task[] = this._unassignedTaskSelctor.getUnassignedTasks(taskManager, planedTask, exclusionTicketIds);
+        let candidateTasks: Task[] = this._unassignedTaskSelctor.getUnassignedTasks(taskManager, planedTask, undefined, exclusionTicketIds);
         // フィルタリングを適用
         candidateTasks = this._taskFilter.filterTasks(candidateTasks, filterOptions);
         let assignedPlanedTask = planedTask;
@@ -200,7 +201,7 @@ export class TaskAssignmentService {
 
             if (assignedPlanedTask.get(task.id)) {
                 // 割り当てが成功した場合、再度候補タスクを取得
-                candidateTasks = this._unassignedTaskSelctor.getUnassignedTasks(taskManager, assignedPlanedTask, exclusionTicketIds);
+                candidateTasks = this._unassignedTaskSelctor.getUnassignedTasks(taskManager, assignedPlanedTask, undefined, exclusionTicketIds);
                 candidateTasks = this._taskFilter.filterTasks(candidateTasks, filterOptions);
 
             }

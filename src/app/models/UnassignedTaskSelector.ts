@@ -1,18 +1,25 @@
 import { UUID } from "../common/IdUtil";
-import { phaseCompare, PhaseEnum } from "../common/PhaseEnum";
+import { orderedPhases, phaseCompare, PhaseEnum } from "../common/PhaseEnum";
 import { difference } from "../common/SetOperationUtil";
 import { PlanedTask } from "./PlanedTask";
-import { Task } from "./Task";
 import { TaskManager } from "./TaskManager";
 
 export class UnassignedTaskSelector {
 
-    public getUnassignedAndAssignedTaskIds(
+    public splitUnAndAssignedTaskId(
         taskManager: TaskManager,
-        planedTask: PlanedTask
+        planedTask: PlanedTask,
+        ticketId?: UUID,
+        exclusionTicketIds: UUID[] = [],
+        phases: PhaseEnum[] = orderedPhases,
     ): { assignedTaskIds: UUID[], unassignedTaskIds: UUID[] } {
-        const taskIds = new Set(taskManager.getTaskIds());
-        const assignedTaskIds = new Set(planedTask.getAll().map(assignedTask => assignedTask.taskId));
+        const includesTasks = taskManager.getTaskAll().values();
+        // 除外するチケットIDが指定されている場合、除外する
+        const filteredTaskIds = includesTasks.filter(
+            task => !exclusionTicketIds.includes(task.ticketId) && phases.includes(task.phase) && (ticketId ? task.ticketId === ticketId : true)
+        ).map(task => task.id);
+        const taskIds = new Set(filteredTaskIds);
+        const assignedTaskIds = new Set(planedTask.getAll().map(assignedTask => assignedTask.taskId).filter(taskId => taskIds.has(taskId)));
         const unassignedTaskIds = difference(taskIds, assignedTaskIds);
 
         return {
@@ -32,27 +39,27 @@ export class UnassignedTaskSelector {
     public getUnassignedTasks(
         taskManager: TaskManager,
         planedTask: PlanedTask,
+        ticketId?: UUID,
         exclusionTicketIds?: UUID[]
     ) {
-        const { unassignedTaskIds } = this.getUnassignedAndAssignedTaskIds(taskManager, planedTask);
+        const { unassignedTaskIds } = this.splitUnAndAssignedTaskId(taskManager, planedTask, ticketId, exclusionTicketIds);
         const unassignedTasks = taskManager.getTaskList(unassignedTaskIds)
             .sort((a, b) => a.ticketId > b.ticketId ? 1 : -1)
             .sort((a, b) => b.duration - a.duration)
             .sort((a, b) => phaseCompare(a.phase, b.phase))
             ;
 
-        if (exclusionTicketIds && exclusionTicketIds.length > 0) {
-            return unassignedTasks.filter(task => !exclusionTicketIds.includes(task.ticketId));
-        } else {
-            return unassignedTasks;
-        }
+        return unassignedTasks;
     }
 
     public splitUnAndAssignedTask(
         taskManager: TaskManager,
         planedTask: PlanedTask,
+        ticketId?: UUID,
+        exclusionTicketIds?: UUID[],
+        phases: PhaseEnum[] = orderedPhases,
     ) {
-        const { assignedTaskIds, unassignedTaskIds } = this.getUnassignedAndAssignedTaskIds(taskManager, planedTask);
+        const { assignedTaskIds, unassignedTaskIds } = this.splitUnAndAssignedTaskId(taskManager, planedTask, ticketId, exclusionTicketIds, phases);
         const assignedTasks = taskManager.getTaskList(assignedTaskIds);
         const unassignedTasks = taskManager.getTaskList(unassignedTaskIds);
 
@@ -62,39 +69,13 @@ export class UnassignedTaskSelector {
         };
     }
 
-    public getUnassignedTaskFromTicketId(
+    public getSplitTaskFromTicketIdToMap(
         ticketId: UUID,
         taskManager: TaskManager,
         planedTask: PlanedTask,
+        exclusionTicketIds?: UUID[]
     ) {
-        const unassignedTasks = this.getUnassignedTasks(taskManager, planedTask);
-        const filteredUnassignedTasks = unassignedTasks.filter(task => task.ticketId === ticketId);
-
-
-        return filteredUnassignedTasks;
-    }
-
-    public getSplitTaskFromTicketId(
-        ticketId: UUID,
-        taskManager: TaskManager,
-        planedTask: PlanedTask,
-    ): { assignedTasks: Task[], unassignedTasks: Task[] } {
-        const { assignedTasks, unassignedTasks } = this.splitUnAndAssignedTask(taskManager, planedTask);
-        const assignedTasksFromTicket = assignedTasks.filter(task => task.ticketId === ticketId);
-        const unassignedTasksFromTicket = unassignedTasks.filter(task => task.ticketId === ticketId);
-
-        return {
-            assignedTasks: assignedTasksFromTicket,
-            unassignedTasks: unassignedTasksFromTicket,
-        };
-    }
-
-    public getSpllitTaskFromTicketIdToMap(
-        ticketId: UUID,
-        taskManager: TaskManager,
-        planedTask: PlanedTask,
-    ) {
-        const { assignedTasks, unassignedTasks } = this.getSplitTaskFromTicketId(ticketId, taskManager, planedTask);
+        const { assignedTasks, unassignedTasks } = this.splitUnAndAssignedTask(taskManager, planedTask, ticketId, exclusionTicketIds);
         const assignedTaskMap = Map.groupBy(assignedTasks, assignedTask => assignedTask.phase);
         const unassignedTaskMap = Map.groupBy(unassignedTasks, unassignedTask => unassignedTask.phase);
         return {
@@ -103,60 +84,25 @@ export class UnassignedTaskSelector {
         };
     }
 
+
     public getSplitTaskFromTicketIdAndPhase(
         ticketId: UUID,
-        phase: PhaseEnum,
+        phase: PhaseEnum | PhaseEnum[],
         taskManager: TaskManager,
         planedTask: PlanedTask,
+        exclusionTicketIds?: UUID[]
     ) {
-        const { assignedTasks, unassignedTasks } = this.splitUnAndAssignedTask(taskManager, planedTask);
-        const assignedTasksFromTicket = assignedTasks.filter(task => task.ticketId === ticketId && task.phase === phase);
-        const unassignedTasksFromTicket = unassignedTasks.filter(task => task.ticketId === ticketId && task.phase === phase);
+        if (!Array.isArray(phase)) {
+            phase = [phase];
+        }
+        const { assignedTasks, unassignedTasks } = this.splitUnAndAssignedTask(taskManager, planedTask, ticketId, exclusionTicketIds);
+        const assignedTasksFromTicket = assignedTasks.filter(task => task.ticketId === ticketId && phase.includes(task.phase));
+        const unassignedTasksFromTicket = unassignedTasks.filter(task => task.ticketId === ticketId && phase.includes(task.phase));
 
         return {
             assignedTasks: assignedTasksFromTicket,
             unassignedTasks: unassignedTasksFromTicket,
         };
-    }
-
-    /**
-     * 指定されたチケットIDとフェーズの配列に基づいて、未割り当てタスクのリストを取得します。
-     *
-     * @param ticketId チケットのUUID。
-     * @param phase フィルタリング対象となるフェーズの配列。
-     * @param taskManager タスク管理オブジェクト。
-     * @param planedTask 計画済みタスクの情報。
-     * @returns 指定されたフェーズに該当する未割り当てタスクの配列。
-     */
-    public getUnassignedTaskFromTicketIdAndPhases(
-        ticketId: UUID,
-        phase: PhaseEnum[],
-        taskManager: TaskManager,
-        planedTask: PlanedTask,
-    ) {
-        const unassignedTasks = this.getUnassignedTaskFromTicketId(ticketId, taskManager, planedTask);
-        const filteredUnassignedTasks = unassignedTasks.filter(task => phase.includes(task.phase));
-
-        return filteredUnassignedTasks;
-    }
-
-    /**
-     * チケットIDとフェーズに基づいて、未割り当てタスクのリストを取得します。
-     * @param ticketId 
-     * @param phase 
-     * @param taskManager 
-     * @param planedTask 
-     * @returns 
-     */
-    public getUnassignedTaskFromTicketIdAndPhase(
-        ticketId: UUID,
-        phase: PhaseEnum,
-        taskManager: TaskManager,
-        planedTask: PlanedTask,
-    ) {
-        const unassignedTasks = this.getUnassignedTaskFromTicketIdAndPhases(ticketId, [phase], taskManager, planedTask);
-
-        return unassignedTasks;
     }
 
     public getMinDurationTask(
@@ -165,7 +111,13 @@ export class UnassignedTaskSelector {
         taskManager: TaskManager,
         planedTask: PlanedTask,
     ) {
-        const unassignedTasks = this.getUnassignedTaskFromTicketIdAndPhase(ticketId, phase, taskManager, planedTask);
+        const { unassignedTasks } = this.splitUnAndAssignedTask(
+            taskManager,
+            planedTask,
+            ticketId,
+            undefined,
+            [phase]
+        );
         if (unassignedTasks.length === 0) {
             return undefined;
         }

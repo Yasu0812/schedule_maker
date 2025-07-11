@@ -26,7 +26,7 @@ export class UnassignedTaskService {
         filterOptions: FilterOptions,
         exclusionTicketIds?: UUID[],
     ): Task[] {
-        const unassignedTasks = this._unassignedTaskSelector.getUnassignedTasks(taskManager, planedTask, exclusionTicketIds);
+        const unassignedTasks = this._unassignedTaskSelector.getUnassignedTasks(taskManager, planedTask, undefined, exclusionTicketIds);
         // フィルタリングを適用
         return this._taskFilter.filterTasks(unassignedTasks, filterOptions)
     }

@@ -29,7 +29,7 @@ export class PhaseCalculator {
         phases: PhaseEnum[] = orderedPhases
     ): Map<PhaseEnum, { startDay: Date | undefined, endDay: Date | undefined }> {
 
-        const { assignedTaskMap, unassignedTaskMap } = this._unassignedTaskSelector.getSpllitTaskFromTicketIdToMap(ticketId, taskManager, planedTask);
+        const { assignedTaskMap, unassignedTaskMap } = this._unassignedTaskSelector.getSplitTaskFromTicketIdToMap(ticketId, taskManager, planedTask);
 
         const phaseStartEndDays: Map<PhaseEnum, { startDay: Date | undefined, endDay: Date | undefined }> = new Map();
         for (const phase of phases) {

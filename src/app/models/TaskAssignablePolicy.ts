@@ -1,15 +1,21 @@
 import { DateUtil } from "../common/DateUtil";
 import { UUID } from "../common/IdUtil";
-import { TicketAssignStatus } from "../common/TicketAssignStatusEnum";
 import Member from "./Member";
 import { MileStoneManager } from "./MileStoneManager";
 import { PhaseStatusPolicy } from "./PhaseStatusPolicy";
 import { PlanedTask } from "./PlanedTask";
+import { RequiredProjectPhaseFinishPolicy } from "./RequiredProjectPhaseFinishPolicy";
+import { RequiredTaskPhaseFinishPolicy } from "./RequiredTaskPhaseFinishPolicy";
 import { TaskManager } from "./TaskManager";
 
 export default class TaskAssignablePolicy {
 
     private _phaseStatusPolicy = new PhaseStatusPolicy();
+
+    private _requiredProjectPhaseFinishPolicy = new RequiredProjectPhaseFinishPolicy();
+
+    private _requiredTaskPhaseFinishPolicy = new RequiredTaskPhaseFinishPolicy();
+
     /**
      * タスクが割り当て可能かどうかを判定します。  
      * あらゆるポリシーを考慮して、メンバーにタスクを割り当てることができるかどうかを判断します。  
@@ -31,7 +37,8 @@ export default class TaskAssignablePolicy {
         mileStoneManager: MileStoneManager,
         member: Member,
         scheduleStartDay: Date,
-        scheduleEndDay: Date
+        scheduleEndDay: Date,
+        exclusionTicketIds: UUID[] = [],
     ): boolean {
         const task = taskManager.getTask(taskId);
         if (!task) {
@@ -40,26 +47,47 @@ export default class TaskAssignablePolicy {
 
         const phase = task.phase;
 
-        // 本工程が開始可能かどうかを確認
-        const isPrePhaseEnd = this._phaseStatusPolicy.judgePhaseStatus(
-            task.ticketId,
+        // これより以前のフェーズが正常に終了しているかどうかを確認
+        // const isPrePhaseEnd = this._phaseStatusPolicy.judgePhaseStatus(
+        //     task.ticketId,
+        //     phase,
+        //     taskManager,
+        //     planedTask
+        // ) === TicketAssignStatus.STARTABLE;
+        // if (!isPrePhaseEnd) return false; // 前のフェーズが終了していない場合、割り当て不可
+
+
+        const requiredTasks = this._requiredTaskPhaseFinishPolicy.isRequiredTaskPhaseFinish(
+            taskId,
             phase,
             taskManager,
-            planedTask
-        ) === TicketAssignStatus.STARTABLE;
+            planedTask,
+            startDay,
+            exclusionTicketIds
+        );
+        if (!requiredTasks) return false; // 必須タスクがない場合、割り当て不可
 
-        //TODO 必須タスクがある場合、必須タスクの終了日がstartDayより前であることを確認
-        const requiredTasks = true; // ここでは仮にtrueとしています。実際には必要なロジックを実装してください。
+        const requiredPhase = this._requiredProjectPhaseFinishPolicy.isRequiredProjectPhaseFinish(
+            phase,
+            taskManager,
+            planedTask,
+            startDay,
+            exclusionTicketIds
+        );
+        if (!requiredPhase) return false; // 必須フェーズがない場合、割り当て不可
 
         // マイルストーンのフェーズに含まれているかどうかを確認
         const taskStartDay = startDay;
         const taskEndDay = endDay;
-
         const isInMileStoneStart = mileStoneManager.isEnabledPhase(phase, taskStartDay);
         const isInMileStoneEnd = mileStoneManager.isEnabledPhase(phase, taskEndDay);
+        if (!isInMileStoneStart || !isInMileStoneEnd) return false; // マイルストーンに含まれていない場合、割り当て不可
 
+        // memberが利用可能かどうか確認
         const isMemberEnabled = member.disableDates.every(date => !DateUtil.isbetweenDates(taskStartDay, date, taskEndDay));
+        if (!isMemberEnabled) return false; // メンバーが利用不可の場合、割り当て不可
 
+        // 物理的に割り当て可能かどうかを確認
         const isAssignmentPermitted = this.isAssignmentPermitted(
             taskId,
             member.id,
@@ -69,9 +97,10 @@ export default class TaskAssignablePolicy {
             scheduleStartDay,
             scheduleEndDay
         );
+        if (!isAssignmentPermitted) return false; // 割り当てが物理的に不可能な場合、割り当て不可
 
 
-        return isPrePhaseEnd && isInMileStoneStart && isInMileStoneEnd && isAssignmentPermitted && requiredTasks && isMemberEnabled;
+        return true; // すべての条件を満たしている場合、割り当て可能
     }
 
     /**

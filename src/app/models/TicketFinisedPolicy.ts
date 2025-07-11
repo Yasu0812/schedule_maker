@@ -50,40 +50,6 @@ export class TicketFinishedPolicy {
     }
 
     /**
-     * チケットにタスクを追加した場合、指定されたフェーズが完了しているかどうかを判定します。
-     * @param ticketId チケットID
-     * @param taskId タスクID
-     * @param phase 判定基準となるフェーズ
-     * @param taskManager タスク管理オブジェクト
-     * @param planedTask 計画されたタスク
-     * @returns フェーズが完了している場合は true、それ以外は false
-     */
-    public isPhaseFinishIfAddTask(
-        ticketId: UUID,
-        taskId: UUID,
-        phase: PhaseEnum,
-        taskManager: TaskManager,
-        planedTask: PlanedTask,
-    ): boolean {
-
-        const leftTasks = this._unassignedTaskSelector.getUnassignedTaskFromTicketIdAndPhases(
-            ticketId,
-            [phase],
-            taskManager,
-            planedTask
-        );
-
-        if (leftTasks.length === 0) {
-            return true;
-        } else if (leftTasks.length === 1 && leftTasks[0].id === taskId) {
-            return true;
-        }
-
-        return false;
-
-    }
-
-    /**
      * 指定されたチケットIDに関連する、指定されたフェーズより前のタスクが、すべて割り当てられているかどうかを判定します。
      *
      * @param ticketId チェック対象のチケットID
@@ -99,7 +65,13 @@ export class TicketFinishedPolicy {
         planedTask: PlanedTask,
     ) {
         const prePhases = previousPhases(phase);
-        const unassignedTasks = this._unassignedTaskSelector.getUnassignedTaskFromTicketIdAndPhases(ticketId, prePhases, taskManager, planedTask);
+        const { unassignedTasks } = this._unassignedTaskSelector.splitUnAndAssignedTask(
+            taskManager,
+            planedTask,
+            ticketId,
+            undefined,
+            prePhases
+        );
         const isAllAssigned = unassignedTasks.length === 0;
 
         return isAllAssigned;
@@ -122,7 +94,13 @@ export class TicketFinishedPolicy {
         planedTask: PlanedTask,
     ): boolean {
 
-        const unassignedTasks = this._unassignedTaskSelector.getUnassignedTaskFromTicketIdAndPhase(ticketId, phase, taskManager, planedTask);
+        const { unassignedTasks } = this._unassignedTaskSelector.splitUnAndAssignedTask(
+            taskManager,
+            planedTask,
+            ticketId,
+            undefined,
+            [phase]
+        );
         const isAllAssigned = unassignedTasks.length === 0;
 
         return isAllAssigned;
