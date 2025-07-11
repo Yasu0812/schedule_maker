@@ -16,15 +16,15 @@ export class PhaseStatusPolicy {
      * 以下のロジックに基づいて返します。
      * - フェーズが存在しない場合、`TicketAssignStatusEnum.NONE`を返す
      * - 前のフェーズが`TicketAssignStatusEnum.VIOLATION`または`TicketAssignStatusEnum.DISABLE`の場合
-     *  - 現在のフェーズが`PhaseStatusEnum.UNASSIGNED`の場合、`TicketAssignStatusEnum.DISABLE`を返す
-     *  - 現在のフェーズが`PhaseStatusEnum.PARTIAL`または`PhaseStatusEnum.FULL`の場合、`TicketAssignStatusEnum.VIOLATION`を返す
+     *   - 現在のフェーズが`PhaseStatusEnum.UNASSIGNED`の場合、`TicketAssignStatusEnum.DISABLE`を返す
+     *   - 現在のフェーズが`PhaseStatusEnum.PARTIAL`または`PhaseStatusEnum.FULL`の場合、`TicketAssignStatusEnum.VIOLATION`を返す
      * - 前のフェーズが`TicketAssignStatusEnum.STARTABLE`の場合
-     *  - 現在のフェーズが`PhaseStatusEnum.UNASSIGNED`の場合、`TicketAssignStatusEnum.DISABLE`を返す
-     *  - 現在のフェーズが`PhaseStatusEnum.PARTIAL`の場合、`TicketAssignStatusEnum.VIOLATION`を返す
+     *   - 現在のフェーズが`PhaseStatusEnum.UNASSIGNED`の場合、`TicketAssignStatusEnum.DISABLE`を返す
+     *   - 現在のフェーズが`PhaseStatusEnum.PARTIAL`の場合、`TicketAssignStatusEnum.VIOLATION`を返す
      * - 前のフェーズが`TicketAssignStatusEnum.FULL`の場合
-     *  - 現在のフェーズが`PhaseStatusEnum.UNASSIGNED`の場合、`TicketAssignStatusEnum.STARTABLE`を返す
-     *  - 現在のフェーズが`PhaseStatusEnum.PARTIAL`の場合、`TicketAssignStatusEnum.STARTABLE`を返す
-     *  - 現在のフェーズが`PhaseStatusEnum.FULL`の場合、`TicketAssignStatusEnum.FULL`を返す
+     *   - 現在のフェーズが`PhaseStatusEnum.UNASSIGNED`の場合、`TicketAssignStatusEnum.STARTABLE`を返す
+     *   - 現在のフェーズが`PhaseStatusEnum.PARTIAL`の場合、`TicketAssignStatusEnum.STARTABLE`を返す
+     *   - 現在のフェーズが`PhaseStatusEnum.FULL`の場合、`TicketAssignStatusEnum.FULL`を返す
      * @param ticketId 
      * @param taskManager 
      * @param planedTask 
