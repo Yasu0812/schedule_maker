@@ -11,6 +11,12 @@ export class TaskMergeSplitter {
      * @returns 分割されたタスクの配列
      */
     public splitTask(task: Task, duration: number[]): Task[] {
+
+        const totalDuration = duration.reduce((sum, d) => sum + d, 0);
+        if (totalDuration !== task.duration) {
+            throw new Error(`Total duration of split parts must equal the original task duration. Original: ${task.duration}, Split: ${totalDuration}`);
+        }
+
         const tasks: Task[] = [];
         const taskIds = [task.id, ...duration.map(() => generateUUID())];
         duration.forEach((v, i) => {
@@ -22,15 +28,28 @@ export class TaskMergeSplitter {
         return tasks;
     }
 
-    /**
-     * タスクを半分に分割するメソッド
-     * @param task 分割するタスク
-     * @returns 分割されたタスクの配列
-     */
-    public splitTaskByHalf(task: Task): Task[] {
-        const halfDurationCeil = Math.ceil(task.duration / 2);
-        const halfDurationFloor = Math.floor(task.duration / 2);
-        return this.splitTask(task, [halfDurationCeil, halfDurationFloor]);
+    public splitTaskByNumDurations(duration: number, num: number): number[] {
+        if (num < 2) {
+            return [duration]; // If num is less than 2, return the original duration as a single element array
+        }
+        const baseDuration = Math.floor(duration / num);
+        const remainder = duration % num;
+        const durations = Array<number>(num).fill(baseDuration);
+        for (let i = 0; i < remainder; i++) {
+            durations[i] += 1; // Distribute the remainder
+        }
+
+        return durations.filter(v => v > 0); // Filter out any zero durations
+
+    }
+
+    public splitTaskByNum(task: Task, num: number): Task[] {
+        if (num < 2) {
+            throw new Error("Number of splits must be at least 2");
+        }
+        const durations = this.splitTaskByNumDurations(task.duration, num);
+
+        return this.splitTask(task, durations);
 
     }
 

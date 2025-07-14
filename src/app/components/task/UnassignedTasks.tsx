@@ -11,6 +11,8 @@ import { TicketManager } from "@/app/models/Ticket";
 import { NameResolveService } from "@/app/service/NameResolveService";
 import { MemberManager } from "@/app/models/MemberManager";
 import { ScheduleConfiguration } from "@/app/models/ScheduleConfiguration";
+import { useModal } from "../modal/ModalContext";
+import TaskSplitModal from "./TaskSplitModal";
 
 export default function UnassignedTasks(
     props: {
@@ -43,12 +45,23 @@ export default function UnassignedTasks(
         setPlanedTaskManager
     } = props;
 
-    const onDoubleClick = (taskId: UUID, clientX: number, currentTarget: HTMLElement) => {
-        const rect = currentTarget.getBoundingClientRect();
-        const pointX = Math.floor((clientX - rect.left) / 75);
-        const newTaskManager = new TaskMergeSplitService().splitTaskLeftDuration(taskId, taskManager, pointX);
-        props.setTaskManager(newTaskManager);
+    const { showModal, hideModal } = useModal();
+
+    const onDoubleClick = (taskId: UUID) => {
+        // const rect = currentTarget.getBoundingClientRect();
+        // const pointX = Math.floor((clientX - rect.left) / 75);
+        // const newTaskManager = new TaskMergeSplitService().splitTaskLeftDuration(taskId, taskManager, pointX);
+        // props.setTaskManager(newTaskManager);
         handleMoveTargetTask(undefined);
+        showModal(() => <TaskSplitModal
+            taskId={taskId}
+            ticketManager={ticketManager}
+            taskManager={taskManager}
+            planedTaskManager={planedTaskManager}
+            calandarManager={calandarManager}
+            setTaskManager={setTaskManager}
+            hideModal={hideModal}
+        />);
     }
 
     const onMouseUp = (e: React.MouseEvent, taskId: UUID) => {
@@ -112,7 +125,7 @@ export default function UnassignedTasks(
             <div
                 key={task.id}
                 style={{ margin: "5px" }}
-                onDoubleClick={(e) => onDoubleClick(task.id, e.clientX, e.currentTarget)}
+                onDoubleClick={() => onDoubleClick(task.id)}
                 onMouseUp={(e) => onMouseUp(e, task.id)}
             >
                 <TaskBeanDiv
