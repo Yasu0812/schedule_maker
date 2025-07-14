@@ -101,7 +101,8 @@ export class TaskAssignmentService {
         calandarManager: CalendarCellTaskManager,
         mileStoneManager: MileStoneManager,
         memberManager: MemberManager,
-        scheduleConfiguration: ScheduleConfiguration
+        scheduleConfiguration: ScheduleConfiguration,
+        exclusionTicketIds: UUID[],
     ): PlanedTask {
         const task = taskManager.getTask(taskId);
         if (!task) {
@@ -152,6 +153,7 @@ export class TaskAssignmentService {
                     member,
                     scheduleConfiguration.firstDate,
                     scheduleConfiguration.lastDate,
+                    exclusionTicketIds
                 );
                 if (isTaskAssignable) {
                     return planedTask.assignTask(task, member.id, currentDay, currentEndDay);
@@ -196,7 +198,8 @@ export class TaskAssignmentService {
                 calandarManager,
                 mileStoneManager,
                 memberManager,
-                scheduleConfiguration
+                scheduleConfiguration,
+                exclusionTicketIds
             );
 
             if (assignedPlanedTask.get(task.id)) {

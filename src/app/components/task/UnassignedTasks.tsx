@@ -106,6 +106,7 @@ export default function UnassignedTasks(
             mileStoneManager,
             memberManager,
             scheduleConfiguration,
+            ticketManager.getExclusiveTicketIds()
         );
 
         setPlanedTaskManager(newPlanedTask);

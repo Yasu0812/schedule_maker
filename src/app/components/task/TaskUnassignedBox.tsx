@@ -57,6 +57,7 @@ export default function TaskUnassignedBox(props: {
         taskManager,
         planedTaskManager,
         filterOptions,
+        undefined,
         ticketManager.getExclusiveTicketIds(),
     );
 

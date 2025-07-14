@@ -3,6 +3,7 @@ import { PlanedTask } from "@/app/models/PlanedTask";
 import { TaskManager } from "@/app/models/TaskManager";
 import { TicketManager } from "@/app/models/Ticket";
 import { TaskMergeSplitService } from "@/app/service/TaskMergeSplitService";
+import { UnassignedTaskService } from "@/app/service/UnassignedTaskService";
 import { UUID } from "crypto";
 import { useState } from "react";
 
@@ -29,6 +30,19 @@ export default function TaskSplitModal(props: {
     if (!task) {
         return <div>Task not found</div>;
     }
+
+    const unassignedTasks = new UnassignedTaskService().getUnassignedTasks(
+        props.taskManager,
+        props.planedTaskManager,
+        {
+            phase: [task.phase],
+            title: ''
+        },
+        task.ticketId,
+        props.ticketManager.getExclusiveTicketIds(),
+    );
+
+    const unassignedTasksDuration = unassignedTasks.reduce((acc, t) => acc + t.duration, 0);
 
     const handleSplitNumChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = parseInt(e.target.value);
@@ -71,12 +85,22 @@ export default function TaskSplitModal(props: {
         setSplitDurationInput("");
     };
 
+    const resetSplit = () => {
+        const newTaskManager = new TaskMergeSplitService().mergeTasks(
+            unassignedTasks.map(t => t.id),
+            props.taskManager
+        );
+        props.setTaskManager(newTaskManager);
+        props.hideModal();
+    };
+
 
     return (
         <div className="p-4" >
             <h3 className="text-lg font-semibold mb-2">Task Split</h3>
             <p className="mb-2">Ticket Title: {task.ticketTitle}</p>
-            <p className="mb-2">Current Duration: {task.duration} days</p>
+            <p className="mb-2">Unassigned Days Sum:{unassignedTasksDuration} days</p>
+            <p className="mb-2">Task Duration: {task.duration} days</p>
             {error && <p className="text-red-500 mb-2">{error}</p>}
             <input
                 type="number"
@@ -97,6 +121,18 @@ export default function TaskSplitModal(props: {
                 onClick={doSplit}
             >
                 Split Task
+            </button>
+            <button
+                className="bg-red-500 text-white rounded p-2 hover:bg-red-600 ml-2"
+                onClick={resetSplit}
+            >
+                Reset Split
+            </button>
+            <button
+                className="bg-gray-300 text-black rounded p-2 hover:bg-gray-400 ml-2"
+                onClick={props.hideModal}
+            >
+                Cancel
             </button>
         </div>
     );
