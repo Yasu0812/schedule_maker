@@ -8,6 +8,8 @@ export const Phase = {
     INTEGRATION_TEST_INTERNAL: 'integration-test-internal', // 内部結合テスト
     INTEGRATION_TEST_EXTERNAL_DOCUMENT_CREATION: 'integration-test-external-document-creation', // 外部結合テスト仕様書作成
     INTEGRATION_TEST_EXTERNAL: 'integration-test-external', // 外部結合テスト
+    PERFORMANCE_TEST_DOCUMENT_CREATION: 'performance-test-document-creation', // パフォーマンステスト仕様書作成
+    PERFORMANCE_TEST: 'performance-test', // パフォーマンステスト
 } as const;
 
 export const orderedPhases: PhaseEnum[] = [
@@ -20,6 +22,8 @@ export const orderedPhases: PhaseEnum[] = [
     Phase.INTEGRATION_TEST_INTERNAL,
     Phase.INTEGRATION_TEST_EXTERNAL_DOCUMENT_CREATION,
     Phase.INTEGRATION_TEST_EXTERNAL,
+    Phase.PERFORMANCE_TEST_DOCUMENT_CREATION,
+    Phase.PERFORMANCE_TEST,
 ];
 
 export type PhaseEnum = typeof Phase[keyof typeof Phase];
@@ -98,6 +102,8 @@ export const phaseNameMap: Record<PhaseEnum, string> = {
     [Phase.INTEGRATION_TEST_INTERNAL]: '内部結合テスト',
     [Phase.INTEGRATION_TEST_EXTERNAL_DOCUMENT_CREATION]: '外部結合テスト仕様書作成',
     [Phase.INTEGRATION_TEST_EXTERNAL]: '外部結合テスト',
+    [Phase.PERFORMANCE_TEST_DOCUMENT_CREATION]: '性能テスト仕様書作成',
+    [Phase.PERFORMANCE_TEST]: '性能テスト',
 };
 
 export const phaseNameReverseMap: Record<string, PhaseEnum> = Object.fromEntries(
@@ -114,4 +120,6 @@ export const phaseNameShortMap: Record<PhaseEnum, string> = {
     [Phase.INTEGRATION_TEST_INTERNAL]: '内結',
     [Phase.INTEGRATION_TEST_EXTERNAL_DOCUMENT_CREATION]: '外結仕様',
     [Phase.INTEGRATION_TEST_EXTERNAL]: '外結',
+    [Phase.PERFORMANCE_TEST_DOCUMENT_CREATION]: '性能仕様',
+    [Phase.PERFORMANCE_TEST]: '性能',
 };
