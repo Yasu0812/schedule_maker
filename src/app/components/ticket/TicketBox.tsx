@@ -5,16 +5,19 @@ import { UUID } from "@/app/common/IdUtil";
 import CancelIcon from "../atom/CancelIcon";
 import { TicketUpdateService } from "@/app/service/TicketUpdateService";
 import { useState } from "react";
+import { TaskManager } from "@/app/models/TaskManager";
 
 export default function TicketBox(props: {
     ticketId: UUID,
     ticketManager: TicketManager,
+    taskManager: TaskManager,
     setTicketManager: (ticketManager: TicketManager) => void;
+    setTaskManager: (taskManager: TaskManager) => void;
     changeHandler: (ticketId: UUID, phase: PhaseEnum, duration: number) => number;
     cancelHander: () => void;
 }) {
 
-    const { ticketId, ticketManager, changeHandler, cancelHander } = props;
+    const { ticketId, ticketManager, taskManager, changeHandler, cancelHander } = props;
     const ticket = ticketManager.getTicket(ticketId);
 
     const [inputName, setInputName] = useState(ticket?.title || "");
@@ -30,9 +33,13 @@ export default function TicketBox(props: {
         if (newTitle.length === 0) {
             return;
         }
+    }
 
-        const newManager = new TicketUpdateService().changeTitle(ticket.id, newTitle, ticketManager);
-        props.setTicketManager(newManager);
+    const changeTitle = () => {
+
+        const { newTicketManager, newTaskManager } = new TicketUpdateService().changeTitle(ticket.id, inputName, ticketManager, taskManager);
+        props.setTicketManager(newTicketManager);
+        props.setTaskManager(newTaskManager);
     }
 
 
@@ -47,7 +54,18 @@ export default function TicketBox(props: {
     return (
         <div>
             <div className="flex pb-6">
-                <div className="py-1">Ticket Name : </div><input type="text" value={inputName} onChange={onChange} className="ml-2 border rounded px-2 py-1" />
+                <div className="py-1">Ticket Name : </div>
+                <input
+                    type="text"
+                    value={inputName}
+                    onChange={onChange}
+                    onBlur={changeTitle}
+                    onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                            changeTitle();
+                        }
+                    }}
+                    className="ml-2 border rounded px-2 py-1" />
                 <nav className="ml-auto flex">
                     <CancelIcon onClick={cancelHander} />
                 </nav>

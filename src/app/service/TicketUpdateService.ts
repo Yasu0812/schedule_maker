@@ -38,17 +38,22 @@ export class TicketUpdateService {
     public changeTitle(
         ticketId: UUID,
         newTitle: string,
-        ticketManager: TicketManager
-    ): TicketManager {
+        ticketManager: TicketManager,
+        taskManager: TaskManager
+    ): { newTicketManager: TicketManager, newTaskManager: TaskManager } {
         const ticket = ticketManager.getTicket(ticketId);
         if (!ticket) {
             throw new Error(`Ticket with ID ${ticketId} not found`);
         }
 
+        const newTaskManager = taskManager.changeTaskTitleFromTicketId(ticketId, newTitle);
+
         if (newTitle.trim() === "") {
             throw new Error("Ticket name cannot be empty");
         }
 
-        return ticketManager.changeTicketTitle(ticketId, newTitle);
+        const newTicketManager = ticketManager.changeTicketTitle(ticketId, newTitle);
+
+        return { newTicketManager, newTaskManager };
     }
 }

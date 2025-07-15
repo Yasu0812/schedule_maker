@@ -99,6 +99,15 @@ export class RequiredTaskPhaseFinishPolicy {
             return [
                 Phase.INTEGRATION_TEST_EXTERNAL_DOCUMENT_CREATION,
             ];
+        } else if (phase === Phase.PERFORMANCE_TEST_DOCUMENT_CREATION) {
+            return [
+                Phase.DEVELOPMENT,
+            ];
+        } else if (phase === Phase.PERFORMANCE_TEST) {
+            return [
+                Phase.INTEGRATION_TEST_INTERNAL,
+                Phase.PERFORMANCE_TEST_DOCUMENT_CREATION,
+            ];
         }
 
 

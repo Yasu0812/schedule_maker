@@ -209,4 +209,42 @@ export class TaskManager {
         return taskList.reduce((sum, task) => sum + task.duration, 0);
     }
 
+    public changeTaskTitle(
+        taskId: UUID,
+        newTitle: string,
+    ): TaskManager {
+        const task = this._taskMap.get(taskId);
+        if (!task) {
+            throw new Error(`Task not found for taskId: ${taskId}`);
+        }
+
+        if (newTitle.trim() === "") {
+            throw new Error("Task title cannot be empty");
+        }
+
+        const updatedTask = new Task(taskId, task.ticketId, newTitle, task.phase, task.duration);
+        this._taskMap.set(taskId, updatedTask);
+        return this;
+    }
+
+    public changeTaskTitleFromTicketId(
+        ticketId: UUID,
+        newTitle: string,
+    ): TaskManager {
+        const tasks = this.getTaskFromTicketId(ticketId);
+        if (tasks.length === 0) {
+            return this;
+        }
+
+        if (newTitle.trim() === "") {
+            throw new Error("Ticket title cannot be empty");
+        }
+
+        tasks.forEach(task => {
+            this.changeTaskTitle(task.id, newTitle);
+        });
+
+        return this;
+    }
+
 }

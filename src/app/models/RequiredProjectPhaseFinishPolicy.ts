@@ -76,6 +76,11 @@ export class RequiredProjectPhaseFinishPolicy {
                 Phase.UNIT_TEST_DOCUMENT_CREATION,
                 Phase.UNIT_TEST,
             ];
+        } else if (phase === Phase.PERFORMANCE_TEST) {
+            return [
+                Phase.INTEGRATION_TEST_INTERNAL,
+                Phase.INTEGRATION_TEST_EXTERNAL,
+            ];
         }
 
 

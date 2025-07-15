@@ -16,7 +16,7 @@ export default function TicketManagementBox(props: {
     ticketManager: TicketManager,
     taskManager: TaskManager,
     planedTask: PlanedTask,
-    scheduleConfiguration:ScheduleConfiguration,
+    scheduleConfiguration: ScheduleConfiguration,
     setTicketManager: (ticketManager: TicketManager) => void;
     setTaskManager: (taskManager: TaskManager) => void;
     setPlanedTask: (planedTask: PlanedTask) => void;
@@ -79,7 +79,9 @@ export default function TicketManagementBox(props: {
             <TicketBox
                 ticketId={ticketId}
                 ticketManager={ticketManager}
+                taskManager={taskManager}
                 setTicketManager={setTicketManager}
+                setTaskManager={setTaskManager}
                 changeHandler={changeHandler}
                 cancelHander={hideModal}
 
