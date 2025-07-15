@@ -47,16 +47,6 @@ export default class TaskAssignablePolicy {
 
         const phase = task.phase;
 
-        // これより以前のフェーズが正常に終了しているかどうかを確認
-        // const isPrePhaseEnd = this._phaseStatusPolicy.judgePhaseStatus(
-        //     task.ticketId,
-        //     phase,
-        //     taskManager,
-        //     planedTask
-        // ) === TicketAssignStatus.STARTABLE;
-        // if (!isPrePhaseEnd) return false; // 前のフェーズが終了していない場合、割り当て不可
-
-
         const requiredTasks = this._requiredTaskPhaseFinishPolicy.isRequiredTaskPhaseFinish(
             taskId,
             phase,
