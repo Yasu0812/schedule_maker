@@ -48,10 +48,6 @@ export default function UnassignedTasks(
     const { showModal, hideModal } = useModal();
 
     const onDoubleClick = (taskId: UUID) => {
-        // const rect = currentTarget.getBoundingClientRect();
-        // const pointX = Math.floor((clientX - rect.left) / 75);
-        // const newTaskManager = new TaskMergeSplitService().splitTaskLeftDuration(taskId, taskManager, pointX);
-        // props.setTaskManager(newTaskManager);
         handleMoveTargetTask(undefined);
         showModal(() => <TaskSplitModal
             taskId={taskId}
