@@ -40,6 +40,7 @@ export default function ScheduleMaker(
                 ticketManager,
                 prevSchedule.taskManager,
                 prevSchedule.planedTaskManager,
+                prevSchedule.mileStoneManager,
             );
 
             return new ScheduleStateManager(
@@ -81,6 +82,7 @@ export default function ScheduleMaker(
                 prevSchedule.ticketManager,
                 prevSchedule.taskManager,
                 planedTaskManager,
+                prevSchedule.mileStoneManager,
             );
 
             return new ScheduleStateManager(
@@ -106,6 +108,7 @@ export default function ScheduleMaker(
                 prevSchedule.ticketManager,
                 prevSchedule.taskManager,
                 prevSchedule.planedTaskManager,
+                prevSchedule.mileStoneManager,
             );
             return new ScheduleStateManager(
                 newCalendarManager,
@@ -131,6 +134,7 @@ export default function ScheduleMaker(
                 prevSchedule.ticketManager,
                 prevSchedule.taskManager,
                 prevSchedule.planedTaskManager,
+                prevSchedule.mileStoneManager,
             );
             return new ScheduleStateManager(
                 newCalendarManager,
@@ -172,6 +176,7 @@ export default function ScheduleMaker(
                     <div style={{ display: 'flex', overflow: 'scroll' }}>
                         <CalendarBox
                             calendarManager={schdule.calandarManager}
+                            ticketManager={schdule.ticketManager}
                             memberManager={schdule.memberManager}
                             taskManager={schdule.taskManager}
                             planedTaskManager={schdule.planedTaskManager}

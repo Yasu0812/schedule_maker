@@ -3,7 +3,6 @@ import { UUID } from "../common/IdUtil";
 import { PhaseEnum, previousPhases } from "../common/PhaseEnum";
 import { AssignedTask } from "../models/AssignedTask";
 import { CalendarCellTaskManager } from "../models/CalendarCellTask";
-import { CalendarDayCalculator } from "../models/CalendarDayCalculator";
 import DurationDayCalc from "../models/DurationDayCalc";
 import { MemberManager } from "../models/MemberManager";
 import { MileStoneManager } from "../models/MileStoneManager";
@@ -18,8 +17,6 @@ import { TicketFinishedPolicy } from "../models/TicketFinisedPolicy";
 import { UnassignedTaskSelector } from "../models/UnassignedTaskSelector";
 
 export class TaskAssignmentService {
-
-    private _calendarDayCalculator = new CalendarDayCalculator();
 
     private _ticketfinishedPolicy = new TicketFinishedPolicy();
 
@@ -155,7 +152,7 @@ export class TaskAssignmentService {
                     scheduleConfiguration.lastDate,
                     exclusionTicketIds
                 );
-                if (isTaskAssignable) {
+                if (isTaskAssignable.isAssignable) {
                     return planedTask.assignTask(task, member.id, currentDay, currentEndDay);
                 }
             }

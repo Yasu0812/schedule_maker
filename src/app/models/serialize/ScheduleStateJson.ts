@@ -110,10 +110,11 @@ export class ScheduleStateJson {
         const mileStoneManager = new MileStoneManager(mileStoneMap);
 
         const planedTaskMapper = new PlanedTaskMapper().toCalender(
-            memberManager.ids,
+            memberManager.members,
             ticketManager,
             taskManager,
             planedTaskManager,
+            mileStoneManager
         );
         const calendar = new CalendarCellTaskManager(
             memberManager.ids,

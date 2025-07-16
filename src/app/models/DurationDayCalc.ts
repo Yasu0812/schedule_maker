@@ -55,4 +55,16 @@ export default class DurationDayCalc {
 
         return nextDate;
     }
+
+    public getPreviousWorkingDay(
+        date: Date,
+        additionalHolidays: Date[]
+    ): Date {
+        const previousDate = new Date(date);
+        do {
+            previousDate.setUTCDate(previousDate.getUTCDate() - 1);
+        } while (this.isScheduleHoliday(previousDate, additionalHolidays));
+
+        return previousDate;
+    }
 }

@@ -14,7 +14,10 @@ export class CalendarCellTask {
         public readonly taskDate: string,
         public readonly taskPhase: PhaseEnum,
         public readonly taskDescription: string,
-        public readonly isFinishedBeforePhase: boolean,
+        public readonly isTaskAssignableDay: {
+            isAssignable: boolean,
+            reason?: string,
+        }
     ) { }
 
 }

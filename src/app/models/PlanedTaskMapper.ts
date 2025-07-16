@@ -1,29 +1,30 @@
 import { DateUtil } from "../common/DateUtil";
-import { UUID } from "../common/IdUtil";
-import { parsePhase } from "../common/PhaseEnum";
 import { CalendarCellTask } from "./CalendarCellTask";
+import Member from "./Member";
+import { MileStoneManager } from "./MileStoneManager";
 import { PlanedTask } from "./PlanedTask";
+import TaskAssignablePolicy from "./TaskAssignablePolicy";
 import { TaskManager } from "./TaskManager";
 import { TicketManager } from "./Ticket";
-import { TicketFinishedPolicy } from "./TicketFinisedPolicy";
 
 export class PlanedTaskMapper {
 
-    private _ticketFinishedPolicy: TicketFinishedPolicy = new TicketFinishedPolicy();
+    private _taskassignablePolicy: TaskAssignablePolicy = new TaskAssignablePolicy();
 
     public toCalender(
-        memberIdList: UUID[],
+        memberList: Member[],
         tikcketManager: TicketManager,
         taskManager: TaskManager,
-        planedTasks: PlanedTask
+        planedTasks: PlanedTask,
+        mileStoneManager: MileStoneManager
     ): Map<string, Map<string, CalendarCellTask>> {
         // key1: memberId, key2: date
         // value: CalendarCellTask
         const taskMap: Map<string, Map<string, CalendarCellTask>> = new Map<string, Map<string, CalendarCellTask>>();
 
-        for (const memberId of memberIdList) {
+        for (const member of memberList) {
             const taskMapForMember: Map<string, CalendarCellTask> = new Map<string, CalendarCellTask>();
-            const assignedTaskList = planedTasks.getAssignedFromMemberId(memberId);
+            const assignedTaskList = planedTasks.getAssignedFromMemberId(member.id);
 
             for (const assignedTask of assignedTaskList) {
                 const task = taskManager.getTask(assignedTask.taskId);
@@ -41,12 +42,14 @@ export class PlanedTaskMapper {
 
                 for (let date = new Date(startDate); date <= new Date(endDate); date.setDate(date.getDate() + 1)) {
                     const dateString = DateUtil.formatDate(date);
-                    const isFinishedBeforePhase = this._ticketFinishedPolicy.isFinishedBeforePhaseWithDay(
-                        assignedTask.ticketId,
-                        parsePhase(task.phase),
-                        taskManager,
+                    const isAssignable = this._taskassignablePolicy.isTaskAssignableDay(
+                        task.id,
+                        date,
                         planedTasks,
-                        date
+                        taskManager,
+                        mileStoneManager,
+                        member,
+                        tikcketManager.getExclusiveTicketIds()
                     );
                     const cellTask = new CalendarCellTask(
                         ticket.title,
@@ -54,12 +57,12 @@ export class PlanedTaskMapper {
                         dateString,
                         task.phase,
                         ticket.description,
-                        isFinishedBeforePhase
+                        isAssignable
                     );
                     taskMapForMember.set(dateString, cellTask);
                 }
             }
-            taskMap.set(memberId, taskMapForMember);
+            taskMap.set(member.id, taskMapForMember);
         }
 
         return taskMap;

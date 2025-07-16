@@ -39,7 +39,7 @@ export default class TaskAssignablePolicy {
         scheduleStartDay: Date,
         scheduleEndDay: Date,
         exclusionTicketIds: UUID[] = [],
-    ): boolean {
+    ): { isAssignable: boolean, reason?: string } {
         const task = taskManager.getTask(taskId);
         if (!task) {
             throw new Error(`Task with ID ${taskId} not found`);
@@ -55,7 +55,9 @@ export default class TaskAssignablePolicy {
             startDay,
             exclusionTicketIds
         );
-        if (!requiredTasks) return false; // 必須タスクがない場合、割り当て不可
+        if (!requiredTasks) {
+            return { isAssignable: false, reason: "Required tasks are not finished." }; // 必須タスクが完了していない場合、割り当て不可
+        }
 
         const requiredPhase = this._requiredProjectPhaseFinishPolicy.isRequiredProjectPhaseFinish(
             phase,
@@ -64,18 +66,24 @@ export default class TaskAssignablePolicy {
             startDay,
             exclusionTicketIds
         );
-        if (!requiredPhase) return false; // 必須フェーズがない場合、割り当て不可
+        if (!requiredPhase) {
+            return { isAssignable: false, reason: "Required project phase is not finished." }; // 必須プロジェクトフェーズが完了していない場合、割り当て不可
+        }
 
         // マイルストーンのフェーズに含まれているかどうかを確認
         const taskStartDay = startDay;
         const taskEndDay = endDay;
         const isInMileStoneStart = mileStoneManager.isEnabledPhase(phase, taskStartDay);
         const isInMileStoneEnd = mileStoneManager.isEnabledPhase(phase, taskEndDay);
-        if (!isInMileStoneStart || !isInMileStoneEnd) return false; // マイルストーンに含まれていない場合、割り当て不可
+        if (!isInMileStoneStart || !isInMileStoneEnd) {
+            return { isAssignable: false, reason: "Task phase is not in milestone." }; // マイルストーンのフェーズに含まれていない場合、割り当て不可
+        }
 
         // memberが利用可能かどうか確認
         const isMemberEnabled = member.disableDates.every(date => !DateUtil.isbetweenDates(taskStartDay, date, taskEndDay));
-        if (!isMemberEnabled) return false; // メンバーが利用不可の場合、割り当て不可
+        if (!isMemberEnabled) {
+            return { isAssignable: false, reason: "Member is not available during the task period." }; // メンバーがタスク期間中に利用不可の場合、割り当て不可
+        }
 
         // 物理的に割り当て可能かどうかを確認
         const isAssignmentPermitted = this.isAssignmentPermitted(
@@ -87,10 +95,36 @@ export default class TaskAssignablePolicy {
             scheduleStartDay,
             scheduleEndDay
         );
-        if (!isAssignmentPermitted) return false; // 割り当てが物理的に不可能な場合、割り当て不可
+        if (!isAssignmentPermitted) {
+            return { isAssignable: false, reason: "Task assignment is not permitted due to scheduling constraints." }; // スケジュールの制約により割り当て不可
+        }
 
 
-        return true; // すべての条件を満たしている場合、割り当て可能
+        return { isAssignable: true }; // すべての条件を満たしている場合、割り当て可能
+    }
+
+    // その日にタスクが割り当て可能かどうかを判定します。
+    public isTaskAssignableDay(
+        taskId: UUID,
+        currentDay: Date,
+        planedTask: PlanedTask,
+        taskManager: TaskManager,
+        mileStoneManager: MileStoneManager,
+        member: Member,
+        exclusionTicketIds: UUID[] = [],
+    ): { isAssignable: boolean, reason?: string } {
+        return this.isTaskAssignable(
+            taskId,
+            currentDay,
+            currentDay,
+            planedTask,
+            taskManager,
+            mileStoneManager,
+            member,
+            DateUtil.ifUndefinedGetMinDate(),
+            DateUtil.ifUndefinedGetMaxDate(),
+            exclusionTicketIds
+        );
     }
 
     /**

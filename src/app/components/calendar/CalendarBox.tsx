@@ -9,10 +9,13 @@ import { ScheduleConfiguration } from "@/app/models/ScheduleConfiguration";
 import { MileStoneLine } from "./MileStoneLine";
 import { MileStoneManager } from "@/app/models/MileStoneManager";
 import CalendarPreference from "./CalendarPreference";
+import { TaskShiftOneDayService } from "@/app/service/TaskShiftOneDayService";
+import { TicketManager } from "@/app/models/Ticket";
 
 export default function CalendarBox(
     props: {
         calendarManager: CalendarCellTaskManager,
+        ticketManager: TicketManager,
         memberManager: MemberManager,
         taskManager: TaskManager,
         planedTaskManager: PlanedTask,
@@ -29,6 +32,7 @@ export default function CalendarBox(
 
     const {
         calendarManager,
+        ticketManager,
         memberManager,
         taskManager,
         planedTaskManager,
@@ -52,6 +56,19 @@ export default function CalendarBox(
                     scheduleConfiguration={scheduleConfiguration}
                     handleScheduleConfigurationChange={handleScheduleConfigurationChange}
                 />
+                <button className="ml-2 border rounded p-2" onClick={() => {
+                    const res = new TaskShiftOneDayService().shiftAllTasksOneDay(
+                        planedTaskManager,
+                        ticketManager,
+                        taskManager,
+                        memberManager,
+                        mileStoneManager,
+                        scheduleConfiguration
+                    );
+                    setPlanedTaskManager(res);
+                }}>
+                    flush left
+                </button>
             </div>
             <table className="calendar-box">
                 <thead>

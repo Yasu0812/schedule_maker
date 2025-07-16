@@ -101,7 +101,7 @@ const TaskCell = memo(
                         taskName: task.taskName,
                         taskPhase: task.taskPhase,
                     }} duration={1} moveTargetTaskId={moveTargetTaskId}
-                        isFinishedBeforePhase={!task.isFinishedBeforePhase}
+                        isTaskAssignableDay={task.isTaskAssignableDay}
 
                     />
                 }
@@ -113,7 +113,7 @@ const TaskCell = memo(
         return (
             prevProps.task?.taskId === nextProps.task?.taskId &&
             prevProps.task?.taskName === nextProps.task?.taskName &&
-            prevProps.task?.isFinishedBeforePhase === nextProps.task?.isFinishedBeforePhase &&
+            prevProps.task?.isTaskAssignableDay.isAssignable === nextProps.task?.isTaskAssignableDay.isAssignable &&
             prevProps.moveTargetTaskId === nextProps.moveTargetTaskId &&
             prevProps.memberId === nextProps.memberId &&
             prevProps.startDay.getTime() === nextProps.startDay.getTime() &&
