@@ -1,5 +1,6 @@
 import { DateUtil } from "../common/DateUtil";
 import { phaseNameMap } from "../common/PhaseEnum";
+import DurationDayCalc from "./DurationDayCalc";
 import { ScheduleStateManager } from "./ScheduleStateManager";
 
 export class ScheduleCsvConverter {
@@ -10,13 +11,15 @@ export class ScheduleCsvConverter {
         const memberMap = schedule.memberManager.memberMap;
 
 
-        const rows = Array.from(memberMap).map(([id, name]) => {
+        const rows = Array.from(memberMap).map(([id, member]) => {
             const line = calandar.getCalendarLine(id);
+
             const taskDescriptions = calandar.dayList.map(date => {
                 const task = line.getTaskForDate(DateUtil.formatDate(date));
-                return task ? `${task.taskName}#${phaseNameMap[task.taskPhase]}` : "";
+                const isHoliday = new DurationDayCalc().isScheduleHoliday(date, schedule.scheduleConfiguration.additionalHolidays);
+                return task && !isHoliday ? `${task.taskName}#${phaseNameMap[task.taskPhase]}` : "";
             });
-            return [name, ...taskDescriptions];
+            return [member.name, ...taskDescriptions];
         });
 
         const csvContent = [header, ...rows].map(row => row.join(",")).join("\n");
