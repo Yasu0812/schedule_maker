@@ -39,13 +39,14 @@ export default class TaskAssignablePolicy {
         scheduleStartDay: Date,
         scheduleEndDay: Date,
         exclusionTicketIds: UUID[] = [],
-    ): { isAssignable: boolean, reason?: string } {
+    ): { isAssignable: boolean, reasons?: string[] } {
         const task = taskManager.getTask(taskId);
         if (!task) {
             throw new Error(`Task with ID ${taskId} not found`);
         }
 
         const phase = task.phase;
+        const reasons = [];
 
         const requiredTasks = this._requiredTaskPhaseFinishPolicy.isRequiredTaskPhaseFinish(
             taskId,
@@ -56,10 +57,9 @@ export default class TaskAssignablePolicy {
             exclusionTicketIds
         );
         if (!requiredTasks.finishDay) {
-            return { isAssignable: false, reason: `Required tasks are not all assigned.` };
-
+            reasons.push(`Required tasks are not all assigned.`);
         } else if (!requiredTasks.isFinished) {
-            return { isAssignable: false, reason: `Required tasks are not finished. Fastest completion day is ${DateUtil.formatDateWithHyphenNoTimeZone(requiredTasks.finishDay)}` }; // 必須タスクが完了していない場合、割り当て不可
+            reasons.push(`Required tasks are not finished. Fastest completion day is ${DateUtil.formatDateWithHyphenNoTimeZone(requiredTasks.finishDay)}`); // 必須タスクが完了していない場合、割り当て不可
         }
 
         const requiredPhase = this._requiredProjectPhaseFinishPolicy.isRequiredProjectPhaseFinish(
@@ -70,9 +70,9 @@ export default class TaskAssignablePolicy {
             exclusionTicketIds
         );
         if (!requiredPhase.finishDay) {
-            return { isAssignable: false, reason: `Required project phase is not assigned.` };
+            reasons.push(`Required project phase is not assigned.`);
         } else if (!requiredPhase.isFinished) {
-            return { isAssignable: false, reason: `Required project phase is not finished. Fastest completion day is ${DateUtil.formatDateWithHyphenNoTimeZone(requiredPhase.finishDay)}` }; // 必須プロジェクトフェーズが完了していない場合、割り当て不可
+            reasons.push(`Required project phase is not finished. Fastest completion day is ${DateUtil.formatDateWithHyphenNoTimeZone(requiredPhase.finishDay)}`); // 必須プロジェクトフェーズが完了していない場合、割り当て不可
         }
 
         // マイルストーンのフェーズに含まれているかどうかを確認
@@ -81,13 +81,13 @@ export default class TaskAssignablePolicy {
         const isInMileStoneStart = mileStoneManager.isEnabledPhase(phase, taskStartDay);
         const isInMileStoneEnd = mileStoneManager.isEnabledPhase(phase, taskEndDay);
         if (!isInMileStoneStart || !isInMileStoneEnd) {
-            return { isAssignable: false, reason: "Task phase is not in milestone." }; // マイルストーンのフェーズに含まれていない場合、割り当て不可
+            reasons.push("Task phase is not in milestone."); // マイルストーンのフェーズに含まれていない場合、割り当て不可
         }
 
         // memberが利用可能かどうか確認
         const isMemberEnabled = member.disableDates.every(date => !DateUtil.isbetweenDates(taskStartDay, date, taskEndDay));
         if (!isMemberEnabled) {
-            return { isAssignable: false, reason: "Member is not available during the task period." }; // メンバーがタスク期間中に利用不可の場合、割り当て不可
+            reasons.push("Member is not available during the task period."); // メンバーがタスク期間中に利用不可の場合、割り当て不可
         }
 
         // 物理的に割り当て可能かどうかを確認
@@ -101,7 +101,10 @@ export default class TaskAssignablePolicy {
             scheduleEndDay
         );
         if (!isAssignmentPermitted) {
-            return { isAssignable: false, reason: "Task assignment is not permitted due to scheduling constraints." }; // スケジュールの制約により割り当て不可
+            reasons.push("Task assignment is not permitted due to scheduling constraints."); // スケジュールの制約により割り当て不可
+        }
+        if (reasons.length > 0) {
+            return { isAssignable: false, reasons }; // 割り当て不可の理由がある場合
         }
 
 

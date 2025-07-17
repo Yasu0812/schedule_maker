@@ -23,8 +23,8 @@ export class RequiredTaskPhaseFinishPolicy {
         planedTask: PlanedTask,
         exclusionTicketIds: UUID[] = []
     ): Date | undefined {
-        const ticket = taskManager.getTask(taskId);
-        if (!ticket) {
+        const task = taskManager.getTask(taskId);
+        if (!task) {
             throw new Error(`Task with ID ${taskId} not found`);
         }
         const requiredPhases = this.getTaskRequiredPhase(phase);
@@ -38,15 +38,15 @@ export class RequiredTaskPhaseFinishPolicy {
         const { assignedTasks, unassignedTasks } = this._unassignedTaskSelector.splitUnAndAssignedTask(
             taskManager,
             planedTask,
-            ticket.ticketId,
+            task.ticketId,
             exclusionTicketIds,
             requiredPhases
         );
 
         if (unassignedTasks.length > 0) {
-            // 未割り当てタスクが存在する場合は、フェーズの終了日を最大日付として返す
+            // 未割り当てタスクが存在する場合は、フェーズの終了日をundefinedとして返す
             // これは、フェーズが開始できないことを意味します
-            return;
+            return undefined;
         }
         if (assignedTasks.length === 0) {
             // 割り当て済みのタスクが存在しない場合は、フェーズの終了日を最小日付として返す
@@ -110,10 +110,12 @@ export class RequiredTaskPhaseFinishPolicy {
         } else if (phase === Phase.INTEGRATION_TEST_INTERNAL_DOCUMENT_CREATION) {
             return [
                 Phase.DEVELOPMENT,
+                Phase.UNIT_TEST,
                 Phase.UNIT_TEST_DOCUMENT_CREATION,
             ];
         } else if (phase === Phase.INTEGRATION_TEST_INTERNAL) {
             return [
+                Phase.UNIT_TEST,
                 Phase.INTEGRATION_TEST_INTERNAL_DOCUMENT_CREATION,
             ];
         } else if (phase === Phase.INTEGRATION_TEST_EXTERNAL_DOCUMENT_CREATION) {

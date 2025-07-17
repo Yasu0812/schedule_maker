@@ -16,7 +16,7 @@ export class CalendarCellTask {
         public readonly taskDescription: string,
         public readonly isTaskAssignableDay: {
             isAssignable: boolean,
-            reason?: string,
+            reasons?: string[],
         }
     ) { }
 

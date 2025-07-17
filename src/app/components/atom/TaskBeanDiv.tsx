@@ -9,7 +9,7 @@ export default function TaskBeanDiv(props: {
     handleContextMenu?: () => void;
     isTaskAssignableDay?: {
         isAssignable: boolean,
-        reason?: string,
+        reasons?: string[],
     }
 
 }) {
@@ -18,7 +18,7 @@ export default function TaskBeanDiv(props: {
     const handleMouseDown = props.handleMouseDown || (() => { });
     const handleContextMenu = props.handleContextMenu || (() => { });
     const isAssignable = props.isTaskAssignableDay === undefined || props.isTaskAssignableDay.isAssignable;
-    const reason = props.isTaskAssignableDay?.reason;
+    const reasons = props.isTaskAssignableDay?.reasons || [];
     const isSelected = moveTargetTaskId === task?.taskId;
     const pointerEvents = isSelected ? "none" : "auto";
 
@@ -37,10 +37,10 @@ export default function TaskBeanDiv(props: {
             onMouseDown={onMouseDown}
             onContextMenu={onContextMenu}
             style={{ width: 75 * duration, height: "100%", zIndex: 1, userSelect: "none", pointerEvents: pointerEvents }}
-            title={reason}
+            title={reasons.join("\n")}
         >
             <JellyBean width={75 * duration} height={36} phase={task?.taskPhase} selected={isSelected} >
-                {task?.taskName} {isAssignable ? "" : "❗️"}
+                {task?.taskName} {isAssignable ? "" : "❗️".repeat(reasons.length)}
             </JellyBean>
         </ div>
     );
