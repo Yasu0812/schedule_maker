@@ -82,7 +82,7 @@ export class RequiredProjectPhaseFinishPolicy {
         phase: PhaseEnum
     ): PhaseEnum[] {
         // TODO: ScheduleConfigurationから取得するようにしたい
-        // 結合テストの必須フェーズを取得
+        // 内部結合テストの必須フェーズを取得
         if (phase === Phase.INTEGRATION_TEST_INTERNAL) {
             return [
                 Phase.REQUIREMENTS_DEFINITION,
@@ -91,6 +91,7 @@ export class RequiredProjectPhaseFinishPolicy {
                 Phase.UNIT_TEST_DOCUMENT_CREATION,
                 Phase.UNIT_TEST,
             ];
+        // 外部結合テストの必須フェーズを取得
         } else if (phase === Phase.INTEGRATION_TEST_EXTERNAL) {
             return [
                 Phase.REQUIREMENTS_DEFINITION,
@@ -99,6 +100,7 @@ export class RequiredProjectPhaseFinishPolicy {
                 Phase.UNIT_TEST_DOCUMENT_CREATION,
                 Phase.UNIT_TEST,
             ];
+        // 性能テストの必須フェーズを取得
         } else if (phase === Phase.PERFORMANCE_TEST) {
             return [
                 Phase.INTEGRATION_TEST_INTERNAL,

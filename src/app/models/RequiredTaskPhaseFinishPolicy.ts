@@ -90,7 +90,6 @@ export class RequiredTaskPhaseFinishPolicy {
         phase: PhaseEnum
     ): PhaseEnum[] {
         // TODO: ScheduleConfigurationから取得するようにしたい
-        // 結合テストの必須フェーズを取得
         if (phase === Phase.DESIGN) {
             return [
                 Phase.REQUIREMENTS_DEFINITION,
@@ -101,7 +100,7 @@ export class RequiredTaskPhaseFinishPolicy {
             ];
         } else if (phase === Phase.UNIT_TEST_DOCUMENT_CREATION) {
             return [
-                Phase.DESIGN,
+                Phase.DEVELOPMENT,
             ];
         } else if (phase === Phase.UNIT_TEST) {
             return [
@@ -127,7 +126,7 @@ export class RequiredTaskPhaseFinishPolicy {
             ];
         } else if (phase === Phase.PERFORMANCE_TEST_DOCUMENT_CREATION) {
             return [
-                Phase.DEVELOPMENT,
+                Phase.UNIT_TEST,
             ];
         } else if (phase === Phase.PERFORMANCE_TEST) {
             return [
