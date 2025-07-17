@@ -61,6 +61,21 @@ export class PlanedTask {
         return assignedTasks;
     }
 
+    public getProgressingTickets(memberId: UUID): UUID[] {
+        return Array.from(new Set(this.getAssignedFromMemberId(memberId).map(assignedTask => assignedTask.ticketId)));
+    }
+
+    public getProgressingTasksFromTicketId(memberId: UUID, ticketId: UUID): AssignedTask[] {
+        const assignedTasks = this.getAssignedFromMemberId(memberId);
+        return assignedTasks.filter(assignedTask => assignedTask.ticketId === ticketId);
+    }
+
+    public isProgressing(memberId: UUID, ticketId: UUID): boolean {
+        const assignedTasks = this.getAssignedFromMemberId(memberId);
+        return assignedTasks.some(assignedTask => assignedTask.ticketId === ticketId);
+
+    }
+
     public removeFromMemberId(memberId: UUID): PlanedTask {
         const assignedTasks = this.getAssignedFromMemberId(memberId);
         assignedTasks.forEach(assignedTask => {
