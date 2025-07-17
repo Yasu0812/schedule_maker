@@ -70,30 +70,34 @@ export default function CalendarBox(
                     flush left
                 </button>
             </div>
-            <table className="calendar-box">
-                <thead>
-                    <MileStoneLine
-                        mileStoneManager={mileStoneManager}
-                        dayListItems={dayList} />
-                    <CalendarHeader dayListItems={dayList} />
-                </thead>
-                <tbody>
-                    <CalendarLineBox
-                        dayListItems={dayList}
-                        memberManager={memberManager}
-                        allTaskMap={allTaskMap}
-                        taskManager={taskManager}
-                        planedTaskManager={planedTaskManager}
-                        setPlanedTaskManager={setPlanedTaskManager}
-                        setMemberManager={setMemberManager}
-                        moveTargetTaskId={moveTargetTaskId}
-                        handleMoveTargetTask={handleMoveTargetTask}
-                        scheduleConfiguration={scheduleConfiguration}
+            <div style={{ overflow: 'scroll' }}>
 
-                    />
-                </tbody>
-            </table>
-            {props.children}
+                <table className="calendar-box">
+                    <thead>
+                        <MileStoneLine
+                            mileStoneManager={mileStoneManager}
+                            dayListItems={dayList} />
+                        <CalendarHeader dayListItems={dayList} />
+                    </thead>
+                    <tbody>
+                        <CalendarLineBox
+                            dayListItems={dayList}
+                            memberManager={memberManager}
+                            allTaskMap={allTaskMap}
+                            taskManager={taskManager}
+                            planedTaskManager={planedTaskManager}
+                            setPlanedTaskManager={setPlanedTaskManager}
+                            setMemberManager={setMemberManager}
+                            moveTargetTaskId={moveTargetTaskId}
+                            handleMoveTargetTask={handleMoveTargetTask}
+                            scheduleConfiguration={scheduleConfiguration}
+
+                        />
+                    </tbody>
+                </table>
+                {props.children}
+
+            </div>
         </div>
     );
 }
