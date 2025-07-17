@@ -110,6 +110,48 @@ export class ScheduleConfiguration {
         );
     }
 
+    public isScheduleHoliday(
+        date: Date,
+        additionalHolidays: Date[]
+    ): boolean {
+        const d = new Date(date);
+
+        // Check if the day is a weekend
+        if (DateUtil.isHoliday(d)) {
+            return true;
+        }
+
+        // Check if the date is in the additional holidays
+        for (const holiday of additionalHolidays) {
+            if (DateUtil.isSameDay(d, holiday)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public getNextWorkingDay(
+        date: Date,
+    ): Date {
+        const nextDate = new Date(date);
+        do {
+            nextDate.setUTCDate(nextDate.getUTCDate() + 1);
+        } while (this.isScheduleHoliday(nextDate, this._additionalHolidays));
+
+        return nextDate;
+    }
+
+    public getPreviousWorkingDay(
+        date: Date,
+    ): Date {
+        const previousDate = new Date(date);
+        do {
+            previousDate.setUTCDate(previousDate.getUTCDate() - 1);
+        } while (this.isScheduleHoliday(previousDate, this._additionalHolidays));
+
+        return previousDate;
+    }
 
     static createDefaultConfiguration(): ScheduleConfiguration {
         const firstDate = DateUtil.getCurrentMonthFirstDate();

@@ -26,8 +26,8 @@ export class TaskShiftOneDayService {
         }
 
         // Shift the start and end dates by one day
-        const startDay = this._durationDayCalc.getPreviousWorkingDay(assignedTask.startDay, scheduleConfiguration.additionalHolidays);
-        const endDay = this._durationDayCalc.getPreviousWorkingDay(assignedTask.endDay, scheduleConfiguration.additionalHolidays);
+        const startDay = scheduleConfiguration.getPreviousWorkingDay(assignedTask.startDay);
+        const endDay = scheduleConfiguration.getPreviousWorkingDay(assignedTask.endDay);
 
         // Update the task in the planed tasks
         planedTask.assignTask(
@@ -60,8 +60,8 @@ export class TaskShiftOneDayService {
         if (!member) {
             throw new Error(`Member not found: ${assignedTask.memberId}`);
         }
-        const startDay = this._durationDayCalc.getPreviousWorkingDay(assignedTask.startDay, scheduleConfiguration.additionalHolidays);
-        const endDay = this._durationDayCalc.getPreviousWorkingDay(assignedTask.endDay, scheduleConfiguration.additionalHolidays);
+        const startDay = scheduleConfiguration.getPreviousWorkingDay(assignedTask.startDay);
+        const endDay = scheduleConfiguration.getPreviousWorkingDay(assignedTask.endDay);
 
         const { isAssignable } = this._taskAssignablePolicy.isTaskAssignable(
             assignedTask.taskId,

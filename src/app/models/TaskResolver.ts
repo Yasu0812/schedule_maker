@@ -34,23 +34,29 @@ export class TaskResolver {
         return { task, assignedTask };
     }
 
-    public resolveAssignedTaskWithPhase(
-        taskId: UUID,
+    public resolveAssignedTaskFromTicketId(
+        ticketId: UUID,
         taskManager: TaskManager,
         planedTask: PlanedTask
-    ): { assignedTask: AssignedTask, phase: PhaseEnum } {
-        const { task, assignedTask } = this.resolveTaskAndAssigned(taskId, taskManager, planedTask);
-        return { assignedTask, phase: task.phase };
+    ): { tasks: Task[], assignedTasks: AssignedTask[] } {
+        const assignedTasks = planedTask.getFromTicketId(ticketId);
+        const tasks = taskManager.getTaskFromTicketId(ticketId);
+
+        return { tasks, assignedTasks };
     }
 
-
-    public resolveAssignedTaskPhase(
-        taskId: UUID,
+    public resolveAssignedTaskFromTicketIdAndPhase(
+        ticketId: UUID,
+        phase: PhaseEnum,
         taskManager: TaskManager,
         planedTask: PlanedTask
-    ): PhaseEnum {
-        const { task } = this.resolveTaskAndAssigned(taskId, taskManager, planedTask);
-        return task.phase;
+    ): { tasks: Task[], assignedTasks: AssignedTask[] } {
+        const tasks = taskManager.getTaskFromTicketId(ticketId);
+
+        const phaseTasks = tasks.filter(task => task.phase === phase);
+        const phaseAssignedTasks = planedTask.getList(phaseTasks.map(task => task.id));
+
+        return { tasks: phaseTasks, assignedTasks: phaseAssignedTasks };
     }
 
     public resolveTaskName(

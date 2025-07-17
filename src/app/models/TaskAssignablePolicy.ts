@@ -2,19 +2,19 @@ import { DateUtil } from "../common/DateUtil";
 import { UUID } from "../common/IdUtil";
 import Member from "./Member";
 import { MileStoneManager } from "./MileStoneManager";
-import { PhaseStatusPolicy } from "./PhaseStatusPolicy";
 import { PlanedTask } from "./PlanedTask";
+import { ProgressCalculator } from "./ProgressCalculator";
 import { RequiredProjectPhaseFinishPolicy } from "./RequiredProjectPhaseFinishPolicy";
 import { RequiredTaskPhaseFinishPolicy } from "./RequiredTaskPhaseFinishPolicy";
 import { TaskManager } from "./TaskManager";
 
 export default class TaskAssignablePolicy {
 
-    private _phaseStatusPolicy = new PhaseStatusPolicy();
-
     private _requiredProjectPhaseFinishPolicy = new RequiredProjectPhaseFinishPolicy();
 
     private _requiredTaskPhaseFinishPolicy = new RequiredTaskPhaseFinishPolicy();
+
+    private _progressCalculator = new ProgressCalculator();
 
     /**
      * タスクが割り当て可能かどうかを判定します。  
@@ -55,8 +55,11 @@ export default class TaskAssignablePolicy {
             startDay,
             exclusionTicketIds
         );
-        if (!requiredTasks) {
-            return { isAssignable: false, reason: "Required tasks are not finished." }; // 必須タスクが完了していない場合、割り当て不可
+        if (!requiredTasks.finishDay) {
+            return { isAssignable: false, reason: `Required tasks are not all assigned.` };
+
+        } else if (!requiredTasks.isFinished) {
+            return { isAssignable: false, reason: `Required tasks are not finished. Fastest completion day is ${DateUtil.formatDateWithHyphenNoTimeZone(requiredTasks.finishDay)}` }; // 必須タスクが完了していない場合、割り当て不可
         }
 
         const requiredPhase = this._requiredProjectPhaseFinishPolicy.isRequiredProjectPhaseFinish(
@@ -66,8 +69,10 @@ export default class TaskAssignablePolicy {
             startDay,
             exclusionTicketIds
         );
-        if (!requiredPhase) {
-            return { isAssignable: false, reason: "Required project phase is not finished." }; // 必須プロジェクトフェーズが完了していない場合、割り当て不可
+        if (!requiredPhase.finishDay) {
+            return { isAssignable: false, reason: `Required project phase is not assigned.` };
+        } else if (!requiredPhase.isFinished) {
+            return { isAssignable: false, reason: `Required project phase is not finished. Fastest completion day is ${DateUtil.formatDateWithHyphenNoTimeZone(requiredPhase.finishDay)}` }; // 必須プロジェクトフェーズが完了していない場合、割り当て不可
         }
 
         // マイルストーンのフェーズに含まれているかどうかを確認

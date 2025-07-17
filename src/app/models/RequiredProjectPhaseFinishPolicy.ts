@@ -16,17 +16,17 @@ export class RequiredProjectPhaseFinishPolicy {
 
     private _unassignedTaskSelector = new UnassignedTaskSelector();
 
-    public isRequiredProjectPhaseFinish(
+    public requiredProjectPhaseFinishDay(
         phase: PhaseEnum,
         taskManager: TaskManager,
         planedTask: PlanedTask,
-        currentDay: Date,
         exclusionTicketIds: UUID[] = []
-    ): boolean {
+    ): Date | undefined {
         const requiredPhases = this.getProjectRequiredPhase(phase);
         if (requiredPhases.length === 0) {
-            // 必須フェーズがない場合は、常にtrueを返す
-            return true;
+            // 必須フェーズがない場合は、常に最小日付を返す
+            // これは、フェーズが開始可能であることを意味します
+            return DateUtil.ifUndefinedGetMinDate();
         }
 
         // チケットのフェーズを取得
@@ -39,20 +39,43 @@ export class RequiredProjectPhaseFinishPolicy {
         );
 
         if (unassignedTasks.length > 0) {
-            // 未割り当てタスクが存在する場合は、フェーズの終了
-            return false;
+            // 未割り当てタスクが存在する場合は、フェーズの終了日を最大日付として返す
+            // これは、フェーズが開始できないことを意味します
+            return;
         }
         if (assignedTasks.length === 0) {
-            // 割り当て済みのタスクが存在しない場合は、フェーズの終了
-            return true;
+            // 割り当て済みのタスクが存在しない場合は、フェーズの終了日を最小日付として返す
+            // これは、フェーズが開始可能であることを意味します
+            return DateUtil.ifUndefinedGetMinDate();
         }
 
         const planedAssignedTasks = planedTask.getList(assignedTasks.map(task => task.id));
 
         const phaseFinishDay = DateUtil.getLatestDay(planedAssignedTasks.map(task => task.endDay));
 
+        return phaseFinishDay;
+    }
+
+    public isRequiredProjectPhaseFinish(
+        phase: PhaseEnum,
+        taskManager: TaskManager,
+        planedTask: PlanedTask,
+        currentDay: Date,
+        exclusionTicketIds: UUID[] = []
+    ): { isFinished: boolean, finishDay?: Date } {
+        const finishDay = this.requiredProjectPhaseFinishDay(
+            phase,
+            taskManager,
+            planedTask,
+            exclusionTicketIds
+        );
+
+        if (!finishDay) {
+            return { isFinished: false };
+        }
+
         // 現在の日付がフェーズの終了日より後であることを確認
-        return currentDay > phaseFinishDay;
+        return { isFinished: currentDay > finishDay, finishDay };
     }
 
     public getProjectRequiredPhase(

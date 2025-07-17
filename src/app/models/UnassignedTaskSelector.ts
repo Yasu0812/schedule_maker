@@ -45,8 +45,9 @@ export class UnassignedTaskSelector {
         const { unassignedTaskIds } = this.splitUnAndAssignedTaskId(taskManager, planedTask, ticketId, exclusionTicketIds);
         const unassignedTasks = taskManager.getTaskList(unassignedTaskIds)
             .sort((a, b) => a.ticketId > b.ticketId ? 1 : -1)
+            .sort((a, b) => phaseCompare(b.phase, a.phase))
             .sort((a, b) => b.duration - a.duration)
-            .sort((a, b) => phaseCompare(a.phase, b.phase))
+
             ;
 
         return unassignedTasks;

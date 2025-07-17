@@ -44,27 +44,4 @@ export default class DurationDayCalc {
         return false;
     }
 
-    public getNextWorkingDay(
-        date: Date,
-        additionalHolidays: Date[]
-    ): Date {
-        const nextDate = new Date(date);
-        do {
-            nextDate.setUTCDate(nextDate.getUTCDate() + 1);
-        } while (this.isScheduleHoliday(nextDate, additionalHolidays));
-
-        return nextDate;
-    }
-
-    public getPreviousWorkingDay(
-        date: Date,
-        additionalHolidays: Date[]
-    ): Date {
-        const previousDate = new Date(date);
-        do {
-            previousDate.setUTCDate(previousDate.getUTCDate() - 1);
-        } while (this.isScheduleHoliday(previousDate, additionalHolidays));
-
-        return previousDate;
-    }
 }

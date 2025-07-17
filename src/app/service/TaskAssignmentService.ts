@@ -1,13 +1,15 @@
 import { DateUtil } from "../common/DateUtil";
 import { UUID } from "../common/IdUtil";
-import { PhaseEnum, previousPhases } from "../common/PhaseEnum";
+import { PhaseEnum } from "../common/PhaseEnum";
 import { AssignedTask } from "../models/AssignedTask";
 import { CalendarCellTaskManager } from "../models/CalendarCellTask";
 import DurationDayCalc from "../models/DurationDayCalc";
 import { MemberManager } from "../models/MemberManager";
+import { MemberSorter } from "../models/MemberSorter";
 import { MileStoneManager } from "../models/MileStoneManager";
-import { PhaseCalculator } from "../models/PhaseCalculator";
 import { PlanedTask } from "../models/PlanedTask";
+import { RequiredProjectPhaseFinishPolicy } from "../models/RequiredProjectPhaseFinishPolicy";
+import { RequiredTaskPhaseFinishPolicy } from "../models/RequiredTaskPhaseFinishPolicy";
 import { ScheduleConfiguration } from "../models/ScheduleConfiguration";
 import { Task } from "../models/Task";
 import TaskAssignablePolicy from "../models/TaskAssignablePolicy";
@@ -24,11 +26,15 @@ export class TaskAssignmentService {
 
     private _unassignedTaskSelctor = new UnassignedTaskSelector();
 
-    private _phaseCalculator = new PhaseCalculator();
-
     private _durationDayCalc = new DurationDayCalc();
 
     private _taskFilter = new TaskFilter();
+
+    private _memberSorter = new MemberSorter();
+
+    private _requiredProjectPhaseFinishPolicy = new RequiredProjectPhaseFinishPolicy();
+
+    private _requiredTaskPhaseFinishPolicy = new RequiredTaskPhaseFinishPolicy();
 
     public disassignTask(
         assignedId: UUID,
@@ -106,40 +112,52 @@ export class TaskAssignmentService {
             throw new Error(`Task not found: ${taskId}`);
         }
 
-        const isAllAssignedBeforePhase = this._ticketfinishedPolicy.isAllAssignedBeforePhase(
-            task.ticketId,
+        const phaseFinishDay = this._requiredTaskPhaseFinishPolicy.requiredTaskPhaseFinishDay(
+            taskId,
             task.phase,
             taskManager,
-            planedTask
+            planedTask,
+            exclusionTicketIds
         );
 
-        if (!isAllAssignedBeforePhase) {
+        const requiredPhaseFinishDay = this._requiredProjectPhaseFinishPolicy.requiredProjectPhaseFinishDay(
+            task.phase,
+            taskManager,
+            planedTask,
+            exclusionTicketIds
+        );
+
+        const firstDate = DateUtil.getAddDate(calandarManager.firstDate, -1);
+
+        if (!phaseFinishDay || !requiredPhaseFinishDay) {
+            // フェーズの終了日が取得できない場合は、割り当てを行わない
             return planedTask;
         }
 
-        const prePhases = previousPhases(task.phase);
-        const ticketPhaseFinishDays = this._phaseCalculator.ticketPhaseStartDayAndEndDay(
+        let currentDay = DateUtil.getLatestDay(
+            [
+                phaseFinishDay,
+                requiredPhaseFinishDay,
+                firstDate,
+            ]
+        );
+        currentDay = scheduleConfiguration.getNextWorkingDay(
+            currentDay
+        );
+        const lastDate = calandarManager.lastDate;
+        const priorityMembers = this._memberSorter.sortByProgress(
             task.ticketId,
             taskManager,
             planedTask,
-            prePhases
-        ).values().map(phase => phase.endDay).filter(day => day !== undefined);
-
-        const ticketPhaseFinishDay = DateUtil.getLatestDay([...ticketPhaseFinishDays, DateUtil.getAddDate(calandarManager.firstDate, -1)]);
-
-        let currentDay = this._durationDayCalc.getNextWorkingDay(
-            ticketPhaseFinishDay,
-            scheduleConfiguration.additionalHolidays,
+            memberManager,
         );
-        currentDay = DateUtil.getAddDate(calandarManager.firstDate, -1);
-        const lastDate = calandarManager.lastDate;
         while (DateUtil.getAddDate(currentDay, task.duration - 1) <= lastDate) {
             const currentEndDay = this._durationDayCalc.getEndDate(
                 currentDay,
                 task.duration,
                 scheduleConfiguration.additionalHolidays,
             );
-            for (const member of memberManager.members) {
+            for (const member of priorityMembers) {
                 const isTaskAssignable = this._taskAssignablePolicy.isTaskAssignable(
                     taskId,
                     currentDay,
@@ -156,9 +174,8 @@ export class TaskAssignmentService {
                     return planedTask.assignTask(task, member.id, currentDay, currentEndDay);
                 }
             }
-            currentDay = this._durationDayCalc.getNextWorkingDay(
-                currentDay,
-                scheduleConfiguration.additionalHolidays,
+            currentDay = scheduleConfiguration.getNextWorkingDay(
+                currentDay
             );
         }
 
@@ -178,7 +195,6 @@ export class TaskAssignmentService {
     ): PlanedTask {
 
         let candidateTasks: Task[] = this._unassignedTaskSelctor.getUnassignedTasks(taskManager, planedTask, undefined, exclusionTicketIds);
-        // フィルタリングを適用
         candidateTasks = this._taskFilter.filterTasks(candidateTasks, filterOptions);
         let assignedPlanedTask = planedTask;
 
