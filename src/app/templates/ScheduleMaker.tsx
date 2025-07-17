@@ -173,25 +173,23 @@ export default function ScheduleMaker(
         <div className="flex flex-wrap" style={{ backgroundColor: '#cccccc' }}>
             <div style={{ width: '100%' }}>
                 <CardDesign>
-                    <div style={{ display: 'flex', overflow: 'scroll' }}>
-                        <CalendarBox
-                            calendarManager={schdule.calandarManager}
-                            ticketManager={schdule.ticketManager}
-                            memberManager={schdule.memberManager}
-                            taskManager={schdule.taskManager}
-                            planedTaskManager={schdule.planedTaskManager}
-                            mileStoneManager={schdule.mileStoneManager}
-                            setPlanedTaskManager={handlePlanedTaskManagerChange}
-                            setMemberManager={handleMemberManagerChange}
-                            moveTargetTaskId={moveTargetTaskId}
-                            handleMoveTargetTask={handleMoveTargetTask}
-                            scheduleConfiguration={schdule.scheduleConfiguration}
-                            handleScheduleConfigurationChange={handleScheduleConfigurationChange}
-                        >
-                            <MemberAddForm memberManager={schdule.memberManager} handleMemberManagerChange={handleMemberManagerChange} />
-                        </CalendarBox>
+                    <CalendarBox
+                        calendarManager={schdule.calandarManager}
+                        ticketManager={schdule.ticketManager}
+                        memberManager={schdule.memberManager}
+                        taskManager={schdule.taskManager}
+                        planedTaskManager={schdule.planedTaskManager}
+                        mileStoneManager={schdule.mileStoneManager}
+                        setPlanedTaskManager={handlePlanedTaskManagerChange}
+                        setMemberManager={handleMemberManagerChange}
+                        moveTargetTaskId={moveTargetTaskId}
+                        handleMoveTargetTask={handleMoveTargetTask}
+                        scheduleConfiguration={schdule.scheduleConfiguration}
+                        handleScheduleConfigurationChange={handleScheduleConfigurationChange}
+                    >
+                        <MemberAddForm memberManager={schdule.memberManager} handleMemberManagerChange={handleMemberManagerChange} />
+                    </CalendarBox>
 
-                    </div>
                 </CardDesign>
             </div>
             {process.env.NODE_ENV === "development" && (
