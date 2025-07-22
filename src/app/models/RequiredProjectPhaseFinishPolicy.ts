@@ -103,7 +103,6 @@ export class RequiredProjectPhaseFinishPolicy {
         // 性能テストの必須フェーズを取得
         } else if (phase === Phase.PERFORMANCE_TEST) {
             return [
-                Phase.INTEGRATION_TEST_INTERNAL,
             ];
         }
 
