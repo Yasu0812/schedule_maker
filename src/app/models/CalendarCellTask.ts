@@ -64,8 +64,6 @@ export class CalendarLineTask {
 export class CalendarCellTaskManager {
 
     private _memberTaskMap: Map<UUID, CalendarLineTask> = new Map<UUID, CalendarLineTask>();
-    public readonly firstDate: Date;
-    public readonly lastDate: Date;
     public readonly dayList: Date[];
 
     constructor(
@@ -75,8 +73,6 @@ export class CalendarCellTaskManager {
         lastDate: Date,
     ) {
         this._memberTaskMap = new Map<UUID, CalendarLineTask>();
-        this.firstDate = firstDate;
-        this.lastDate = lastDate;
         this.dayList = DateUtil.generateDayList(DateUtil.formatDate(firstDate), DateUtil.formatDate(lastDate));
 
         // メンバーリストを元に、メンバーごとのタスクマップを初期化する

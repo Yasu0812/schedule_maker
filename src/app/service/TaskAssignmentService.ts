@@ -2,7 +2,6 @@ import { DateUtil } from "../common/DateUtil";
 import { UUID } from "../common/IdUtil";
 import { PhaseEnum } from "../common/PhaseEnum";
 import { AssignedTask } from "../models/AssignedTask";
-import { CalendarCellTaskManager } from "../models/CalendarCellTask";
 import DurationDayCalc from "../models/DurationDayCalc";
 import { MemberManager } from "../models/MemberManager";
 import { MemberSorter } from "../models/MemberSorter";
@@ -101,7 +100,6 @@ export class TaskAssignmentService {
         taskId: UUID,
         planedTask: PlanedTask,
         taskManager: TaskManager,
-        calandarManager: CalendarCellTaskManager,
         mileStoneManager: MileStoneManager,
         memberManager: MemberManager,
         scheduleConfiguration: ScheduleConfiguration,
@@ -127,7 +125,7 @@ export class TaskAssignmentService {
             exclusionTicketIds
         );
 
-        const firstDate = DateUtil.getAddDate(calandarManager.firstDate, -1);
+        const firstDate = DateUtil.getAddDate(scheduleConfiguration.firstDate, -1);
 
         if (!phaseFinishDay || !requiredPhaseFinishDay) {
             // フェーズの終了日が取得できない場合は、割り当てを行わない
@@ -144,7 +142,7 @@ export class TaskAssignmentService {
         currentDay = scheduleConfiguration.getNextWorkingDay(
             currentDay
         );
-        const lastDate = calandarManager.lastDate;
+        const lastDate = scheduleConfiguration.lastDate;
         const priorityMembers = this._memberSorter.sortByProgress(
             task.ticketId,
             taskManager,
@@ -186,7 +184,6 @@ export class TaskAssignmentService {
     public fullAutoAssignTask(
         planedTask: PlanedTask,
         taskManager: TaskManager,
-        calandarManager: CalendarCellTaskManager,
         mileStoneManager: MileStoneManager,
         memberManager: MemberManager,
         scheduleConfiguration: ScheduleConfiguration,
@@ -208,7 +205,6 @@ export class TaskAssignmentService {
                 task.id,
                 planedTask,
                 taskManager,
-                calandarManager,
                 mileStoneManager,
                 memberManager,
                 scheduleConfiguration,

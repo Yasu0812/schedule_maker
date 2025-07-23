@@ -210,7 +210,6 @@ export default function ScheduleMaker(
                         taskManager={schdule.taskManager}
                         memberManager={schdule.memberManager}
                         planedTaskManager={schdule.planedTaskManager}
-                        calendarManager={schdule.calandarManager}
                         mileStoneManager={schdule.mileStoneManager}
                         scheduleConfiguration={schdule.scheduleConfiguration}
                         setTaskManager={handleTaskManagerChange}

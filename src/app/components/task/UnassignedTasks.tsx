@@ -4,7 +4,6 @@ import { TaskManager } from "@/app/models/TaskManager";
 import TaskBeanDiv from "../atom/TaskBeanDiv";
 import { TaskAssignmentService } from "@/app/service/TaskAssignmentService";
 import { PlanedTask } from "@/app/models/PlanedTask";
-import { CalendarCellTaskManager } from "@/app/models/CalendarCellTask";
 import { UUID } from "@/app/common/IdUtil";
 import { MileStoneManager } from "@/app/models/MileStoneManager";
 import { TicketManager } from "@/app/models/Ticket";
@@ -22,7 +21,6 @@ export default function UnassignedTasks(
         taskManager: TaskManager,
         moveTargetTaskId: UUID | undefined,
         planedTaskManager: PlanedTask,
-        calandarManager: CalendarCellTaskManager,
         mileStoneManager: MileStoneManager,
         scheduleConfiguration: ScheduleConfiguration,
         setTaskManager: (taskManager: TaskManager) => void,
@@ -37,7 +35,6 @@ export default function UnassignedTasks(
         moveTargetTaskId,
         setTaskManager,
         handleMoveTargetTask,
-        calandarManager,
         mileStoneManager,
         planedTaskManager,
         ticketManager,
@@ -54,7 +51,6 @@ export default function UnassignedTasks(
             ticketManager={ticketManager}
             taskManager={taskManager}
             planedTaskManager={planedTaskManager}
-            calandarManager={calandarManager}
             setTaskManager={setTaskManager}
             hideModal={hideModal}
         />);
@@ -98,7 +94,6 @@ export default function UnassignedTasks(
             taskId,
             planedTaskManager,
             taskManager,
-            calandarManager,
             mileStoneManager,
             memberManager,
             scheduleConfiguration,

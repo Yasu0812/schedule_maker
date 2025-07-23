@@ -1,4 +1,3 @@
-import { CalendarCellTaskManager } from "@/app/models/CalendarCellTask";
 import { PlanedTask } from "@/app/models/PlanedTask";
 import { TaskManager } from "@/app/models/TaskManager";
 import { TicketManager } from "@/app/models/Ticket";
@@ -13,7 +12,6 @@ export default function TaskSplitModal(props: {
     ticketManager: TicketManager,
     taskManager: TaskManager,
     planedTaskManager: PlanedTask,
-    calandarManager: CalendarCellTaskManager,
     setTaskManager: (taskManager: TaskManager) => void,
     hideModal: () => void;
 }) {

@@ -3,7 +3,6 @@ import { PlanedTask } from "@/app/models/PlanedTask";
 import { UUID } from "@/app/common/IdUtil";
 import UnassignedTasks from "./UnassignedTasks";
 import { UnassignedTaskService } from "@/app/service/UnassignedTaskService";
-import { CalendarCellTaskManager } from "@/app/models/CalendarCellTask";
 import { MileStoneManager } from "@/app/models/MileStoneManager";
 import { TicketManager } from "@/app/models/Ticket";
 import TaskFilter from "./TaskFilter";
@@ -24,7 +23,6 @@ export default function TaskUnassignedBox(props: {
     taskManager: TaskManager,
     memberManager: MemberManager,
     planedTaskManager: PlanedTask,
-    calendarManager: CalendarCellTaskManager,
     mileStoneManager: MileStoneManager,
     scheduleConfiguration: ScheduleConfiguration,
     setTaskManager: (taskManager: TaskManager) => void,
@@ -42,7 +40,6 @@ export default function TaskUnassignedBox(props: {
         setTaskManager,
         moveTargetTaskId,
         handleMoveTargetTask,
-        calendarManager,
         setPlanedTaskManager,
         mileStoneManager,
         scheduleConfiguration
@@ -65,7 +62,6 @@ export default function TaskUnassignedBox(props: {
         const newPlanedManager = new TaskAssignmentService().fullAutoAssignTask(
             planedTaskManager,
             taskManager,
-            calendarManager,
             mileStoneManager,
             memberManager,
             scheduleConfiguration,
@@ -115,7 +111,6 @@ export default function TaskUnassignedBox(props: {
                     memberManager={memberManager}
                     moveTargetTaskId={moveTargetTaskId}
                     planedTaskManager={planedTaskManager}
-                    calandarManager={calendarManager}
                     mileStoneManager={mileStoneManager}
                     scheduleConfiguration={scheduleConfiguration}
                     setTaskManager={setTaskManager}
