@@ -22,6 +22,7 @@ interface TaskAssignmentProps {
     memberId: UUID;
     startDay: Date;
     isEnabled: boolean;
+    isFiltered: boolean;
 }
 
 const TaskCell = memo(
@@ -38,7 +39,8 @@ const TaskCell = memo(
             handleMoveTargetTask,
             memberId,
             startDay,
-            isEnabled
+            isEnabled,
+            isFiltered
         } = props;
         const className = `calendar-task-cell h-full ${isEnabled ? '' : 'disabled'}`;
 
@@ -102,6 +104,7 @@ const TaskCell = memo(
                         taskPhase: task.taskPhase,
                     }} duration={1} moveTargetTaskId={moveTargetTaskId}
                         isTaskAssignableDay={task.isTaskAssignableDay}
+                        isFiltered={isFiltered}
 
                     />
                 }
@@ -118,7 +121,8 @@ const TaskCell = memo(
             prevProps.memberId === nextProps.memberId &&
             prevProps.startDay.getTime() === nextProps.startDay.getTime() &&
             prevProps.planedTaskManager.get(prevProps.task?.taskId)?.id === nextProps.planedTaskManager.get(nextProps.task?.taskId)?.id &&
-            prevProps.isEnabled === nextProps.isEnabled
+            prevProps.isEnabled === nextProps.isEnabled &&
+            prevProps.isFiltered === nextProps.isFiltered
         );
     })
 

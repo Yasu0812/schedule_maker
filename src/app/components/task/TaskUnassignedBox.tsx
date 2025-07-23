@@ -6,17 +6,13 @@ import { UnassignedTaskService } from "@/app/service/UnassignedTaskService";
 import { MileStoneManager } from "@/app/models/MileStoneManager";
 import { TicketManager } from "@/app/models/Ticket";
 import TaskFilter from "./TaskFilter";
-import { orderedPhases, PhaseEnum } from "@/app/common/PhaseEnum";
+import { orderedPhases } from "@/app/common/PhaseEnum";
 import { useState } from "react";
 import { TaskAssignmentService } from "@/app/service/TaskAssignmentService";
 import { JellyBean } from "../decorator/JellyBean";
 import { MemberManager } from "@/app/models/MemberManager";
 import { ScheduleConfiguration } from "@/app/models/ScheduleConfiguration";
-
-export type FilterOptions = {
-    phase: PhaseEnum[];
-    title: string;
-}
+import { FilterOptions } from "@/app/types/FilterOptions";
 
 export default function TaskUnassignedBox(props: {
     ticketManager: TicketManager,

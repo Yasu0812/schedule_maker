@@ -10,6 +10,8 @@ import { MemberService } from "@/app/service/MemberService";
 import { useState } from "react";
 import { ScheduleConfiguration } from "@/app/models/ScheduleConfiguration";
 import DurationDayCalc from "@/app/models/DurationDayCalc";
+import { FilterOptions } from "@/app/types/FilterOptions";
+import TaskFilterService from "@/app/service/TaskFilterService";
 
 type memberDisableAreaDragStateType = {
     memberId?: UUID,
@@ -32,6 +34,7 @@ export default function CalendarLine(
         moveTargetTaskId: UUID | undefined,
         handleMoveTargetTask: (taskId: UUID | undefined) => void,
         isEditing: boolean,
+        filterOptions: FilterOptions,
         handleEditMember: (memberId: UUID | undefined) => void,
         scheduleConfiguration: ScheduleConfiguration,
     }
@@ -48,6 +51,7 @@ export default function CalendarLine(
     const setPlanedTaskManager = props.setPlanedTaskManager;
     const setMemberManager = props.setMemberManager;
     const scheduleConfiguration = props.scheduleConfiguration;
+    const filterOptions = props.filterOptions;
 
     const hasAssignTask = lineTask.hasTask();
 
@@ -140,6 +144,10 @@ export default function CalendarLine(
         const isHoliday = new DurationDayCalc().isScheduleHoliday(day, scheduleConfiguration.additionalHolidays);
         const task = lineTask.getTaskForDate(dayString);
         const isEnabled = !memberManager.isDisabledOn(memberId, day);
+        const isFiltered = task ? new TaskFilterService().isFiltered({
+            ticketTitle: task.taskName,
+            phase: task.taskPhase,
+        }, filterOptions) : false;
 
         return (
             <td key={index} className="calendar-line-item" style={{ position: 'relative', alignItems: "center" }}
@@ -177,6 +185,7 @@ export default function CalendarLine(
                             memberId={memberId}
                             startDay={day}
                             isEnabled={isEnabled}
+                            isFiltered={isFiltered}
                         />}
                     </div>
                 </DayColor>

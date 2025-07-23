@@ -1,8 +1,7 @@
 import { orderedPhases, PhaseEnum, phaseNameShortMap } from "@/app/common/PhaseEnum";
 import { Dispatch, SetStateAction, } from "react";
 import { JellyBean } from "../decorator/JellyBean";
-import { FilterOptions } from "./TaskUnassignedBox";
-
+import { FilterOptions } from "@/app/types/FilterOptions";
 
 export default function TaskFilter(props: {
     filterOptions: FilterOptions,

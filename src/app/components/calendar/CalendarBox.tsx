@@ -11,6 +11,7 @@ import { MileStoneManager } from "@/app/models/MileStoneManager";
 import CalendarPreference from "./CalendarPreference";
 import { TaskShiftOneDayService } from "@/app/service/TaskShiftOneDayService";
 import { TicketManager } from "@/app/models/Ticket";
+import { useState } from "react";
 
 export default function CalendarBox(
     props: {
@@ -29,6 +30,13 @@ export default function CalendarBox(
         children?: React.ReactNode,
     }
 ) {
+
+    const [filterOptions, setFilterOptions] = useState({
+        phase: [],
+        title: ''
+    });
+
+
 
     const {
         calendarManager,
@@ -69,6 +77,15 @@ export default function CalendarBox(
                 }}>
                     flush left
                 </button>
+                <input
+                    type="search"
+                    placeholder="Filter by title"
+                    value={filterOptions.title}
+                    onChange={(e) => setFilterOptions({
+                        ...filterOptions, title: e.target.value
+                    })}
+                    className="border rounded p-2"
+                />
             </div>
             <div style={{ overflow: 'scroll' }}>
 
@@ -91,6 +108,7 @@ export default function CalendarBox(
                             moveTargetTaskId={moveTargetTaskId}
                             handleMoveTargetTask={handleMoveTargetTask}
                             scheduleConfiguration={scheduleConfiguration}
+                            filterOptions={filterOptions}
 
                         />
                     </tbody>

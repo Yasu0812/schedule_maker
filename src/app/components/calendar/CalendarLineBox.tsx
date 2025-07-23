@@ -6,6 +6,7 @@ import { TaskManager } from "@/app/models/TaskManager";
 import { MemberManager } from "@/app/models/MemberManager";
 import { useState } from "react";
 import { ScheduleConfiguration } from "@/app/models/ScheduleConfiguration";
+import { FilterOptions } from "@/app/types/FilterOptions";
 
 
 export default function CalendarLineBox(
@@ -18,6 +19,7 @@ export default function CalendarLineBox(
         setPlanedTaskManager: (planedTaskManager: PlanedTask) => void,
         setMemberManager: (memberManager: MemberManager) => void,
         moveTargetTaskId: UUID | undefined,
+        filterOptions: FilterOptions,
         handleMoveTargetTask: (taskId: UUID | undefined) => void,
         scheduleConfiguration: ScheduleConfiguration,
     }
@@ -28,6 +30,7 @@ export default function CalendarLineBox(
     const moveTargetTaskId = props.moveTargetTaskId;
     const memberIds = memberManager.ids;
     const scheduleConfiguration = props.scheduleConfiguration;
+    const filterOptions = props.filterOptions;
 
     const [editingMemberId, setEditingMemberId] = useState<UUID | undefined>(undefined);
 
@@ -55,6 +58,7 @@ export default function CalendarLineBox(
                 moveTargetTaskId={moveTargetTaskId}
                 handleMoveTargetTask={handleMoveTargetTask}
                 isEditing={isEditing}
+                filterOptions={filterOptions}
                 handleEditMember={handleEditMember}
                 scheduleConfiguration={scheduleConfiguration}
 

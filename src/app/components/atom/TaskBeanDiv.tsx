@@ -5,6 +5,7 @@ export default function TaskBeanDiv(props: {
     task: { taskId: UUID, taskName: string, taskPhase: string };
     duration: number;
     moveTargetTaskId: UUID | undefined;
+    isFiltered?: boolean;
     handleMouseDown?: () => void;
     handleContextMenu?: () => void;
     isTaskAssignableDay?: {
@@ -18,6 +19,7 @@ export default function TaskBeanDiv(props: {
     const handleMouseDown = props.handleMouseDown || (() => { });
     const handleContextMenu = props.handleContextMenu || (() => { });
     const isAssignable = props.isTaskAssignableDay === undefined || props.isTaskAssignableDay.isAssignable;
+    const isFiltered = props.isFiltered === undefined || props.isFiltered;
     const reasons = props.isTaskAssignableDay?.reasons || [];
     const isSelected = moveTargetTaskId === task?.taskId;
     const pointerEvents = isSelected ? "none" : "auto";
@@ -39,7 +41,7 @@ export default function TaskBeanDiv(props: {
             style={{ width: 75 * duration, height: "100%", zIndex: 1, userSelect: "none", pointerEvents: pointerEvents }}
             title={reasons.join("\n")}
         >
-            <JellyBean width={75 * duration} height={36} phase={task?.taskPhase} selected={isSelected} >
+            <JellyBean width={75 * duration} height={36} phase={task?.taskPhase} selected={isSelected} disabled={!isFiltered} >
                 {task?.taskName} {isAssignable ? "" : "❗️".repeat(reasons.length)}
             </JellyBean>
         </ div>

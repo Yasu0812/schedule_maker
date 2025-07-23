@@ -1,10 +1,10 @@
 import { UUID } from "../common/IdUtil";
-import { FilterOptions } from "../components/task/TaskUnassignedBox";
 import { PlanedTask } from "../models/PlanedTask";
 import { Task } from "../models/Task";
 import TaskFilter from "../models/TaskFilter";
 import { TaskManager } from "../models/TaskManager";
 import { UnassignedTaskSelector } from "../models/UnassignedTaskSelector";
+import { FilterOptions } from "../types/FilterOptions";
 
 
 export class UnassignedTaskService {
