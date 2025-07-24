@@ -14,12 +14,13 @@ export class CalendarCellTask {
         public readonly taskDate: string,
         public readonly taskPhase: PhaseEnum,
         public readonly taskDescription: string,
+        public readonly startDay: Date,
+        public readonly duration: number,
         public readonly isTaskAssignableDay: {
             isAssignable: boolean,
             reasons?: string[],
         }
     ) { }
-
 }
 
 /**

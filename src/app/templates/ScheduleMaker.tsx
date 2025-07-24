@@ -41,6 +41,7 @@ export default function ScheduleMaker(
                 prevSchedule.taskManager,
                 prevSchedule.planedTaskManager,
                 prevSchedule.mileStoneManager,
+                prevSchedule.scheduleConfiguration
             );
 
             return new ScheduleStateManager(
@@ -83,6 +84,7 @@ export default function ScheduleMaker(
                 prevSchedule.taskManager,
                 planedTaskManager,
                 prevSchedule.mileStoneManager,
+                prevSchedule.scheduleConfiguration
             );
 
             return new ScheduleStateManager(
@@ -109,6 +111,7 @@ export default function ScheduleMaker(
                 prevSchedule.taskManager,
                 prevSchedule.planedTaskManager,
                 prevSchedule.mileStoneManager,
+                prevSchedule.scheduleConfiguration
             );
             return new ScheduleStateManager(
                 newCalendarManager,
@@ -135,6 +138,7 @@ export default function ScheduleMaker(
                 prevSchedule.taskManager,
                 prevSchedule.planedTaskManager,
                 prevSchedule.mileStoneManager,
+                scheduleConfiguration
             );
             return new ScheduleStateManager(
                 newCalendarManager,

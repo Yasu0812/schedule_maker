@@ -153,6 +153,41 @@ export class ScheduleConfiguration {
         return previousDate;
     }
 
+    public getWorkingDayCount(
+        startDate: Date,
+        endDate: Date,
+    ): number {
+        let count = 0;
+        const currentDate = new Date(startDate);
+        while (currentDate <= endDate) {
+            if (!this.isScheduleHoliday(currentDate, this._additionalHolidays)) {
+                count++;
+            }
+            currentDate.setUTCDate(currentDate.getUTCDate() + 1);
+        }
+        return count;
+    }
+
+    public getDayCount(
+        startDate: Date,
+        endDate: Date,
+    ): number {
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        return Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+    }
+
+    public countWorkingDaysOrAllDays(
+        startDate: Date,
+        endDate: Date,
+    ): number {
+        if (this._isShowHoliday) {
+            return this.getDayCount(startDate, endDate);
+        } else {
+            return this.getWorkingDayCount(startDate, endDate);
+        }
+    }
+
     static createDefaultConfiguration(): ScheduleConfiguration {
         const firstDate = DateUtil.getCurrentMonthFirstDate();
         const lastDate = DateUtil.getCurrentMonthLastDate();

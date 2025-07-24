@@ -6,6 +6,7 @@ import { PlanedTaskMapper } from "../models/PlanedTaskMapper";
 import { TaskManager } from "../models/TaskManager";
 import { TicketManager } from "../models/Ticket";
 import { MileStoneManager } from "../models/MileStoneManager";
+import { ScheduleConfiguration } from "../models/ScheduleConfiguration";
 
 export class GetCalendarService {
 
@@ -26,14 +27,16 @@ export class GetCalendarService {
         taskManager: TaskManager,
         planedTasks: PlanedTask,
         mileStoneManager: MileStoneManager,
+        scheduleConfiguration: ScheduleConfiguration
 
     ) {
-        const planedTaskMapper = new PlanedTaskMapper().toCalender(
+        const planedTaskMapper = new PlanedTaskMapper().toCalendar(
             memberManager.members,
             ticketManager,
             taskManager,
             planedTasks,
-            mileStoneManager
+            mileStoneManager,
+            scheduleConfiguration
         );
 
         return this.getCalendar(memberManager.ids, planedTaskMapper, firstDate, lastDate);

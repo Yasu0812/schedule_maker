@@ -3,6 +3,7 @@ import { CalendarCellTask } from "./CalendarCellTask";
 import Member from "./Member";
 import { MileStoneManager } from "./MileStoneManager";
 import { PlanedTask } from "./PlanedTask";
+import { ScheduleConfiguration } from "./ScheduleConfiguration";
 import TaskAssignablePolicy from "./TaskAssignablePolicy";
 import { TaskManager } from "./TaskManager";
 import { TicketManager } from "./Ticket";
@@ -11,12 +12,13 @@ export class PlanedTaskMapper {
 
     private _taskassignablePolicy: TaskAssignablePolicy = new TaskAssignablePolicy();
 
-    public toCalender(
+    public toCalendar(
         memberList: Member[],
-        tikcketManager: TicketManager,
+        ticketManager: TicketManager,
         taskManager: TaskManager,
         planedTasks: PlanedTask,
-        mileStoneManager: MileStoneManager
+        mileStoneManager: MileStoneManager,
+        scheduleConfiguration: ScheduleConfiguration
     ): Map<string, Map<string, CalendarCellTask>> {
         // key1: memberId, key2: date
         // value: CalendarCellTask
@@ -32,7 +34,7 @@ export class PlanedTaskMapper {
                     throw new Error(`Task with ID ${assignedTask.taskId} not found`);
                 }
 
-                const ticket = tikcketManager.getTicket(task.ticketId);
+                const ticket = ticketManager.getTicket(task.ticketId);
                 if (!ticket) {
                     throw new Error(`Ticket with ID ${task.ticketId} not found`);
                 }
@@ -49,7 +51,7 @@ export class PlanedTaskMapper {
                         taskManager,
                         mileStoneManager,
                         member,
-                        tikcketManager.getExclusiveTicketIds()
+                        ticketManager.getExclusiveTicketIds()
                     );
                     const cellTask = new CalendarCellTask(
                         ticket.title,
@@ -57,6 +59,8 @@ export class PlanedTaskMapper {
                         dateString,
                         task.phase,
                         ticket.description,
+                        assignedTask.startDay,
+                        scheduleConfiguration.countWorkingDaysOrAllDays(assignedTask.startDay, assignedTask.endDay),
                         isAssignable
                     );
                     taskMapForMember.set(dateString, cellTask);

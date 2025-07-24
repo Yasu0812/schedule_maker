@@ -38,10 +38,10 @@ export default function TaskBeanDiv(props: {
         <div
             onMouseDown={onMouseDown}
             onContextMenu={onContextMenu}
-            style={{ width: 75 * duration, height: "100%", zIndex: 1, userSelect: "none", pointerEvents: pointerEvents }}
+            style={{ width: 77 * duration - 2, height: "100%", zIndex: 1, userSelect: "none", pointerEvents: pointerEvents }}
             title={reasons.join("\n")}
         >
-            <JellyBean width={75 * duration} height={36} phase={task?.taskPhase} selected={isSelected} disabled={!isFiltered} >
+            <JellyBean width={77 * duration - 2} height={35} phase={task?.taskPhase} selected={isSelected} disabled={!isFiltered} >
                 {task?.taskName} {isAssignable ? "" : "❗️".repeat(reasons.length)}
             </JellyBean>
         </ div>

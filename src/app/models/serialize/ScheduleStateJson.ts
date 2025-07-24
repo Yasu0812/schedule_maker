@@ -109,12 +109,13 @@ export class ScheduleStateJson {
         const mileStoneMap = new Map(Object.entries(mileStones).map(([id, mileStone]) => [id, MileStoneSerializable.deserialize(mileStone)])) as Map<UUID, MileStone>;
         const mileStoneManager = new MileStoneManager(mileStoneMap);
 
-        const planedTaskMapper = new PlanedTaskMapper().toCalender(
+        const planedTaskMapper = new PlanedTaskMapper().toCalendar(
             memberManager.members,
             ticketManager,
             taskManager,
             planedTaskManager,
-            mileStoneManager
+            mileStoneManager,
+            scheduleConfiguration
         );
         const calendar = new CalendarCellTaskManager(
             memberManager.ids,

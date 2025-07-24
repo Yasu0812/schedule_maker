@@ -6,6 +6,7 @@ import { TaskManager } from "@/app/models/TaskManager";
 import TaskBeanDiv from "../atom/TaskBeanDiv";
 import { memo } from "react";
 import { ScheduleConfiguration } from "@/app/models/ScheduleConfiguration";
+import { DateUtil } from "@/app/common/DateUtil";
 
 let clickStartTime = 0;
 
@@ -97,12 +98,12 @@ const TaskCell = memo(
                 onMouseDown={onMouseDown}
                 onContextMenu={onContextMenu}
             >
-                {task &&
+                {task && DateUtil.isSameDay(task.startDay, startDay) &&
                     <TaskBeanDiv task={{
                         taskId: task.taskId,
                         taskName: task.taskName,
                         taskPhase: task.taskPhase,
-                    }} duration={1} moveTargetTaskId={moveTargetTaskId}
+                    }} duration={task.duration} moveTargetTaskId={moveTargetTaskId}
                         isTaskAssignableDay={task.isTaskAssignableDay}
                         isFiltered={isFiltered}
 
