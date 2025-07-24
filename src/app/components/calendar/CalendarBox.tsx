@@ -80,10 +80,14 @@ export default function CalendarBox(
                 <input
                     type="search"
                     placeholder="Filter by title"
-                    value={filterOptions.title}
-                    onChange={(e) => setFilterOptions({
+                    onBlur={(e) => setFilterOptions({
                         ...filterOptions, title: e.target.value
                     })}
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                            e.currentTarget.blur();
+                        }
+                    }}
                     className="border rounded p-2"
                 />
             </div>
