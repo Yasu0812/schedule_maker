@@ -234,6 +234,8 @@ table .violation {
   white-space: nowrap;
   /* pointer-events: none; */
   z-index: 2;
+  outline: 1px solid rgba(201, 201, 201, 0.5);
+  outline-offset: -1px;
 }
 
 
