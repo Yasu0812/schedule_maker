@@ -1,9 +1,10 @@
 import { DateUtil } from "../common/DateUtil";
 import { UUID } from "../common/IdUtil";
+import { GroupTaskAssignPolicy } from "./GroupTaskAssignPolicy";
 import Member from "./Member";
 import { MileStoneManager } from "./MileStoneManager";
 import { PlanedTask } from "./PlanedTask";
-import { ProgressCalculator } from "./ProgressCalculator";
+import { RequiredPremiseTaskFinishPolicy } from "./RequiredPremiseTaskFinishPolicy";
 import { RequiredProjectPhaseFinishPolicy } from "./RequiredProjectPhaseFinishPolicy";
 import { RequiredTaskPhaseFinishPolicy } from "./RequiredTaskPhaseFinishPolicy";
 import { TaskManager } from "./TaskManager";
@@ -14,7 +15,9 @@ export default class TaskAssignablePolicy {
 
     private _requiredTaskPhaseFinishPolicy = new RequiredTaskPhaseFinishPolicy();
 
-    private _progressCalculator = new ProgressCalculator();
+    private _requiredPremiseTaskFinishPolicy = new RequiredPremiseTaskFinishPolicy();
+
+    private _groupTaskAssignPolicy = new GroupTaskAssignPolicy();
 
     /**
      * タスクが割り当て可能かどうかを判定します。  
@@ -47,6 +50,28 @@ export default class TaskAssignablePolicy {
 
         const phase = task.phase;
         const reasons = [];
+
+        const premiseTasks = this._requiredPremiseTaskFinishPolicy.isRequiredPremiseTaskFinish(
+            taskId,
+            taskManager,
+            planedTask,
+            startDay,
+        );
+        if (!premiseTasks.finishDay) {
+            reasons.push(`Premise tasks are not assigned.`);
+        } else if (!premiseTasks.isFinished) {
+            reasons.push(`Premise tasks are not finished. Fastest completion day is ${DateUtil.formatDateWithHyphenNoTimeZone(premiseTasks.finishDay)}`); // 前提タスクが完了していない場合、割り当て不可
+        }
+
+        const isGroupTaskAssignUnique = this._groupTaskAssignPolicy.isGroupTaskAssignUnique(
+            taskId,
+            member.id,
+            taskManager,
+            planedTask,
+        );
+        if (!isGroupTaskAssignUnique) {
+            reasons.push(`Group task assignment is not unique. Task is assigned to multiple members.`); // グループタスクの割り当てが一意でない場合、割り当て不可
+        }
 
         const requiredTasks = this._requiredTaskPhaseFinishPolicy.isRequiredTaskPhaseFinish(
             taskId,
@@ -103,6 +128,7 @@ export default class TaskAssignablePolicy {
         if (!isAssignmentPermitted) {
             reasons.push("Task assignment is not permitted due to scheduling constraints."); // スケジュールの制約により割り当て不可
         }
+
         if (reasons.length > 0) {
             return { isAssignable: false, reasons }; // 割り当て不可の理由がある場合
         }

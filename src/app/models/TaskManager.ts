@@ -2,6 +2,7 @@ import { Task } from "./Task";
 import { Ticket } from "./Ticket";
 import { PhaseEnum, previousPhase } from "../common/PhaseEnum";
 import { generateUUID, UUID } from "../common/IdUtil";
+import { TaskInformation } from "./TaskInformation";
 
 /**
  * タスクの管理を行うクラス。
@@ -30,8 +31,16 @@ export class TaskManager {
         for (const ticket of ticketList) {
             ticket.phases.forEach(phase => {
                 const taskId = generateUUID();
-                taskMap.set(taskId, new Task(taskId, ticket.id, ticket.title, phase.phase, phase.duration));
+                taskMap.set(taskId, new Task(taskId, ticket.id, ticket.title, phase.phase, phase.duration, TaskInformation.createEmpty()));
             });
+        }
+        return new TaskManager(taskMap);
+    }
+
+    public static makeClone(taskList: Iterable<Task>): TaskManager {
+        const taskMap: Map<UUID, Task> = new Map<UUID, Task>();
+        for (const task of taskList) {
+            taskMap.set(task.id, new Task(task.id, task.ticketId, task.ticketTitle, task.phase, task.duration, task.taskInformation));
         }
         return new TaskManager(taskMap);
     }
@@ -44,7 +53,7 @@ export class TaskManager {
     public addTaskFromTicket(ticket: Ticket): TaskManager {
         ticket.phases.forEach(phase => {
             const taskId = generateUUID();
-            this._taskMap.set(taskId, new Task(taskId, ticket.id, ticket.title, phase.phase, phase.duration));
+            this._taskMap.set(taskId, new Task(taskId, ticket.id, ticket.title, phase.phase, phase.duration, TaskInformation.createEmpty()));
         });
         return this;
     }
@@ -160,7 +169,7 @@ export class TaskManager {
 
         this.removeTask(taskId);
         if (newDuration > 0) {
-            const newTask = new Task(task.id, task.ticketId, task.ticketTitle, task.phase, newDuration);
+            const newTask = new Task(task.id, task.ticketId, task.ticketTitle, task.phase, newDuration, task.taskInformation);
             this.addTask(newTask);
         }
 
@@ -222,7 +231,7 @@ export class TaskManager {
             throw new Error("Task title cannot be empty");
         }
 
-        const updatedTask = new Task(taskId, task.ticketId, newTitle, task.phase, task.duration);
+        const updatedTask = new Task(taskId, task.ticketId, newTitle, task.phase, task.duration, task.taskInformation);
         this._taskMap.set(taskId, updatedTask);
         return this;
     }
@@ -245,6 +254,58 @@ export class TaskManager {
         });
 
         return this;
+    }
+
+    public getTaskInformation(
+        taskId: UUID,
+    ): TaskInformation | undefined {
+        const task = this._taskMap.get(taskId);
+        if (!task) {
+            return undefined;
+        }
+        return task.taskInformation;
+    }
+
+    public updateTaskInformation(
+        taskId: UUID,
+        taskInformation: TaskInformation,
+    ): TaskManager {
+        const task = this._taskMap.get(taskId);
+        if (!task) {
+            throw new Error(`Task not found for taskId: ${taskId}`);
+        }
+
+        const updatedTask = new Task(
+            task.id,
+            task.ticketId,
+            task.ticketTitle,
+            task.phase,
+            task.duration,
+            taskInformation
+        );
+        this._taskMap.set(taskId, updatedTask);
+        return this;
+    }
+
+    public getTaskGroupFromTaskId(
+        taskId: UUID,
+    ): Task[] {
+        const task = this._taskMap.get(taskId);
+        if (!task) {
+            throw new Error(`Task not found for taskId: ${taskId}`);
+        }
+
+        const groupTaskId = task.taskInformation.groupTaskId;
+        if (!groupTaskId) {
+            return [task];
+        }
+
+        // 同じグループIDのタスクを取得
+        return this.getTaskFromGroupId(groupTaskId);
+    }
+
+    public getTaskFromGroupId(groupTaskId: string): Task[] {
+        return Array.from(this._taskMap.values()).filter(task => task.taskInformation.groupTaskId === groupTaskId);
     }
 
 }

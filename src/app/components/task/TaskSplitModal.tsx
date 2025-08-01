@@ -1,11 +1,15 @@
 import { PlanedTask } from "@/app/models/PlanedTask";
 import { TaskManager } from "@/app/models/TaskManager";
 import { TicketManager } from "@/app/models/Ticket";
+import { TaskInfoUpdateService } from "@/app/service/TaskInfoUpdateService";
 import { TaskMergeSplitService } from "@/app/service/TaskMergeSplitService";
 import { UnassignedTaskService } from "@/app/service/UnassignedTaskService";
 import { UUID } from "crypto";
 import { useState } from "react";
+import { JellyBean } from "../decorator/JellyBean";
 
+
+const taskInfoUpdateService = new TaskInfoUpdateService();
 
 export default function TaskSplitModal(props: {
     taskId: UUID,
@@ -24,6 +28,16 @@ export default function TaskSplitModal(props: {
     const [splitDuration, setSplitDuration] = useState<number[]>([]);
 
     const [error, setError] = useState<string>("");
+
+    const [inputName, setInputName] = useState<string>(task?.taskInformation?.taskName || "");
+
+    const [inputDescription, setInputDescription] = useState<string>(task?.taskInformation?.description || "");
+
+    const [inputPremiseTaskIds, setInputPremiseTaskIds] = useState<string>(task?.taskInformation?.premiseTaskIds?.join(", ") || "");
+
+    const [premiseTaskIds, setPremiseTaskIds] = useState<UUID[]>(task?.taskInformation?.premiseTaskIds || []);
+
+    const [inputGroupTaskId, setInputGroupTaskId] = useState<string>(task?.taskInformation?.groupTaskId || "");
 
     if (!task) {
         return <div>Task not found</div>;
@@ -65,6 +79,13 @@ export default function TaskSplitModal(props: {
         setSplitDuration(durations);
     }
 
+    const handleSplitPremiseTaskIdsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const input = e.target.value;
+        setInputPremiseTaskIds(input);
+        const ids = input.split(/[,\s|]+/).map(id => id.trim()).filter(id => id !== "");
+        setPremiseTaskIds(ids as UUID[]);
+    }
+
     const doSplit = () => {
         if (splitDuration.length > 0) {
             const newTaskManager = new TaskMergeSplitService().splitTaskDuration(
@@ -92,25 +113,110 @@ export default function TaskSplitModal(props: {
         props.hideModal();
     };
 
+    const updateTaskName = () => {
+        if (inputName.trim() === "") {
+            return;
+        }
+        const updatedTaskManager = taskInfoUpdateService.updateTaskName(
+            props.taskId,
+            props.taskManager,
+            inputName.trim()
+        );
+
+        props.setTaskManager(updatedTaskManager);
+    };
+
+    const updateTaskDescription = () => {
+        if (inputDescription.trim() === "") {
+            return;
+        }
+        const updatedTaskManager = taskInfoUpdateService.updateTaskDescription(
+            props.taskId,
+            props.taskManager,
+            inputDescription.trim()
+        );
+
+        props.setTaskManager(updatedTaskManager);
+    };
+
+
+
 
     return (
-        <div className="p-4" >
+        <div className="p-2" >
+            <JellyBean width={150} height={36} phase={task.phase} selected={false}>{task.ticketTitle}</JellyBean>
+
+            <h3 className="text-lg font-semibold mb-2">Task Setting</h3>
+            <p className="mb-2">Task ID: {task.id}</p>
+            <p className="mb-2">Task Name:</p>
+            <input
+                type="text"
+                placeholder="Enter task name"
+                className="border rounded p-2 mb-4 mr-2"
+                value={inputName}
+                onChange={(e) => setInputName(e.target.value)}
+                onBlur={updateTaskName}
+                onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                        updateTaskName();
+                    }
+                }}
+            />
+            <p className="mb-2">Task Description:</p>
+            <textarea
+                placeholder="Enter task description"
+                className="border rounded p-2 mb-4 mr-2 w-full"
+                value={inputDescription}
+                onChange={(e) => setInputDescription(e.target.value)}
+                onBlur={updateTaskDescription}
+            />
+            <p className="mb-2">Premise Task IDs (comma separated):</p>
+            <input
+                type="text"
+                placeholder="Enter premise task IDs"
+                className="border rounded p-2 mb-4 mr-2 w-full"
+                value={inputPremiseTaskIds}
+                onChange={handleSplitPremiseTaskIdsChange}
+                onBlur={() => {
+                    const updatedTaskManager = taskInfoUpdateService.updatePremiseTaskIds(
+                        props.taskId,
+                        props.taskManager,
+                        premiseTaskIds
+                    );
+                    props.setTaskManager(updatedTaskManager);
+                }}
+            />
+            <p className="mb-2">Group Task ID:</p>
+            <input
+                type="text"
+                placeholder="Enter group task ID"
+                className="border rounded p-2 mb-4 mr-2 w-full"
+                value={inputGroupTaskId}
+                onChange={(e) => setInputGroupTaskId(e.target.value)}
+                onBlur={() => {
+                    const updatedTaskManager = taskInfoUpdateService.updateGroupTaskId(
+                        props.taskId,
+                        props.taskManager,
+                        inputGroupTaskId
+                    );
+                    props.setTaskManager(updatedTaskManager);
+                }}
+            />
             <h3 className="text-lg font-semibold mb-2">Task Split</h3>
-            <p className="mb-2">Ticket Title: {task.ticketTitle}</p>
             <p className="mb-2">Unassigned Days Sum:{unassignedTasksDuration} days</p>
             <p className="mb-2">Task Duration: {task.duration} days</p>
             {error && <p className="text-red-500 mb-2">{error}</p>}
             <input
                 type="number"
                 placeholder="Enter duration to split"
-                className="border rounded p-2 mb-4 w-full"
+                className="border rounded p-2 mb-4 mr-2"
                 value={splitNum}
                 onChange={handleSplitNumChange}
             />
             <input
                 type="text"
                 placeholder="Enter split durations (comma separated)"
-                className="border rounded p-2 mb-4 w-full"
+                className="border rounded p-2 mb-4 mr-2"
                 value={splitDurationInput}
                 onChange={handleSpritDurationInputChange}
             />
@@ -125,12 +231,6 @@ export default function TaskSplitModal(props: {
                 onClick={resetSplit}
             >
                 Reset Split
-            </button>
-            <button
-                className="bg-gray-300 text-black rounded p-2 hover:bg-gray-400 ml-2"
-                onClick={props.hideModal}
-            >
-                Cancel
             </button>
         </div>
     );

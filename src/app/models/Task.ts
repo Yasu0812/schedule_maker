@@ -1,5 +1,6 @@
 import { UUID } from "../common/IdUtil";
 import { PhaseEnum } from "../common/PhaseEnum";
+import { TaskInformation } from "./TaskInformation";
 
 /**
  * メンバーが実際に実行するべきタスクを表す。
@@ -17,6 +18,7 @@ export class Task {
         public readonly ticketTitle: string,
         public readonly phase: PhaseEnum,
         public readonly duration: number,
+        public readonly taskInformation: TaskInformation,
     ) { }
 
 }

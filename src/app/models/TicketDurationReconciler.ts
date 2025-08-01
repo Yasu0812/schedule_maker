@@ -2,6 +2,7 @@ import { generateUUID, UUID } from "../common/IdUtil";
 import { orderedPhases, PhaseEnum } from "../common/PhaseEnum";
 import { PlanedTask } from "./PlanedTask";
 import { ScheduleConfiguration } from "./ScheduleConfiguration";
+import { TaskInformation } from "./TaskInformation";
 import { TaskManager } from "./TaskManager";
 import TaskUpdateApplier from "./TaskUpdateApplier";
 import { TicketManager } from "./Ticket";
@@ -64,7 +65,8 @@ export class TicketDurationReconciler {
                             ticketId: ticketId,
                             ticketTitle: ticket.title,
                             phase: phase,
-                            duration: 1
+                            duration: 1,
+                            taskInformation: TaskInformation.createEmpty()
                         }
 
                     );

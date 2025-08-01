@@ -7,8 +7,8 @@ import { UUID } from "../common/IdUtil";
 
 /**
  * あるフェーズを始められるかどうかを確認するポリシー  
- * 特定のフェーズを始めるために、プロジェクト全体で終了している必要があるフェーズが存在する場合があります。  
- * (ex. 結合テストの前に、全てのユニットテストが終了している必要がある)  
+ * 特定のフェーズを始めるために、タスク内で終了している必要があるフェーズが存在する場合があります。  
+ * (ex. 開発の前に、設計が終了している必要がある)  
  * それらの判定を行うクラスです。  
  * 
  */
@@ -58,7 +58,6 @@ export class RequiredTaskPhaseFinishPolicy {
 
         const phaseFinishDay = DateUtil.getLatestDay(planedAssignedTasks.map(task => task.endDay));
 
-        // 現在の日付がフェーズの終了日より後であることを確認
         return phaseFinishDay;
     }
 
