@@ -17,15 +17,16 @@ import { ScheduleConfiguration } from "../models/ScheduleConfiguration";
 import MileStoneConfig from "../components/milestone/MileStoneConfig";
 import { MileStoneManager } from "../models/MileStoneManager";
 import DebugState from "../components/debug/DebugState";
+import GanttChart from "./GanttChart";
 
 export default function ScheduleMaker(
     props: {
-        schdule: ScheduleStateManager,
+        schedule: ScheduleStateManager,
         setSchedule: Dispatch<SetStateAction<ScheduleStateManager | undefined>>
     }
 ) {
 
-    const { schdule, setSchedule } = props;
+    const { schedule, setSchedule } = props;
 
     const [moveTargetTaskId, setMoveTargetTaskId] = useState<UUID | undefined>();
 
@@ -177,21 +178,32 @@ export default function ScheduleMaker(
         <div className="flex flex-wrap" style={{ backgroundColor: '#cccccc' }}>
             <div style={{ width: '100%' }}>
                 <CardDesign>
+                    <GanttChart
+                        assignedTasks={schedule.planedTaskManager.getAll()}
+                        taskManager={schedule.taskManager}
+                        dayList={schedule.scheduleConfiguration.dayList}
+                        memberManager={schedule.memberManager}
+                    />
+                </CardDesign>
+            </div>
+
+            <div style={{ width: '100%' }}>
+                <CardDesign>
                     <CalendarBox
-                        calendarManager={schdule.calandarManager}
-                        ticketManager={schdule.ticketManager}
-                        memberManager={schdule.memberManager}
-                        taskManager={schdule.taskManager}
-                        planedTaskManager={schdule.planedTaskManager}
-                        mileStoneManager={schdule.mileStoneManager}
+                        calendarManager={schedule.calandarManager}
+                        ticketManager={schedule.ticketManager}
+                        memberManager={schedule.memberManager}
+                        taskManager={schedule.taskManager}
+                        planedTaskManager={schedule.planedTaskManager}
+                        mileStoneManager={schedule.mileStoneManager}
                         setPlanedTaskManager={handlePlanedTaskManagerChange}
                         setMemberManager={handleMemberManagerChange}
                         moveTargetTaskId={moveTargetTaskId}
                         handleMoveTargetTask={handleMoveTargetTask}
-                        scheduleConfiguration={schdule.scheduleConfiguration}
+                        scheduleConfiguration={schedule.scheduleConfiguration}
                         handleScheduleConfigurationChange={handleScheduleConfigurationChange}
                     >
-                        <MemberAddForm memberManager={schdule.memberManager} handleMemberManagerChange={handleMemberManagerChange} />
+                        <MemberAddForm memberManager={schedule.memberManager} handleMemberManagerChange={handleMemberManagerChange} />
                     </CalendarBox>
 
                 </CardDesign>
@@ -200,22 +212,22 @@ export default function ScheduleMaker(
                 <DebugState>
                     <>
                         <pre>{JSON.stringify(moveTargetTaskId, null, 2)}</pre>
-                        <pre>{schdule && ScheduleStateJson.toJson(schdule)}</pre>
+                        <pre>{schedule && ScheduleStateJson.toJson(schedule)}</pre>
                     </>
                 </DebugState>
             )}
 
-            <GhostJelly taskId={moveTargetTaskId} ticketManager={schdule.ticketManager} taskManager={schdule.taskManager} />
+            <GhostJelly taskId={moveTargetTaskId} ticketManager={schedule.ticketManager} taskManager={schedule.taskManager} />
 
             <div className="w-full">
                 <CardDesign>
                     <TaskUnassignedBox
-                        ticketManager={schdule.ticketManager}
-                        taskManager={schdule.taskManager}
-                        memberManager={schdule.memberManager}
-                        planedTaskManager={schdule.planedTaskManager}
-                        mileStoneManager={schdule.mileStoneManager}
-                        scheduleConfiguration={schdule.scheduleConfiguration}
+                        ticketManager={schedule.ticketManager}
+                        taskManager={schedule.taskManager}
+                        memberManager={schedule.memberManager}
+                        planedTaskManager={schedule.planedTaskManager}
+                        mileStoneManager={schedule.mileStoneManager}
+                        scheduleConfiguration={schedule.scheduleConfiguration}
                         setTaskManager={handleTaskManagerChange}
                         moveTargetTaskId={moveTargetTaskId}
                         handleMoveTargetTask={handleMoveTargetTask}
@@ -226,10 +238,10 @@ export default function ScheduleMaker(
             </div>
             <div className="w-2/3">
                 <TicketManagementBox
-                    ticketManager={schdule.ticketManager}
-                    taskManager={schdule.taskManager}
-                    planedTask={schdule.planedTaskManager}
-                    scheduleConfiguration={schdule.scheduleConfiguration}
+                    ticketManager={schedule.ticketManager}
+                    taskManager={schedule.taskManager}
+                    planedTask={schedule.planedTaskManager}
+                    scheduleConfiguration={schedule.scheduleConfiguration}
                     setTicketManager={handleTicketManagerChange}
                     setTaskManager={handleTaskManagerChange}
                     setPlanedTask={handlePlanedTaskManagerChange}
@@ -238,7 +250,7 @@ export default function ScheduleMaker(
             <div className="w-1/3">
                 <CardDesign>
                     <MileStoneConfig
-                        mileStoneManager={schdule.mileStoneManager}
+                        mileStoneManager={schedule.mileStoneManager}
                         setMileStoneManager={handleMilestoneManagerChange}
                     />
                 </CardDesign>
