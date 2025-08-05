@@ -17,7 +17,6 @@ import { ScheduleConfiguration } from "../models/ScheduleConfiguration";
 import MileStoneConfig from "../components/milestone/MileStoneConfig";
 import { MileStoneManager } from "../models/MileStoneManager";
 import DebugState from "../components/debug/DebugState";
-import GanttChart from "./GanttChart";
 
 export default function ScheduleMaker(
     props: {
