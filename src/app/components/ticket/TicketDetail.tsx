@@ -1,6 +1,7 @@
 import { orderedPhases, PhaseEnum, phaseNameMap, } from "@/app/common/PhaseEnum";
 import { JellyBean } from "../decorator/JellyBean";
 import PhaseDurationInput from "./PhaseDurationInput";
+import { useState } from "react";
 
 interface TicketPhaseInfo {
     phaseId: string;
@@ -12,9 +13,12 @@ interface TicketPhaseInfo {
 export default function TicketDetail(props: {
     ticketPhases: Map<PhaseEnum, TicketPhaseInfo>;
     changeDuration: (phase: PhaseEnum, duration: number) => number;
+    parseInput: (input: string) => void;
 }) {
 
-    const { ticketPhases, changeDuration } = props;
+    const { ticketPhases, changeDuration, parseInput } = props;
+
+    const [inputValues, setInputValues] = useState<string>("");
 
     const phases = orderedPhases.map((phase) => {
         const phaseInfo = ticketPhases.get(phase);
@@ -36,6 +40,18 @@ export default function TicketDetail(props: {
     return (
         <div>
             {phases}
+            <textarea className="w-full p-2 border border-gray-300 rounded" value={inputValues} placeholder="Add a description..." onChange={(e) => setInputValues(e.target.value)}></textarea>
+            <div className="mt-2">
+                <button
+                    className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                    onClick={() => {
+                        parseInput(inputValues);
+                        setInputValues("");
+                    }}
+                >
+                    Save Description
+                </button>
+            </div>
         </div>
     );
 }

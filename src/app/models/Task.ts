@@ -1,4 +1,4 @@
-import { UUID } from "../common/IdUtil";
+import { generateUUID, UUID } from "../common/IdUtil";
 import { PhaseEnum } from "../common/PhaseEnum";
 import { TaskInformation } from "./TaskInformation";
 
@@ -20,6 +20,27 @@ export class Task {
         public readonly duration: number,
         public readonly taskInformation: TaskInformation,
     ) { }
+
+    public static create(
+        ticketId: UUID,
+        ticketTitle: string,
+        phase: PhaseEnum,
+        duration: number,
+        taskInformation: {
+            taskName: string,
+            description?: string,
+            premiseTaskIds?: UUID[],
+            groupTaskId?: string, // グループタスクID
+        },
+    ): Task {
+        return new Task(generateUUID(), ticketId, ticketTitle, phase, duration, {
+            id: generateUUID(),
+            taskName: taskInformation.taskName,
+            description: taskInformation.description || "",
+            premiseTaskIds: taskInformation.premiseTaskIds || [],
+            groupTaskId: taskInformation.groupTaskId,
+        });
+    }
 
 }
 

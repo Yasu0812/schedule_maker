@@ -178,17 +178,6 @@ export default function ScheduleMaker(
         <div className="flex flex-wrap" style={{ backgroundColor: '#cccccc' }}>
             <div style={{ width: '100%' }}>
                 <CardDesign>
-                    <GanttChart
-                        assignedTasks={schedule.planedTaskManager.getAll()}
-                        taskManager={schedule.taskManager}
-                        dayList={schedule.scheduleConfiguration.dayList}
-                        memberManager={schedule.memberManager}
-                    />
-                </CardDesign>
-            </div>
-
-            <div style={{ width: '100%' }}>
-                <CardDesign>
                     <CalendarBox
                         calendarManager={schedule.calandarManager}
                         ticketManager={schedule.ticketManager}

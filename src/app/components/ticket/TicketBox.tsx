@@ -6,6 +6,7 @@ import CancelIcon from "../atom/CancelIcon";
 import { TicketUpdateService } from "@/app/service/TicketUpdateService";
 import { useState } from "react";
 import { TaskManager } from "@/app/models/TaskManager";
+import { ParseToTicketService } from "@/app/service/ParseToTicketService";
 
 export default function TicketBox(props: {
     ticketId: UUID,
@@ -50,6 +51,15 @@ export default function TicketBox(props: {
         return changeHandler(ticketId, phase, duration);
     };
 
+    const parseInput = (input: string) => {
+        if (input.trim().length === 0) {
+            return;
+        }
+        const { newTicketManager, newTaskManager } = new ParseToTicketService().parseAndUpdate(ticketId, ticket.title, input, ticketManager, taskManager);
+        props.setTicketManager(newTicketManager);
+        props.setTaskManager(newTaskManager);
+    };
+
 
     return (
         <div>
@@ -70,7 +80,7 @@ export default function TicketBox(props: {
                     <CancelIcon onClick={cancelHander} />
                 </nav>
             </div>
-            <TicketDetail ticketPhases={ticket.phases} changeDuration={changeDuration} />
+            <TicketDetail ticketPhases={ticket.phases} changeDuration={changeDuration} parseInput={parseInput} />
         </div>
     );
 }

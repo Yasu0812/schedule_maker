@@ -36,6 +36,8 @@ export default function GanttChart(props: {
                             <tr>
                                 <th className="calendar-header-item">Task Name</th>
                                 <th className="calendar-header-item">Member</th>
+                                <th className="calendar-header-item">Start Day</th>
+                                <th className="calendar-header-item">End Day</th>
                                 {
                                     dayList.map((day, index) => (
                                         <th key={index} className="calendar-header-item">
