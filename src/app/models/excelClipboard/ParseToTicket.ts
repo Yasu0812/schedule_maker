@@ -8,14 +8,13 @@ export class ParseToTicket {
     public fromTaskMap(
         ticketId: UUID,
         ticketTitle: string,
-        taskMap: Map<PhaseEnum, Task>
+        taskMap: Map<PhaseEnum, Task[]>
     ): Ticket {
-        const taskGroups = Map.groupBy(taskMap, (task) => task[1].phase);
 
         const phases = new Map<PhaseEnum, TicketPhase>();
 
-        taskGroups.forEach((tasks, phase) => {
-            const totalDuration = Array.from(tasks.values()).reduce((sum, task) => sum + task[1].duration, 0);
+        taskMap.forEach((tasks, phase) => {
+            const totalDuration = tasks.reduce((sum, task) => sum + task.duration, 0);
             phases.set(phase, {
                 phaseId: generateUUID(),
                 duration: totalDuration,

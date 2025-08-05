@@ -22,12 +22,15 @@ export class ExcelClipboardParseTask {
         return taskLines;
     }
 
-    public toTaskMap(ticketId: UUID, ticketTitle: string, taskLines: ExcelClipboardParseTaskLine[]): Map<PhaseEnum, Task> {
-        const tasks = new Map<PhaseEnum, Task>();
+    public toTaskMap(ticketId: UUID, ticketTitle: string, taskLines: ExcelClipboardParseTaskLine[]): Map<PhaseEnum, Task[]> {
+        const tasks = new Map<PhaseEnum, Task[]>();
         for (const line of taskLines) {
             const lineTasks = line.toTasks(ticketId, ticketTitle);
             lineTasks.forEach((task, phase) => {
-                tasks.set(phase, task);
+                if (!tasks.has(phase)) {
+                    tasks.set(phase, []);
+                }
+                tasks.get(phase)!.push(task);
             });
         }
         return tasks;
@@ -37,7 +40,7 @@ export class ExcelClipboardParseTask {
         ticketId: UUID,
         ticketTitle: string,
         inputData: string
-    ): Map<PhaseEnum, Task> {
+    ): Map<PhaseEnum, Task[]> {
         const parsedData = parseExcelClipboardTextSimple(inputData);
         const taskLines = this.parseLines(parsedData);
         return this.toTaskMap(ticketId, ticketTitle, taskLines);

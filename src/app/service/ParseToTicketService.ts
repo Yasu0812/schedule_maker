@@ -22,7 +22,7 @@ export class ParseToTicketService {
 
         ticketManager.addTicket(newTicket);
         taskManager.removeTasksFromTicketId(ticketId);
-        taskManager.addTaskList(Array.from(taskMap.values()));
+        taskManager.addTaskList(Array.from(taskMap.values()).flat());
 
         return {
             newTicketManager: ticketManager,
