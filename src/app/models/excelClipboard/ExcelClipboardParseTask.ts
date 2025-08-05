@@ -11,6 +11,11 @@ export class ExcelClipboardParseTask {
             if (line.length < 14) {
                 throw new Error("Invalid line format. Expected at least 14 columns.");
             }
+            if (line[0].trim() === "") {
+                continue; // Skip empty lines
+            }else if (!parseInt(line[0].trim())) {
+                continue; // Skip lines that do not start with a number (e.g., task ID)
+            }
             const taskLine = new ExcelClipboardParseTaskLine(line);
             taskLines.push(taskLine);
         }

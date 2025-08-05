@@ -1,7 +1,5 @@
 
 
-
-
 export function parseExcelClipboardTextSimple(text: string): string[][] {
     const rows: string[][] = [];
     let row: string[] = [];
