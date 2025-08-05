@@ -95,10 +95,12 @@ export class RequiredTaskPhaseFinishPolicy {
             ];
         } else if (phase === Phase.DEVELOPMENT) {
             return [
+                Phase.REQUIREMENTS_DEFINITION,
                 Phase.DESIGN,
             ];
         } else if (phase === Phase.UNIT_TEST_DOCUMENT_CREATION) {
             return [
+                Phase.REQUIREMENTS_DEFINITION,
                 Phase.DEVELOPMENT,
             ];
         } else if (phase === Phase.UNIT_TEST) {

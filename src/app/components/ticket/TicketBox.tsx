@@ -80,7 +80,7 @@ export default function TicketBox(props: {
                     <CancelIcon onClick={cancelHander} />
                 </nav>
             </div>
-            <TicketDetail ticketPhases={ticket.phases} changeDuration={changeDuration} parseInput={parseInput} />
+            <TicketDetail ticketPhases={ticket.phases} changeDuration={changeDuration} parseInput={parseInput} cancelHander={cancelHander} />
         </div>
     );
 }

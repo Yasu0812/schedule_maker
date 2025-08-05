@@ -14,9 +14,10 @@ export default function TicketDetail(props: {
     ticketPhases: Map<PhaseEnum, TicketPhaseInfo>;
     changeDuration: (phase: PhaseEnum, duration: number) => number;
     parseInput: (input: string) => void;
+    cancelHander: () => void;
 }) {
 
-    const { ticketPhases, changeDuration, parseInput } = props;
+    const { ticketPhases, changeDuration, parseInput, cancelHander } = props;
 
     const [inputValues, setInputValues] = useState<string>("");
 
@@ -38,19 +39,26 @@ export default function TicketDetail(props: {
     );
 
     return (
-        <div>
-            {phases}
-            <textarea className="w-full p-2 border border-gray-300 rounded" value={inputValues} placeholder="Add a description..." onChange={(e) => setInputValues(e.target.value)}></textarea>
-            <div className="mt-2">
-                <button
-                    className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-                    onClick={() => {
-                        parseInput(inputValues);
-                        setInputValues("");
-                    }}
-                >
-                    Save Description
-                </button>
+        <div className="flex w-[50vw]">
+            <div className="mb-4">
+                <h2 className="text-xl font-bold mb-4">Ticket Phases</h2>
+                {phases}
+            </div>
+            <div className="mb-4 w-1/2">
+                <h2 className="text-xl font-bold mb-4">Ticket Parse</h2>
+                <textarea className="w-full p-2 border border-gray-300 rounded" value={inputValues} placeholder="Paste from excel clipboard" onChange={(e) => setInputValues(e.target.value)}></textarea>
+                <div className="mt-2">
+                    <button
+                        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                        onClick={() => {
+                            parseInput(inputValues);
+                            setInputValues("");
+                            cancelHander();
+                        }}
+                    >
+                        Parse
+                    </button>
+                </div>
             </div>
         </div>
     );

@@ -24,7 +24,7 @@ export class ParseToTicket {
             });
         });
 
-        const ticket: Ticket = new Ticket(ticketId, ticketTitle, "", false, phases);
+        const ticket: Ticket = new Ticket(ticketId, ticketTitle, "", true, phases);
 
         return ticket;
     }
