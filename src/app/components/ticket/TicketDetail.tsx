@@ -4,7 +4,6 @@ import PhaseDurationInput from "./PhaseDurationInput";
 import { useState } from "react";
 
 interface TicketPhaseInfo {
-    phaseId: string;
     duration: number;
     phase: string;
     description: string;

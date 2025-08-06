@@ -16,7 +16,6 @@ export class ParseToTicket {
         taskMap.forEach((tasks, phase) => {
             const totalDuration = tasks.reduce((sum, task) => sum + task.duration, 0);
             phases.set(phase, {
-                phaseId: generateUUID(),
                 duration: totalDuration,
                 phase: phase,
                 description: "",

@@ -12,7 +12,6 @@ import { TicketMaterial } from "../types/TicketType";
  */
 export class TicketPhase {
     constructor(
-        public readonly phaseId: UUID,
         public readonly duration: number,
         public readonly phase: PhaseEnum,
         public readonly description: string,
@@ -176,16 +175,6 @@ export class TicketManager {
         return undefined;
     }
 
-    getTicketPhaseFromPhaseId(phaseId: string): TicketPhase | undefined {
-        for (const ticket of this._ticketList) {
-            const phase = ticket.phases.get(phaseId as PhaseEnum);
-            if (phase) {
-                return phase;
-            }
-        }
-        return undefined;
-    }
-
     getTicketByTitle(title: string) {
         const tickets = this._ticketList.filter(ticket => ticket.title === title);
         if (tickets.length === 0) {
@@ -228,7 +217,6 @@ export class TicketManager {
         if (existingPhase) {
             // 既存のフェーズを更新
             const updatedPhase = new TicketPhase(
-                existingPhase.phaseId,
                 duration,
                 phase,
                 description
@@ -271,7 +259,6 @@ export class TicketManager {
         } else {
             // フェーズの更新
             const updatedPhase = new TicketPhase(
-                existingPhase.phaseId,
                 duration,
                 phase,
                 existingPhase.description

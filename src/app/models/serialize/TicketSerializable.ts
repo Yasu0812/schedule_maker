@@ -8,7 +8,6 @@ export type TicketSerializableType = {
     description: string;
     enabled: boolean;
     phases: Array<{
-        phaseId: UUID;
         duration: number;
         phase: string;
         description: string;
@@ -19,7 +18,6 @@ export class TicketSerializable {
 
     public static serialize(ticket: Ticket): TicketSerializableType {
         const phasesArray = Array.from(ticket.phases.values()).map(phase => ({
-            phaseId: phase.phaseId,
             duration: phase.duration,
             phase: phase.phase.toString(),
             description: phase.description
@@ -34,10 +32,9 @@ export class TicketSerializable {
     }
 
     public static deserialize(serialized: TicketSerializableType): Ticket {
-        const phasesMap = new Map<PhaseEnum, { phaseId: UUID; duration: number; phase: PhaseEnum; description: string }>();
+        const phasesMap = new Map<PhaseEnum, { duration: number; phase: PhaseEnum; description: string }>();
         serialized.phases.forEach(phase => {
             phasesMap.set(parsePhase(phase.phase), {
-                phaseId: phase.phaseId,
                 duration: phase.duration,
                 phase: parsePhase(phase.phase),
                 description: phase.description
