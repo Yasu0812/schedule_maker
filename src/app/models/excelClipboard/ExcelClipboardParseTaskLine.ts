@@ -16,7 +16,7 @@ export interface ITaskLineProps {
     integrationTestInternal: number;
     integrationTestExternal: number;
     performanceTest: number;
-    memberGroup: string;
+    memberGroup: string | undefined;
 }
 
 
@@ -34,29 +34,39 @@ export class ExcelClipboardParseTaskLine implements ITaskLineProps {
     integrationTestInternal: number;
     integrationTestExternal: number;
     performanceTest: number;
-    memberGroup: string;
+    memberGroup: string | undefined;
 
 
     constructor(props: string[]) {
-        this.no = parseInt(props[0]);
-        this.isNew = props[1] === "新規";
-        this.taskKind = props[2];
-        this.taskName = props[3];
-        this.feature = props[4];
-        this.description = props[5];
-        this.requirementsDefinition = this.parseNumber(props[6]);
-        this.design = this.parseNumber(props[7]);
-        this.development = this.parseNumber(props[8]);
-        this.unitTest = this.parseNumber(props[9]);
-        this.integrationTestInternal = this.parseNumber(props[10]);
-        this.integrationTestExternal = this.parseNumber(props[11]);
-        this.performanceTest = this.parseNumber(props[12]);
-        this.memberGroup = props[13];
+        const _props: string[] = props.map(prop => prop.trim());
+        const expectedLength = 14;
+        while (_props.length < expectedLength) {
+            _props.push(""); // Fill missing columns with empty strings
+        }
+
+        this.no = parseInt(_props[0]);
+        this.isNew = _props[1] === "新規";
+        this.taskKind = _props[2];
+        this.taskName = _props[3];
+        this.feature = _props[4];
+        this.description = _props[5];
+        this.requirementsDefinition = this.parseNumber(_props[6]);
+        this.design = this.parseNumber(_props[7]);
+        this.development = this.parseNumber(_props[8]);
+        this.unitTest = this.parseNumber(_props[9]);
+        this.integrationTestInternal = this.parseNumber(_props[10]);
+        this.integrationTestExternal = this.parseNumber(_props[11]);
+        this.performanceTest = this.parseNumber(_props[12]);
+        this.memberGroup = this.parseMemberGroup(_props[13]);
     }
 
     private parseNumber(value: string): number {
         const parsed = parseInt(value);
         return isNaN(parsed) ? 0 : parsed;
+    }
+
+    private parseMemberGroup(value: string): string | undefined {
+        return value.trim() === "" ? undefined : value.trim();
     }
 
     private toTask(ticketId: UUID, ticketTitle: string, phase: PhaseEnum, duration: number): Task {

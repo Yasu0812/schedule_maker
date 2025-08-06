@@ -9,7 +9,7 @@ export default function GanttModal(props: {
 
     return (
         <div className="h-[50vh] w-[50vw]" >
-            <JellyBean width={75} height={35} phase={task.phase} selected={false}>
+            <JellyBean width={250} height={35} phase={task.phase} selected={false}>
                 {task.ticketTitle}
             </JellyBean>
 
@@ -18,7 +18,9 @@ export default function GanttModal(props: {
             <ul>
                 {
                     task.taskInformation.description ? (
-                        <li><input type="checkbox" />{task.taskInformation.description}</li>
+                        task.taskInformation.description.split('\n').map((line, index) => (
+                            <li key={index}><input type="checkbox" />{line}</li>
+                        ))
                     ) : (
                         <li>No Description</li>
                     )

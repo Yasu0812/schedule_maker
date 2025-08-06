@@ -8,12 +8,12 @@ export class ExcelClipboardParseTask {
     public parseLines(lines: string[][]): ExcelClipboardParseTaskLine[] {
         const taskLines: ExcelClipboardParseTaskLine[] = [];
         for (const line of lines) {
-            if (line.length < 14) {
-                throw new Error("Invalid line format. Expected at least 14 columns.");
+            if (line.length < 12) {
+                throw new Error("Invalid line format. Expected at least 12 columns.");
             }
             if (line[0].trim() === "") {
                 continue; // Skip empty lines
-            }else if (!parseInt(line[0].trim())) {
+            } else if (!parseInt(line[0].trim())) {
                 continue; // Skip lines that do not start with a number (e.g., task ID)
             }
             const taskLine = new ExcelClipboardParseTaskLine(line);

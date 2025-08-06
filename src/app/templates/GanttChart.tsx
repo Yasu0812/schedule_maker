@@ -26,7 +26,7 @@ export default function GanttChart(props: {
 
     return (
         <CardDesign>
-            <div style={{ width: '100%' }} className="flex flex-col gap-4">
+            <div className="flex flex-col gap-4">
                 <div className="flex items-center gap-2 border-b pb-2">
                     <h2 className="text-lg font-semibold">Schedule Gantt</h2>
                 </div>
