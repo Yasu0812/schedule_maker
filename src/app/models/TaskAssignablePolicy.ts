@@ -66,6 +66,7 @@ export default class TaskAssignablePolicy {
         const isGroupTaskAssignUnique = this._groupTaskAssignPolicy.isGroupTaskAssignUnique(
             taskId,
             member.id,
+            task.ticketId, // タスクのチケットIDを渡す
             taskManager,
             planedTask,
         );

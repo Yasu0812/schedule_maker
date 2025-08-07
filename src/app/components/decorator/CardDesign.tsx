@@ -10,7 +10,7 @@ export default function CardDesign(
 
     const popupClass = popup ? "shadow-xl/30 ring-2" : "shadow-lg";
 
-    const className = `w-full h-full bg-white rounded-xl p-6 space-y-6 font-sans ${popupClass}`;
+    const className = ` bg-white rounded-xl p-6 space-y-6 font-sans ${popupClass}`;
 
 
     return (

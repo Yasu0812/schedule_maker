@@ -50,7 +50,6 @@ export class Ticket {
         ticketMaterial.phases.forEach(phase => {
             const phaseEnum = parsePhase(phase.phase);
             const ticketDetail = new TicketPhase(
-                generateUUID(),
                 phase.duration,
                 phaseEnum,
                 phase.description
@@ -224,7 +223,7 @@ export class TicketManager {
             ticket.phases.set(phase, updatedPhase);
         } else {
             // 新しいフェーズを追加
-            const newPhase = new TicketPhase(generateUUID(), duration, phase, description);
+            const newPhase = new TicketPhase(duration, phase, description);
             ticket.phases.set(phase, newPhase);
         }
 
@@ -253,7 +252,7 @@ export class TicketManager {
             ticket.phases.delete(phase);
         } else if (existingPhase === undefined) {
             // 新しいフェーズの追加
-            const newPhase = new TicketPhase(generateUUID(), duration, phase, "");
+            const newPhase = new TicketPhase(duration, phase, "");
             ticket.phases.set(phase, newPhase);
 
         } else {

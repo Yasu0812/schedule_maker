@@ -1,6 +1,6 @@
 import { PhaseEnum } from "@/app/common/PhaseEnum";
 import { Task } from "../Task";
-import { generateUUID, UUID } from "@/app/common/IdUtil";
+import { UUID } from "@/app/common/IdUtil";
 import { Ticket, TicketPhase } from "../Ticket";
 
 export class ParseToTicket {

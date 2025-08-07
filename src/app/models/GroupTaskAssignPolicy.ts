@@ -17,6 +17,7 @@ export class GroupTaskAssignPolicy {
     public isGroupTaskAssignUnique(
         taskId: UUID,
         memberId: UUID,
+        ticketId: UUID,
         taskManager: TaskManager,
         planedTask: PlanedTask,
     ): boolean {
@@ -30,6 +31,7 @@ export class GroupTaskAssignPolicy {
         const { assignedTasks } = this._unassignedTaskSelector.splitUnAndAssignedTask(
             tmpTaskManager,
             planedTask,
+            ticketId,
         );
 
         if (assignedTasks.length === 0) {
