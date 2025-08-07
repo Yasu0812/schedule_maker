@@ -16,6 +16,7 @@ import { MileStone } from "../MileStone";
 import { MileStoneManager } from "../MileStoneManager";
 import Member from "../Member";
 import { MemberSerializable, MemberSerializableType } from "./MemberSerializable";
+import { AnyToTask } from "./AnyToTask";
 
 type ScheduleStateJsonType = {
     configration: ScheduleConfigurationSerializableType;
@@ -73,7 +74,9 @@ export class ScheduleStateJson {
 
         const configration = data.configration;
         const tickets = data.tickets as TicketSerializableType[];
-        const tasks = data.tasks as Task[];
+        const tasks = data.tasks.map((task: unknown) => {
+            return AnyToTask.toTask(task);
+        });
         const assignedTasks = data.assignedTasks as Record<UUID, AssignedTaskSerializableType>;
         const members = data.members as Record<UUID, MemberSerializableType>;
         const mileStones = data.mileStones as Record<UUID, MileStoneSerializableType>;
