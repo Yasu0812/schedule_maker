@@ -404,3 +404,21 @@ table .violation {
   overflow: auto;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
 }
+
+.calendar-header-item.today {
+  position: relative;
+  /* 擬似要素の基準 */
+}
+
+.calendar-header-item.today::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  bottom: -9999px;
+  /* ヘッダの下、表全体まで突き抜けるイメージ */
+  left: 0;
+  /* セル中央に線を置く */
+  width: 2px;
+  background: red;
+  z-index: 100;
+}

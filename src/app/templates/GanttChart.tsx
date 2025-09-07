@@ -24,7 +24,10 @@ export default function GanttChart(props: {
 
 
     const gantt = Gantt.fromAssignedTasks(assignedTasks);
-    const [scale, setScale] = useState(1);
+    const [scale, setScale] = useState(0.8);
+
+    const [titleFilter, setTitleFilter] = useState("");
+    const [memberFilter, setMemberFilter] = useState("");
 
     const zoomIn = () => setScale(prev => Math.min(prev + 0.1, 2));
     const zoomOut = () => setScale(prev => Math.max(prev - 0.1, 0.5));
@@ -37,6 +40,8 @@ export default function GanttChart(props: {
                     <div className="flex items-center gap-2">
                         <button onClick={zoomIn} disabled={scale === 2} className="px-2 py-1 bg-blue-500 text-white rounded disabled:opacity-50">+</button>
                         <button onClick={zoomOut} disabled={scale === 0.5} className="px-2 py-1 bg-blue-500 text-white rounded disabled:opacity-50">-</button>
+                        <input type="text" placeholder="Filter by title" onBlur={e => setTitleFilter(e.target.value)} onKeyDown={e => e.key === 'Enter' && setTitleFilter(e.currentTarget.value)} className="border p-1" />
+                        <input type="text" placeholder="Filter by member" onBlur={e => setMemberFilter(e.target.value)} onKeyDown={e => e.key === 'Enter' && setMemberFilter(e.currentTarget.value)} className="border p-1" />
                         <span className="text-sm">Scale: {scale.toFixed(1)}</span>
                     </div>
                 </div>
@@ -45,35 +50,58 @@ export default function GanttChart(props: {
                         <thead className="">
                             <tr>
                                 <th className="calendar-header-item">Task Name</th>
+                                <th className="calendar-header-item">Task Name</th>
                                 <th className="calendar-header-item">Member</th>
                                 <th className="calendar-header-item">Start Day</th>
                                 <th className="calendar-header-item">End Day</th>
                                 {
-                                    dayList.map((day, index) => (
-                                        <th key={index} className="calendar-header-item">
-                                            {DateUtil.formatDateShow(day)}
-                                        </th>
-                                    ))
+                                    dayList.map((day, index) => {
+                                        const isToday = DateUtil.isSameDay(day, new Date());
+                                        if (isToday) {
+                                            return (
+                                                <th key={index} className="calendar-header-item today">
+                                                    {DateUtil.formatDateShow(day)}
+                                                </th>
+                                            );
+                                        }
+
+                                        return (
+                                            <th key={index} className="calendar-header-item">
+                                                {DateUtil.formatDateShow(day)}
+                                            </th>
+                                        );
+                                    })
                                 }
                             </tr>
                         </thead>
                         <tbody>
-                            {gantt.getGanttBars().map((bar) => {
-                                const task = taskManager.getTask(bar._assignedTask.taskId);
-                                if (!task) {
-                                    console.warn(`Task with ID ${bar._assignedTask.taskId} not found.`);
-                                    return null;
-                                }
-                                return (
-                                    <GanttLine
-                                        key={bar.id}
-                                        assignedTask={bar._assignedTask}
-                                        task={task}
-                                        dayList={dayList}
-                                        memberManager={memberManager}
-                                    />
-                                );
-                            })}
+                            {gantt
+                                .getGanttBars()
+                                .filter(bar => {
+                                    if (titleFilter && !taskManager.getTask(bar._assignedTask.taskId)?.ticketTitle.toLowerCase().includes(titleFilter.toLowerCase())) {
+                                        return false;
+                                    }
+                                    if (memberFilter && !memberManager.getMember(bar._assignedTask.memberId)?.name.toLowerCase().includes(memberFilter.toLowerCase())) {
+                                        return false;
+                                    }
+                                    return true;
+                                })
+                                .map((bar) => {
+                                    const task = taskManager.getTask(bar._assignedTask.taskId);
+                                    if (!task) {
+                                        console.warn(`Task with ID ${bar._assignedTask.taskId} not found.`);
+                                        return null;
+                                    }
+                                    return (
+                                        <GanttLine
+                                            key={bar.id}
+                                            assignedTask={bar._assignedTask}
+                                            task={task}
+                                            dayList={dayList}
+                                            memberManager={memberManager}
+                                        />
+                                    );
+                                })}
 
                         </tbody>
                     </table>

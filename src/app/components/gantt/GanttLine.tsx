@@ -34,6 +34,9 @@ export default function GanttLine(props: {
     return (
         <tr>
             <th scope="row" className="calendar-cell-header border-2">
+                {task.ticketTitle || "No Task Name"}
+            </th>
+            <th scope="row" className="calendar-cell-header border-2">
                 {task.taskInformation.taskName || "No Task Name"}
             </th>
             <th scope="row" className="calendar-cell-header border-2">
@@ -49,7 +52,7 @@ export default function GanttLine(props: {
                 dayList.map((day, index) => {
                     const isTaskDay = DateUtil.isSameDay(assignedTask.startDay, day);
                     if (!isTaskDay) {
-                        return <td key={index} className="calendar-cell"></td>;
+                        return <td key={index} className="calendar-cell calendar-line-item"></td>;
                     }
 
                     return (

@@ -7,7 +7,7 @@ export class Gantt {
     ) { }
 
     public static fromAssignedTasks(assignedTasks: Iterable<AssignedTask>): Gantt {
-        const ganttBars = Array.from(assignedTasks).map(task => GanttBar.fromAssignedTask(task));
+        const ganttBars = Array.from(assignedTasks).map(task => GanttBar.fromAssignedTask(task)).filter(bar => bar.startDay && bar.endDay);
         return new Gantt(ganttBars);
     }
 
