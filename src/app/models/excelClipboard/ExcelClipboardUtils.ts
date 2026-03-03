@@ -55,5 +55,6 @@ export const updatePreTaskIds = (src: Map<PhaseEnum, (Task & { no: number, preTa
 }
 
 const isPreTaskNeedPhase = (phase: PhaseEnum): boolean => {
+  // TODO 自由にフェーズを選べるようにする (現状は要件定義、設計、開発のみ前提 工数がない;;)
   return phase === Phase.REQUIREMENTS_DEFINITION || phase === Phase.DESIGN || phase === Phase.DEVELOPMENT;
 }
