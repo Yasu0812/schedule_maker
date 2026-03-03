@@ -17,8 +17,8 @@ export interface ITaskLineProps {
     integrationTestExternal: number;
     performanceTest: number;
     memberGroup: string | undefined;
+    premiseTaskNos: number[] | undefined;
 }
-
 
 export class ExcelClipboardParseTaskLine implements ITaskLineProps {
     no: number;
@@ -35,11 +35,12 @@ export class ExcelClipboardParseTaskLine implements ITaskLineProps {
     integrationTestExternal: number;
     performanceTest: number;
     memberGroup: string | undefined;
+    premiseTaskNos: number[] | undefined;
 
 
     constructor(props: string[]) {
         const _props: string[] = props.map(prop => prop.trim());
-        const expectedLength = 14;
+        const expectedLength = 15;
         while (_props.length < expectedLength) {
             _props.push(""); // Fill missing columns with empty strings
         }
@@ -58,6 +59,7 @@ export class ExcelClipboardParseTaskLine implements ITaskLineProps {
         this.integrationTestExternal = this.parseNumber(_props[11]);
         this.performanceTest = this.parseNumber(_props[12]);
         this.memberGroup = this.parseMemberGroup(_props[13]);
+        this.premiseTaskNos = this.parsePremiseTaskNos(_props[14]);
     }
 
     private parseNumber(value: string): number {
@@ -67,6 +69,13 @@ export class ExcelClipboardParseTaskLine implements ITaskLineProps {
 
     private parseMemberGroup(value: string): string | undefined {
         return value.trim() === "" ? undefined : value.trim();
+    }
+
+    private parsePremiseTaskNos(value: string): number[] | undefined {
+        if (value.trim() === "") {
+            return undefined;
+        }
+        return value.split(",").map(num => parseInt(num.trim())).filter(num => !isNaN(num));
     }
 
     private toTask(ticketId: UUID, ticketTitle: string, phase: PhaseEnum, duration: number): Task {
@@ -116,26 +125,4 @@ export class ExcelClipboardParseTaskLine implements ITaskLineProps {
 
     }
 
-    public parseLines(lines: string[][]): ExcelClipboardParseTaskLine[] {
-        const taskLines: ExcelClipboardParseTaskLine[] = [];
-        for (const line of lines) {
-            if (line.length < 14) {
-                throw new Error("Invalid line format. Expected at least 14 columns.");
-            }
-            const taskLine = new ExcelClipboardParseTaskLine(line);
-            taskLines.push(taskLine);
-        }
-        return taskLines;
-    }
-
-    public toTaskMap(ticketId: UUID, ticketTitle: string, taskLines: ExcelClipboardParseTaskLine[]): Map<PhaseEnum, Task> {
-        const tasks = new Map<PhaseEnum, Task>();
-        for (const line of taskLines) {
-            const lineTasks = line.toTasks(ticketId, ticketTitle);
-            lineTasks.forEach((task, phase) => {
-                tasks.set(phase, task);
-            });
-        }
-        return tasks;
-    }
 }

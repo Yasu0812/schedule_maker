@@ -32,9 +32,11 @@ export class Task {
             premiseTaskIds?: UUID[],
             groupTaskId?: string, // グループタスクID
         },
+        taskId?: UUID, // タスクIDをオプションに変更
+        taskInformationId?: UUID, // タスク情報IDをオプションに変更
     ): Task {
-        return new Task(generateUUID(), ticketId, ticketTitle, phase, duration, {
-            id: generateUUID(),
+        return new Task(taskId || generateUUID(), ticketId, ticketTitle, phase, duration, {
+            id: taskInformationId || generateUUID(),
             taskName: taskInformation.taskName,
             description: taskInformation.description || "",
             premiseTaskIds: taskInformation.premiseTaskIds || [],

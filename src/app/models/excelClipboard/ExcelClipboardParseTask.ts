@@ -2,14 +2,14 @@ import { UUID } from "crypto";
 import { PhaseEnum } from "../../common/PhaseEnum";
 import { ExcelClipboardParseTaskLine, } from "./ExcelClipboardParseTaskLine";
 import { Task } from "../Task";
-import { parseExcelClipboardTextSimple } from "@/app/common/ExcelClipboardUtil";
 
 export class ExcelClipboardParseTask {
     public parseLines(lines: string[][]): ExcelClipboardParseTaskLine[] {
         const taskLines: ExcelClipboardParseTaskLine[] = [];
+        console.log("Parsing lines:", lines);
         for (const line of lines) {
             if (line.length < 12) {
-                throw new Error("Invalid line format. Expected at least 12 columns.");
+                continue; // Skip lines that do not have enough columns
             }
             if (line[0].trim() === "") {
                 continue; // Skip empty lines
@@ -22,27 +22,18 @@ export class ExcelClipboardParseTask {
         return taskLines;
     }
 
-    public toTaskMap(ticketId: UUID, ticketTitle: string, taskLines: ExcelClipboardParseTaskLine[]): Map<PhaseEnum, Task[]> {
-        const tasks = new Map<PhaseEnum, Task[]>();
+    public toTaskMap(ticketId: UUID, ticketTitle: string, taskLines: ExcelClipboardParseTaskLine[]): Map<PhaseEnum, (Task & { no: number, preTaskNo: number[] | undefined })[]> {
+        const tasks = new Map<PhaseEnum, (Task & { no: number, preTaskNo: number[] | undefined })[]>();
         for (const line of taskLines) {
             const lineTasks = line.toTasks(ticketId, ticketTitle);
             lineTasks.forEach((task, phase) => {
                 if (!tasks.has(phase)) {
                     tasks.set(phase, []);
                 }
-                tasks.get(phase)!.push(task);
+                const taskWithNo = { ...task, no: line.no, preTaskNo: line.premiseTaskNos };
+                tasks.get(phase)!.push(taskWithNo);
             });
         }
         return tasks;
-    }
-
-    public parseTaskMap(
-        ticketId: UUID,
-        ticketTitle: string,
-        inputData: string
-    ): Map<PhaseEnum, Task[]> {
-        const parsedData = parseExcelClipboardTextSimple(inputData);
-        const taskLines = this.parseLines(parsedData);
-        return this.toTaskMap(ticketId, ticketTitle, taskLines);
     }
 }
