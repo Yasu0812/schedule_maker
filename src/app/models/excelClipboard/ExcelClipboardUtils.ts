@@ -31,7 +31,7 @@ export const getPreTaskIds = (taskId: UUID, src: Map<PhaseEnum, (Task & { no: nu
     }
   }
 
-  throw new Error(`Task with id: ${taskId} not found in any phase.`);
+  return []; // タスクが見つからない場合は空の配列を返す
 }
 
 export const setPreTaskIds = (task: Task, preTaskIds: UUID[]) => {
