@@ -9,14 +9,14 @@ import { UUID } from "@/app/common/IdUtil";
  * @param src 
  * @returns 
  */
-export const getTaskIdFromNo = (phase: PhaseEnum, no: number, src: Map<PhaseEnum, (Task & { no: number })[]>): UUID => {
+export const getTaskIdFromNo = (phase: PhaseEnum, no: number, src: Map<PhaseEnum, (Task & { no: number })[]>): UUID | undefined => {
   const tasks = src.get(phase);
   if (!tasks) {
-    throw new Error(`No tasks found for phase: ${phase}`);
+    return undefined;
   }
   const task = Array.from(tasks.values()).find(t => t.no === no);
   if (!task) {
-    throw new Error(`No task found for phase: ${phase} with no: ${no}`);
+    return undefined;
   }
 
   return task.id;
@@ -27,7 +27,7 @@ export const getPreTaskIds = (taskId: UUID, src: Map<PhaseEnum, (Task & { no: nu
   for (const [phase, tasks] of src.entries()) {
     const task = tasks.find(t => t.id === taskId);
     if (task) {
-      return task.preTaskNo.map(preNo => getTaskIdFromNo(phase, preNo, src));
+      return task.preTaskNo.map(preNo => getTaskIdFromNo(phase, preNo, src)).filter((id): id is UUID => id !== undefined);
     }
   }
 
@@ -43,7 +43,7 @@ export const updatePreTaskIds = (src: Map<PhaseEnum, (Task & { no: number, preTa
   const updatedSrc = new Map<PhaseEnum, Task[]>();
   for (const [phase, tasks] of src.entries()) {
     for (const task of tasks) {
-      const preTaskIds = task.preTaskNo && isPreTaskNeedPhase(phase) ? task.preTaskNo.map(preNo => getTaskIdFromNo(phase, preNo, src)) : [];
+      const preTaskIds = task.preTaskNo && isPreTaskNeedPhase(phase) ? task.preTaskNo.map(preNo => getTaskIdFromNo(phase, preNo, src)).filter((id): id is UUID => id !== undefined) : [];
       const updatedTask = setPreTaskIds(task, preTaskIds);
       if (!updatedSrc.has(phase)) {
         updatedSrc.set(phase, []);
