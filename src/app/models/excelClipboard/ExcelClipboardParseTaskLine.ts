@@ -12,9 +12,13 @@ export interface ITaskLineProps {
     requirementsDefinition: number;
     design: number;
     development: number;
+    unitTestDocumentCreation: number;
     unitTest: number;
+    integrationTestInternalDocumentCreation: number;
     integrationTestInternal: number;
+    integrationTestExternalDocumentCreation: number;
     integrationTestExternal: number;
+    performanceTestDocumentCreation: number;
     performanceTest: number;
     memberGroup: string | undefined;
     premiseTaskNos: number[] | undefined;
@@ -30,9 +34,13 @@ export class ExcelClipboardParseTaskLine implements ITaskLineProps {
     requirementsDefinition: number;
     design: number;
     development: number;
+    unitTestDocumentCreation: number;
     unitTest: number;
+    integrationTestInternalDocumentCreation: number;
     integrationTestInternal: number;
+    integrationTestExternalDocumentCreation: number;
     integrationTestExternal: number;
+    performanceTestDocumentCreation: number;
     performanceTest: number;
     memberGroup: string | undefined;
     premiseTaskNos: number[] | undefined;
@@ -40,7 +48,7 @@ export class ExcelClipboardParseTaskLine implements ITaskLineProps {
 
     constructor(props: string[]) {
         const _props: string[] = props.map(prop => prop.trim());
-        const expectedLength = 15;
+        const expectedLength = 17;
         while (_props.length < expectedLength) {
             _props.push(""); // Fill missing columns with empty strings
         }
@@ -54,12 +62,16 @@ export class ExcelClipboardParseTaskLine implements ITaskLineProps {
         this.requirementsDefinition = this.parseNumber(_props[6]);
         this.design = this.parseNumber(_props[7]);
         this.development = this.parseNumber(_props[8]);
-        this.unitTest = this.parseNumber(_props[9]);
-        this.integrationTestInternal = this.parseNumber(_props[10]);
-        this.integrationTestExternal = this.parseNumber(_props[11]);
-        this.performanceTest = this.parseNumber(_props[12]);
-        this.memberGroup = this.parseMemberGroup(_props[13]);
-        this.premiseTaskNos = this.parsePremiseTaskNos(_props[14]);
+        this.unitTestDocumentCreation = this.parseNumber(_props[9]);
+        this.unitTest = this.parseNumber(_props[10]);
+        this.integrationTestInternalDocumentCreation = this.parseNumber(_props[11]);
+        this.integrationTestInternal = this.parseNumber(_props[12]);
+        this.integrationTestExternalDocumentCreation = this.parseNumber(_props[13]);
+        this.integrationTestExternal = this.parseNumber(_props[14]);
+        this.performanceTestDocumentCreation = this.parseNumber(_props[15]);
+        this.performanceTest = this.parseNumber(_props[16]);
+        this.memberGroup = this.parseMemberGroup(_props[17]);
+        this.premiseTaskNos = this.parsePremiseTaskNos(_props[18]);
     }
 
     private parseNumber(value: string): number {
@@ -104,17 +116,33 @@ export class ExcelClipboardParseTaskLine implements ITaskLineProps {
         if (developmentTask.duration > 0) {
             tasks.set(Phase.DEVELOPMENT, developmentTask);
         }
+        const unitTestDocumentCreationTask = this.toTask(ticketId, ticketTitle, Phase.UNIT_TEST_DOCUMENT_CREATION, this.unitTestDocumentCreation);
+        if (unitTestDocumentCreationTask.duration > 0) {
+            tasks.set(Phase.UNIT_TEST_DOCUMENT_CREATION, unitTestDocumentCreationTask);
+        }
         const unitTestTask = this.toTask(ticketId, ticketTitle, Phase.UNIT_TEST, this.unitTest);
         if (unitTestTask.duration > 0) {
             tasks.set(Phase.UNIT_TEST, unitTestTask);
+        }
+        const integrationTestInternalDocumentCreationTask = this.toTask(ticketId, ticketTitle, Phase.INTEGRATION_TEST_INTERNAL_DOCUMENT_CREATION, this.integrationTestInternalDocumentCreation);
+        if (integrationTestInternalDocumentCreationTask.duration > 0) {
+            tasks.set(Phase.INTEGRATION_TEST_INTERNAL_DOCUMENT_CREATION, integrationTestInternalDocumentCreationTask);
         }
         const integrationTestTask = this.toTask(ticketId, ticketTitle, Phase.INTEGRATION_TEST_INTERNAL, this.integrationTestInternal);
         if (integrationTestTask.duration > 0) {
             tasks.set(Phase.INTEGRATION_TEST_INTERNAL, integrationTestTask);
         }
+        const integrationTestExternalDocumentCreationTask = this.toTask(ticketId, ticketTitle, Phase.INTEGRATION_TEST_EXTERNAL_DOCUMENT_CREATION, this.integrationTestExternalDocumentCreation);
+        if (integrationTestExternalDocumentCreationTask.duration > 0) {
+            tasks.set(Phase.INTEGRATION_TEST_EXTERNAL_DOCUMENT_CREATION, integrationTestExternalDocumentCreationTask);
+        }
         const integrationTestExternalTask = this.toTask(ticketId, ticketTitle, Phase.INTEGRATION_TEST_EXTERNAL, this.integrationTestExternal);
         if (integrationTestExternalTask.duration > 0) {
             tasks.set(Phase.INTEGRATION_TEST_EXTERNAL, integrationTestExternalTask);
+        }
+        const performanceTestDocumentCreationTask = this.toTask(ticketId, ticketTitle, Phase.PERFORMANCE_TEST_DOCUMENT_CREATION, this.performanceTestDocumentCreation);
+        if (performanceTestDocumentCreationTask.duration > 0) {
+            tasks.set(Phase.PERFORMANCE_TEST_DOCUMENT_CREATION, performanceTestDocumentCreationTask);
         }
         const performanceTestTask = this.toTask(ticketId, ticketTitle, Phase.PERFORMANCE_TEST, this.performanceTest);
         if (performanceTestTask.duration > 0) {

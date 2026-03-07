@@ -8,7 +8,7 @@ export class ExcelClipboardParseTask {
         const taskLines: ExcelClipboardParseTaskLine[] = [];
         console.log("Parsing lines:", lines);
         for (const line of lines) {
-            if (line.length < 12) {
+            if (line.length < 17) {
                 continue; // Skip lines that do not have enough columns
             }
             if (line[0].trim() === "") {
