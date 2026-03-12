@@ -91,11 +91,13 @@ export class ExcelClipboardParseTaskLine implements ITaskLineProps {
     }
 
     private toTask(ticketId: UUID, ticketTitle: string, phase: PhaseEnum, duration: number): Task {
+        const memberGroup = this.isGroupingTaskNeedPhase(phase) ? this.memberGroup : undefined;
+
         const taskInformation = {
             taskName: this.taskName,
             description: this.description,
             premiseTaskIds: [],
-            groupTaskId: this.memberGroup || undefined,
+            groupTaskId: memberGroup,
         };
 
         return Task.create(ticketId, ticketTitle, phase, duration, taskInformation);
@@ -151,6 +153,11 @@ export class ExcelClipboardParseTaskLine implements ITaskLineProps {
 
         return tasks;
 
+    }
+
+    private isGroupingTaskNeedPhase = (phase: PhaseEnum): boolean => {
+        // TODO 自由にフェーズを選べるようにする (現状は要件定義、設計、開発のみ前提 工数がない;;)
+        return phase === Phase.DEVELOPMENT || phase === Phase.DESIGN || phase === Phase.REQUIREMENTS_DEFINITION;
     }
 
 }
