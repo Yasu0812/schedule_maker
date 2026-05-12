@@ -6,6 +6,7 @@ import DataImportExport from "../import/DataImportExport";
 import { ScheduleStateManager } from "@/app/models/ScheduleStateManager";
 import { Dispatch, SetStateAction } from "react";
 import { PageContents } from "@/app/types/PageContents";
+import DbSaveButton from "./DbSaveButton";
 
 export default function Header(
     props: {
@@ -45,6 +46,9 @@ export default function Header(
                         </li>
                     </ul>
                     <ul className="flex space-x-4">
+                        <li>
+                            <DbSaveButton schedule={schedule} />
+                        </li>
                         <SaveIcon onClick={() => showModal(() => <DataImportExport
                             schedule={schedule}
                             setSchedule={setSchedule}

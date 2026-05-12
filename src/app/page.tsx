@@ -7,6 +7,10 @@ import { ScheduleStateJson } from "./models/serialize/ScheduleStateJson";
 import { ModalProvider } from "./components/modal/ModalContext";
 import GanttChart from "./templates/GanttChart";
 import { PageContents } from "./types/PageContents";
+import { loadScheduleState } from "./actions/scheduleStateActions";
+
+const LOCAL_STORAGE_SCHEDULE_KEY = "app-data";
+const LOCAL_STORAGE_SCHEDULE_STATE_ID_KEY = "schedule-state-id";
 
 export default function Home() {
 
@@ -19,26 +23,42 @@ export default function Home() {
     };
 
     useEffect(() => {
-        const data = localStorage.getItem('app-data');
-        if (data) {
-            try {
-                setSchedule(ScheduleStateJson.fromJson(data))
-            } catch (error) {
-                console.error("Failed to load schedule data from localStorage:", error);
-                // Fallback to default schedule if loading fails
-                setSchedule(ScheduleStateManager.ScheduleStateManagerFactory());
+        const loadSchedule = async () => {
+            const scheduleStateId = localStorage.getItem(LOCAL_STORAGE_SCHEDULE_STATE_ID_KEY);
+
+            if (scheduleStateId) {
+                try {
+                    const data = await loadScheduleState(scheduleStateId);
+                    if (data) {
+                        localStorage.setItem(LOCAL_STORAGE_SCHEDULE_KEY, data);
+                        setSchedule(ScheduleStateJson.fromJson(data));
+                        return;
+                    }
+                } catch (error) {
+                    console.error("Failed to load schedule data from DB:", error);
+                }
             }
 
-        } else {
-            // If no data in localStorage, initialize with default schedule
+            const data = localStorage.getItem(LOCAL_STORAGE_SCHEDULE_KEY);
+            if (data) {
+                try {
+                    setSchedule(ScheduleStateJson.fromJson(data));
+                    return;
+                } catch (error) {
+                    console.error("Failed to load schedule data from localStorage:", error);
+                }
+            }
+
             setSchedule(ScheduleStateManager.ScheduleStateManagerFactory());
-        }
+        };
+
+        loadSchedule();
     }, []);
 
 
     useEffect(() => {
         if (!schedule) return;
-        localStorage.setItem('app-data', ScheduleStateJson.toJson(schedule));
+        localStorage.setItem(LOCAL_STORAGE_SCHEDULE_KEY, ScheduleStateJson.toJson(schedule));
     }, [schedule]);
 
     return (
