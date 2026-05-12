@@ -8,9 +8,10 @@ import { ModalProvider } from "./components/modal/ModalContext";
 import GanttChart from "./templates/GanttChart";
 import { PageContents } from "./types/PageContents";
 import { loadScheduleState } from "./actions/scheduleStateActions";
-
-const LOCAL_STORAGE_SCHEDULE_KEY = "app-data";
-const LOCAL_STORAGE_SCHEDULE_STATE_ID_KEY = "schedule-state-id";
+import {
+    LOCAL_STORAGE_SCHEDULE_KEY,
+    LOCAL_STORAGE_SCHEDULE_STATE_ID_KEY,
+} from "./common/LocalStorageKeys";
 
 export default function Home() {
 

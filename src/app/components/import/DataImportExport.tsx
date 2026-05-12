@@ -4,6 +4,7 @@ import { DataExport } from "./DataExport";
 import { DataDelete } from "./DataDelete";
 import { ProjectImport } from "./ProjectImport";
 import { TicketImport } from "./TicketImport";
+import { DbProjectManager } from "./DbProjectManager";
 
 export default function DataImportExport(
     props: {
@@ -15,6 +16,8 @@ export default function DataImportExport(
 
     return (
         <div className="min-w-lg">
+            <DbProjectManager setSchedule={props.setSchedule} hideModal={props.hideModal} />
+
             <h2 className="text-lg font-semibold pb-2 mb-2 border-b">Data Import</h2>
             <ProjectImport schedule={props.schedule} setSchedule={props.setSchedule} hideModal={props.hideModal} />
             <TicketImport schedule={props.schedule} setSchedule={props.setSchedule} hideModal={props.hideModal} />

@@ -4,9 +4,10 @@ import { useState, useTransition } from "react";
 import { saveScheduleState } from "@/app/actions/scheduleStateActions";
 import { ScheduleStateManager } from "@/app/models/ScheduleStateManager";
 import { ScheduleStateJson } from "@/app/models/serialize/ScheduleStateJson";
-
-const LOCAL_STORAGE_SCHEDULE_KEY = "app-data";
-const LOCAL_STORAGE_SCHEDULE_STATE_ID_KEY = "schedule-state-id";
+import {
+    LOCAL_STORAGE_SCHEDULE_KEY,
+    LOCAL_STORAGE_SCHEDULE_STATE_ID_KEY,
+} from "@/app/common/LocalStorageKeys";
 
 export default function DbSaveButton(props: {
     schedule: ScheduleStateManager;
@@ -23,6 +24,7 @@ export default function DbSaveButton(props: {
                 const scheduleStateId = localStorage.getItem(LOCAL_STORAGE_SCHEDULE_STATE_ID_KEY) ?? undefined;
                 const saved = await saveScheduleState({
                     id: scheduleStateId,
+                    name: scheduleStateId ? undefined : "Untitled schedule",
                     scheduleJson,
                 });
 

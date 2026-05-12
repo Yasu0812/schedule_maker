@@ -7,7 +7,14 @@ import { ScheduleStateRepository } from "@/app/repositories/ScheduleStateReposit
 const repository = new ScheduleStateRepository();
 
 export async function listScheduleStates() {
-  return repository.list();
+  const summaries = await repository.list();
+
+  return summaries.map((summary) => ({
+    id: summary.id,
+    name: summary.name,
+    createdAt: summary.createdAt.toISOString(),
+    updatedAt: summary.updatedAt.toISOString(),
+  }));
 }
 
 export async function loadScheduleState(id: string): Promise<string | undefined> {
@@ -32,6 +39,28 @@ export async function saveScheduleState(params: {
     id: saved.id,
     name: saved.name,
     scheduleJson: ScheduleStateJson.toJson(saved.schedule),
+  };
+}
+
+export async function renameScheduleState(params: {
+  id: string;
+  name: string;
+}) {
+  const schedule = await repository.findById(params.id);
+
+  if (!schedule) {
+    throw new Error(`ScheduleState ${params.id} was not found.`);
+  }
+
+  const saved = await repository.save({
+    id: params.id,
+    name: params.name,
+    schedule,
+  });
+
+  return {
+    id: saved.id,
+    name: saved.name,
   };
 }
 
