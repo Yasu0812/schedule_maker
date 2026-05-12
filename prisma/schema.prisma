@@ -5,3 +5,160 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+enum Phase {
+  REQUIREMENTS_DEFINITION                     @map("requirements-definition")
+  DESIGN                                      @map("design")
+  DEVELOPMENT                                 @map("development")
+  UNIT_TEST_DOCUMENT_CREATION                 @map("unit-test-document-creation")
+  UNIT_TEST                                   @map("unit-test")
+  INTEGRATION_TEST_INTERNAL_DOCUMENT_CREATION @map("integration-test-internal-document-creation")
+  INTEGRATION_TEST_INTERNAL                   @map("integration-test-internal")
+  INTEGRATION_TEST_EXTERNAL_DOCUMENT_CREATION @map("integration-test-external-document-creation")
+  INTEGRATION_TEST_EXTERNAL                   @map("integration-test-external")
+  PERFORMANCE_TEST_DOCUMENT_CREATION          @map("performance-test-document-creation")
+  PERFORMANCE_TEST                            @map("performance-test")
+}
+
+model ScheduleState {
+  id        String   @id @default(uuid()) @db.Uuid
+  name      String   @default("Untitled schedule")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  configuration ScheduleConfiguration?
+  tickets       Ticket[]
+  tasks         Task[]
+  assignedTasks AssignedTask[]
+  members       Member[]
+  mileStones    MileStone[]
+}
+
+model ScheduleConfiguration {
+  id                 String     @id @default(uuid()) @db.Uuid
+  scheduleStateId    String     @unique @db.Uuid
+  firstDate          DateTime
+  lastDate           DateTime
+  additionalHolidays DateTime[]
+  isShowHoliday      Boolean
+
+  scheduleState ScheduleState @relation(fields: [scheduleStateId], references: [id], onDelete: Cascade)
+}
+
+model Ticket {
+  id              String  @id @db.Uuid
+  scheduleStateId String  @db.Uuid
+  title           String
+  description     String
+  enabled         Boolean
+  sortOrder       Int     @default(0)
+
+  scheduleState ScheduleState  @relation(fields: [scheduleStateId], references: [id], onDelete: Cascade)
+  phases        TicketPhase[]
+  tasks         Task[]
+  assignedTasks AssignedTask[]
+
+  @@index([scheduleStateId])
+}
+
+model TicketPhase {
+  id          String @id @default(uuid()) @db.Uuid
+  ticketId    String @db.Uuid
+  phase       Phase
+  duration    Int
+  description String
+  sortOrder   Int    @default(0)
+
+  ticket Ticket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+
+  @@unique([ticketId, phase])
+  @@index([ticketId])
+}
+
+model Task {
+  id              String @id @db.Uuid
+  scheduleStateId String @db.Uuid
+  ticketId        String @db.Uuid
+  ticketTitle     String
+  phase           Phase
+  duration        Int
+
+  scheduleState   ScheduleState    @relation(fields: [scheduleStateId], references: [id], onDelete: Cascade)
+  ticket          Ticket           @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  taskInformation TaskInformation?
+  premiseTasks    TaskDependency[] @relation("TaskPremises")
+  dependentTasks  TaskDependency[] @relation("TaskDependents")
+  assignedTasks   AssignedTask[]
+
+  @@index([scheduleStateId])
+  @@index([ticketId])
+}
+
+model TaskInformation {
+  id          String  @id @db.Uuid
+  taskId      String  @unique @db.Uuid
+  taskName    String
+  description String
+  groupTaskId String?
+
+  task Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
+}
+
+model TaskDependency {
+  taskId        String @db.Uuid
+  premiseTaskId String @db.Uuid
+
+  task        Task @relation("TaskPremises", fields: [taskId], references: [id], onDelete: Cascade)
+  premiseTask Task @relation("TaskDependents", fields: [premiseTaskId], references: [id], onDelete: Cascade)
+
+  @@id([taskId, premiseTaskId])
+  @@index([premiseTaskId])
+}
+
+model AssignedTask {
+  id              String   @id @db.Uuid
+  scheduleStateId String   @db.Uuid
+  ticketId        String   @db.Uuid
+  taskId          String   @db.Uuid
+  memberId        String   @db.Uuid
+  startDay        DateTime
+  endDay          DateTime
+
+  scheduleState ScheduleState @relation(fields: [scheduleStateId], references: [id], onDelete: Cascade)
+  ticket        Ticket        @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  task          Task          @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  member        Member        @relation(fields: [memberId], references: [id], onDelete: Cascade)
+
+  @@index([scheduleStateId])
+  @@index([ticketId])
+  @@index([taskId])
+  @@index([memberId])
+}
+
+model Member {
+  id              String     @id @db.Uuid
+  scheduleStateId String     @db.Uuid
+  name            String
+  disableDates    DateTime[]
+  isAvailable     Boolean
+  sortOrder       Int        @default(0)
+
+  scheduleState ScheduleState  @relation(fields: [scheduleStateId], references: [id], onDelete: Cascade)
+  assignedTasks AssignedTask[]
+
+  @@index([scheduleStateId])
+}
+
+model MileStone {
+  id              String    @id @db.Uuid
+  scheduleStateId String    @db.Uuid
+  name            String
+  day             DateTime?
+  prePhases       Phase[]
+  postPhases      Phase[]
+  sortOrder       Int       @default(0)
+
+  scheduleState ScheduleState @relation(fields: [scheduleStateId], references: [id], onDelete: Cascade)
+
+  @@index([scheduleStateId])
+}
