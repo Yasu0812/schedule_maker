@@ -46,7 +46,8 @@ model ScheduleConfiguration {
 }
 
 model Ticket {
-  id              String  @id @db.Uuid
+  dbId            String  @id @default(uuid()) @db.Uuid
+  id              String  @db.Uuid
   scheduleStateId String  @db.Uuid
   title           String
   description     String
@@ -58,25 +59,28 @@ model Ticket {
   tasks         Task[]
   assignedTasks AssignedTask[]
 
+  @@unique([scheduleStateId, id])
   @@index([scheduleStateId])
 }
 
 model TicketPhase {
-  id          String @id @default(uuid()) @db.Uuid
-  ticketId    String @db.Uuid
-  phase       Phase
-  duration    Int
-  description String
-  sortOrder   Int    @default(0)
+  dbId            String @id @default(uuid()) @db.Uuid
+  scheduleStateId String @db.Uuid
+  ticketId        String @db.Uuid
+  phase           Phase
+  duration        Int
+  description     String
+  sortOrder       Int    @default(0)
 
-  ticket Ticket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  ticket Ticket @relation(fields: [scheduleStateId, ticketId], references: [scheduleStateId, id], onDelete: Cascade)
 
-  @@unique([ticketId, phase])
-  @@index([ticketId])
+  @@unique([scheduleStateId, ticketId, phase])
+  @@index([scheduleStateId, ticketId])
 }
 
 model Task {
-  id              String @id @db.Uuid
+  dbId            String @id @default(uuid()) @db.Uuid
+  id              String @db.Uuid
   scheduleStateId String @db.Uuid
   ticketId        String @db.Uuid
   ticketTitle     String
@@ -84,39 +88,47 @@ model Task {
   duration        Int
 
   scheduleState   ScheduleState    @relation(fields: [scheduleStateId], references: [id], onDelete: Cascade)
-  ticket          Ticket           @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  ticket          Ticket           @relation(fields: [scheduleStateId, ticketId], references: [scheduleStateId, id], onDelete: Cascade)
   taskInformation TaskInformation?
   premiseTasks    TaskDependency[] @relation("TaskPremises")
   dependentTasks  TaskDependency[] @relation("TaskDependents")
   assignedTasks   AssignedTask[]
 
+  @@unique([scheduleStateId, id])
   @@index([scheduleStateId])
-  @@index([ticketId])
+  @@index([scheduleStateId, ticketId])
 }
 
 model TaskInformation {
-  id          String  @id @db.Uuid
-  taskId      String  @unique @db.Uuid
-  taskName    String
-  description String
-  groupTaskId String?
+  dbId            String  @id @default(uuid()) @db.Uuid
+  id              String  @db.Uuid
+  scheduleStateId String  @db.Uuid
+  taskId          String  @db.Uuid
+  taskName        String
+  description     String
+  groupTaskId     String?
 
-  task Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  task Task @relation(fields: [scheduleStateId, taskId], references: [scheduleStateId, id], onDelete: Cascade)
+
+  @@unique([scheduleStateId, id])
+  @@unique([scheduleStateId, taskId])
 }
 
 model TaskDependency {
-  taskId        String @db.Uuid
-  premiseTaskId String @db.Uuid
+  scheduleStateId String @db.Uuid
+  taskId          String @db.Uuid
+  premiseTaskId   String @db.Uuid
 
-  task        Task @relation("TaskPremises", fields: [taskId], references: [id], onDelete: Cascade)
-  premiseTask Task @relation("TaskDependents", fields: [premiseTaskId], references: [id], onDelete: Cascade)
+  task        Task @relation("TaskPremises", fields: [scheduleStateId, taskId], references: [scheduleStateId, id], onDelete: Cascade)
+  premiseTask Task @relation("TaskDependents", fields: [scheduleStateId, premiseTaskId], references: [scheduleStateId, id], onDelete: Cascade)
 
-  @@id([taskId, premiseTaskId])
-  @@index([premiseTaskId])
+  @@id([scheduleStateId, taskId, premiseTaskId])
+  @@index([scheduleStateId, premiseTaskId])
 }
 
 model AssignedTask {
-  id              String   @id @db.Uuid
+  dbId            String   @id @default(uuid()) @db.Uuid
+  id              String   @db.Uuid
   scheduleStateId String   @db.Uuid
   ticketId        String   @db.Uuid
   taskId          String   @db.Uuid
@@ -125,18 +137,20 @@ model AssignedTask {
   endDay          DateTime
 
   scheduleState ScheduleState @relation(fields: [scheduleStateId], references: [id], onDelete: Cascade)
-  ticket        Ticket        @relation(fields: [ticketId], references: [id], onDelete: Cascade)
-  task          Task          @relation(fields: [taskId], references: [id], onDelete: Cascade)
-  member        Member        @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  ticket        Ticket        @relation(fields: [scheduleStateId, ticketId], references: [scheduleStateId, id], onDelete: Cascade)
+  task          Task          @relation(fields: [scheduleStateId, taskId], references: [scheduleStateId, id], onDelete: Cascade)
+  member        Member        @relation(fields: [scheduleStateId, memberId], references: [scheduleStateId, id], onDelete: Cascade)
 
+  @@unique([scheduleStateId, id])
   @@index([scheduleStateId])
-  @@index([ticketId])
-  @@index([taskId])
-  @@index([memberId])
+  @@index([scheduleStateId, ticketId])
+  @@index([scheduleStateId, taskId])
+  @@index([scheduleStateId, memberId])
 }
 
 model Member {
-  id              String     @id @db.Uuid
+  dbId            String     @id @default(uuid()) @db.Uuid
+  id              String     @db.Uuid
   scheduleStateId String     @db.Uuid
   name            String
   disableDates    DateTime[]
@@ -146,11 +160,13 @@ model Member {
   scheduleState ScheduleState  @relation(fields: [scheduleStateId], references: [id], onDelete: Cascade)
   assignedTasks AssignedTask[]
 
+  @@unique([scheduleStateId, id])
   @@index([scheduleStateId])
 }
 
 model MileStone {
-  id              String    @id @db.Uuid
+  dbId            String    @id @default(uuid()) @db.Uuid
+  id              String    @db.Uuid
   scheduleStateId String    @db.Uuid
   name            String
   day             DateTime?
@@ -160,5 +176,6 @@ model MileStone {
 
   scheduleState ScheduleState @relation(fields: [scheduleStateId], references: [id], onDelete: Cascade)
 
+  @@unique([scheduleStateId, id])
   @@index([scheduleStateId])
 }
