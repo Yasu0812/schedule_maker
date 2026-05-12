@@ -147,7 +147,7 @@ export function DbProjectManager(props: {
 
     return (
         <>
-            <h2 className="text-lg font-semibold pb-2 mb-2 border-b">DB Project</h2>
+            <h2 className="text-lg font-semibold pb-2 mb-2 border-b">Load Database</h2>
             <div className="mb-3 flex flex-wrap items-center gap-2">
                 {!isEditingName && (
                     <>
@@ -262,6 +262,7 @@ export function DbProjectManager(props: {
                     </>
                 )}
             </div>
+            <h2 className="text-lg font-semibold pb-2 mb-2 border-b">Create New Project</h2>
             <div className="mb-4 flex flex-wrap items-center gap-2">
                 <input
                     className="min-w-64 rounded border border-gray-300 px-3 py-2 text-sm text-gray-800"
