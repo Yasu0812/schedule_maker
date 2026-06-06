@@ -56,6 +56,11 @@ export async function GET(request: NextRequest) {
           select: {
             duration: true,
             phase: true,
+            taskInformation: {
+              select: {
+                taskName: true,
+              },
+            },
           },
         },
       },
@@ -70,6 +75,7 @@ export async function GET(request: NextRequest) {
         endDay: assignedTask.endDay.toISOString(),
         ticketTitle: ticket.title,
         memberName: member.name,
+        taskName: task.taskInformation?.taskName ?? "",
         taskDuration: task.duration,
         phase: prismaPhaseNameMap[task.phase],
       })),

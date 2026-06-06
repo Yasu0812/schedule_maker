@@ -1,5 +1,6 @@
 import { generateUUID } from '../common/IdUtil';
 import { Task } from './Task';
+import { TaskInformation } from './TaskInformation';
 
 
 export class TaskMergeSplitter {
@@ -21,11 +22,22 @@ export class TaskMergeSplitter {
         const taskIds = [task.id, ...duration.map(() => generateUUID())];
         duration.forEach((v, i) => {
             if (v > 0) {
-                const newTask = new Task(taskIds[i], task.ticketId, task.ticketTitle, task.phase, v, task.taskInformation);
+                const taskInformation = this.cloneTaskInformation(task, i === 0);
+                const newTask = new Task(taskIds[i], task.ticketId, task.ticketTitle, task.phase, v, taskInformation);
                 tasks.push(newTask);
             }
         });
         return tasks;
+    }
+
+    private cloneTaskInformation(task: Task, preserveId: boolean): TaskInformation {
+        return new TaskInformation(
+            preserveId ? task.taskInformation.id : generateUUID(),
+            task.taskInformation.taskName,
+            task.taskInformation.description,
+            [...task.taskInformation.premiseTaskIds],
+            task.taskInformation.groupTaskId,
+        );
     }
 
     public splitTaskByNumDurations(duration: number, num: number): number[] {

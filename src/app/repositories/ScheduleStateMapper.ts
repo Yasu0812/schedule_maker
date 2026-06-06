@@ -106,6 +106,23 @@ export class ScheduleStateMapper {
     const members = schedule.memberManager.members;
     const assignedTasks = schedule.planedTaskManager.getAll();
     const mileStones = schedule.mileStoneManager.getAllMileStones();
+    const taskIds = new Set(tasks.map((task) => task.id));
+    const taskInformationIds = new Set<UUID>();
+    const toPersistenceTaskInformationId = (task: Task): UUID => {
+      if (!taskInformationIds.has(task.taskInformation.id)) {
+        taskInformationIds.add(task.taskInformation.id);
+        return task.taskInformation.id;
+      }
+
+      if (!taskInformationIds.has(task.id)) {
+        taskInformationIds.add(task.id);
+        return task.id;
+      }
+
+      const id = generateUUID();
+      taskInformationIds.add(id);
+      return id;
+    };
 
     return {
       configuration: {
@@ -142,7 +159,7 @@ export class ScheduleStateMapper {
         duration: task.duration,
       })),
       taskInformations: tasks.map((task) => ({
-        id: task.taskInformation.id,
+        id: toPersistenceTaskInformationId(task),
         scheduleStateId,
         taskId: task.id,
         taskName: task.taskInformation.taskName,
@@ -150,11 +167,13 @@ export class ScheduleStateMapper {
         groupTaskId: task.taskInformation.groupTaskId,
       })),
       taskDependencies: tasks.flatMap((task) =>
-        task.taskInformation.premiseTaskIds.map((premiseTaskId) => ({
-          scheduleStateId,
-          taskId: task.id,
-          premiseTaskId,
-        })),
+        Array.from(new Set(task.taskInformation.premiseTaskIds))
+          .filter((premiseTaskId) => taskIds.has(premiseTaskId))
+          .map((premiseTaskId) => ({
+            scheduleStateId,
+            taskId: task.id,
+            premiseTaskId,
+          })),
       ),
       members: members.map((member, index) => ({
         id: member.id,

@@ -1,6 +1,10 @@
 import { ScheduleStateManager } from "@/app/models/ScheduleStateManager";
 import { ScheduleStateJson } from "@/app/models/serialize/ScheduleStateJson";
 import { useRef, useState } from "react";
+import {
+    LOCAL_STORAGE_SCHEDULE_KEY,
+    LOCAL_STORAGE_SCHEDULE_STATE_ID_KEY,
+} from "@/app/common/LocalStorageKeys";
 
 export function ProjectImport(props: {
     schedule: ScheduleStateManager | undefined,
@@ -27,6 +31,8 @@ export function ProjectImport(props: {
             try {
                 const data = event.target?.result as string;
                 const schedule = ScheduleStateJson.fromJson(data);
+                localStorage.removeItem(LOCAL_STORAGE_SCHEDULE_STATE_ID_KEY);
+                localStorage.setItem(LOCAL_STORAGE_SCHEDULE_KEY, data);
                 props.setSchedule(schedule);
                 props.hideModal();
 
